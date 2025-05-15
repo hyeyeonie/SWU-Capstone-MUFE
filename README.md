@@ -21,7 +21,7 @@ MUFE는 즐거운 페스티벌 경험으로 팬덤 활동과 같이 음악 관�
 
 (1). Front-end : Xcode, Swift UI
 
-(2). Back-end :  Firebase (Firestore, Firebase Function, Cloud Stroage), Open AI Api
+(2). Back-end :  Swift Data, Open AI API, 공연예술통합전산망 Open API, Melon Playlist API
 
 (3). 버전 및 이슈 관리: Github, Github Issues, Github Project
 
