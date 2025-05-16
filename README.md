@@ -19,7 +19,7 @@ MUFE는 즐거운 페스티벌 경험으로 팬덤 활동과 같이 음악 관�
 
 ## 2. 개발 환경
 
-(1). Front-end : Xcode, Swift UI
+(1). Front-end : Xcode, Swift UI, UIKit
 
 (2). Back-end :  Swift Data, Open AI API, 공연예술통합전산망 Open API, Melon Playlist API
 
