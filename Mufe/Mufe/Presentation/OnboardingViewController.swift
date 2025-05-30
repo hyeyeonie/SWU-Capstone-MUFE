@@ -38,12 +38,27 @@ class OnboardingViewController: UIViewController {
     private let contentView = UIView()
     
     private let selectFestivalView = SelectFestivalView()
+    private let selectDateView = SelectDateView()
     
     var selectedFestivalName: String = "2025 뷰티풀민트라이프"
     var currentStep: FestivalProgressStep = .festivalSelection {
         didSet {
             progressBar.progress = currentStep.progress
             titleLabel.attributedText = currentStep.attributedTitle(with: selectedFestivalName)
+            
+            // TODO: 수정
+            switch currentStep {
+            case .festivalSelection:
+                selectFestivalView.isHidden = false
+                selectDateView.isHidden = true
+            case .dateSelection:
+                selectFestivalView.isHidden = true
+                selectDateView.isHidden = false
+            case .timeSelection:
+                selectDateView.isHidden = false
+            case .artistSelection:
+                selectDateView.isHidden = false
+            }
         }
     }
     
@@ -61,7 +76,7 @@ class OnboardingViewController: UIViewController {
     
     private func setStyle() {
         view.backgroundColor = .black
-        currentStep = .festivalSelection
+        currentStep = .dateSelection
     }
     
     private func setUI() {
@@ -72,7 +87,7 @@ class OnboardingViewController: UIViewController {
             scrollView
         )
         scrollView.addSubview(contentView)
-        contentView.addSubview(selectFestivalView)
+        contentView.addSubviews(selectFestivalView, selectDateView)
     }
     
     private func setLayout() {
@@ -105,8 +120,12 @@ class OnboardingViewController: UIViewController {
             $0.width.equalTo(scrollView.frameLayoutGuide)
         }
         
-        // 이 부분이 뭔가 이상함, 추후 데이터 동적으로 들어올텐데 고민
         selectFestivalView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview()
+        }
+        
+        selectDateView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview()
         }
