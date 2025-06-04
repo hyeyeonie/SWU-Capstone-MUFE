@@ -10,12 +10,13 @@ import UIKit
 import SnapKit
 import Then
 
-struct DateItem {
-    let day: String
-    let date: String
+protocol SelectDateViewDelegate: AnyObject {
+    func didSelectDate(_ dateItem: DateItem)
 }
 
 final class SelectDateView: UIView {
+    
+    weak var delegate: SelectDateViewDelegate?
     
     private let dates: [DateItem] = [
         DateItem(day: "1일차", date: "1월 7일 토요일"),
@@ -81,5 +82,10 @@ extension SelectDateView: UICollectionViewDataSource, UICollectionViewDelegate {
         let item = dates[indexPath.item]
         cell.setDate(day: item.day, date: item.date)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedItem = dates[indexPath.item]
+        delegate?.didSelectDate(selectedItem)
     }
 }
