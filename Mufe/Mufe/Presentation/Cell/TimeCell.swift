@@ -109,6 +109,7 @@ final class TimeCell: UICollectionViewCell {
         
         ticketLine.snp.makeConstraints {
             $0.top.equalTo(dayLabel.snp.bottom).offset(6)
+            $0.horizontalEdges.equalToSuperview()
             $0.width.equalTo(363)
             $0.height.equalTo(20)
         }
@@ -129,7 +130,7 @@ final class TimeCell: UICollectionViewCell {
         }
         
         wave.snp.makeConstraints {
-            $0.bottom.equalToSuperview().inset(56)
+            $0.bottom.equalToSuperview().inset(46)
             $0.centerX.equalToSuperview()
         }
         
