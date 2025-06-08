@@ -23,7 +23,8 @@ class OnboardingViewController: UIViewController {
     private let progressBar = ProgressBarView()
     
     private let titleLabel = UILabel().then {
-        $0.textColor = .white
+        $0.textColor = .gray00
+        $0.customFont(CustomUIFont.f2xl_Bold)
         $0.numberOfLines = 2
         $0.textAlignment = .left
     }
@@ -43,10 +44,10 @@ class OnboardingViewController: UIViewController {
     private let selectArtistView = SelectArtistView()
     
     private let nextButton = UIButton().then {
-        $0.backgroundColor = .orange
+        $0.backgroundColor = .primary50
         $0.setTitle("다음으로", for: .normal)
-        $0.setTitleColor(.white, for: .normal)
-        $0.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        $0.setTitleColor(.gray00, for: .normal)
+        $0.titleLabel?.customFont(.flg_SemiBold)
         $0.layer.cornerRadius = 16
         
         $0.layer.shadowColor = UIColor.black.cgColor
@@ -60,7 +61,7 @@ class OnboardingViewController: UIViewController {
     var currentStep: FestivalProgressStep = .festivalSelection {
         didSet {
             progressBar.progress = currentStep.progress
-            titleLabel.attributedText = currentStep.attributedTitle(with: selectedFestivalName)
+            titleLabel.attributedText = currentStep.attributedTitle(with: selectedFestivalName, customFont: CustomUIFont.f2xl_Bold)
             
             // TODO: 수정
             switch currentStep {
@@ -166,7 +167,6 @@ class OnboardingViewController: UIViewController {
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(progressBar.snp.bottom).offset(32)
             $0.leading.equalToSuperview().offset(16)
-            
         }
         
         scrollView.snp.makeConstraints {

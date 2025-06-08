@@ -26,46 +26,74 @@ enum FestivalProgressStep: Int {
         }
     }
     
-    func attributedTitle(with festivalName: String) -> NSAttributedString {
+    func attributedTitle(with festivalName: String, customFont: CustomUIFont) -> NSAttributedString {
         let fullText: String
         switch self {
         case .festivalSelection:
             fullText = "어떤 페스티벌에\n참여하실 예정인가요?"
-            return NSAttributedString(
-                string: fullText,
-                attributes: [
-                    .font: UIFont.systemFont(ofSize: 24, weight: .bold),
-                    .foregroundColor: UIColor.white
-                ]
-            )
-            
         case .dateSelection:
-            fullText = "\(festivalName)에\n언제 방문하실 예정인가요?"
-            
+            fullText = "\(festivalName) 에\n언제 방문하실 예정인가요?"
         case .timeSelection:
-            fullText = "\(festivalName)에\n얼마나 머무르시나요?"
-            
+            fullText = "\(festivalName) 에\n얼마나 머무르시나요?"
         case .artistSelection:
-            fullText = "\(festivalName)에\n꼭 보고 싶은 무대가 있나요?"
+            fullText = "\(festivalName) 에\n꼭 보고 싶은 무대가 있나요?"
         }
         
-        let attributed = NSMutableAttributedString(
-            string: fullText,
-            attributes: [
-                .font: UIFont.systemFont(ofSize: 24, weight: .regular),
-                .foregroundColor: UIColor.white
-            ]
-        )
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = customFont.lineSpacing
         
-        if let range = fullText.range(of: festivalName) {
-            let nsRange = NSRange(range, in: fullText)
-            attributed.addAttribute(
-                .font,
-                value: UIFont.boldSystemFont(ofSize: 24),
-                range: nsRange
-            )
+        let attributed = NSMutableAttributedString(string: fullText)
+        
+        switch self {
+        case .dateSelection, .timeSelection, .artistSelection:
+            // festivalName 범위
+            if let festivalRange = fullText.range(of: festivalName) {
+                let nsFestivalRange = NSRange(festivalRange, in: fullText)
+                
+                // festivalName 스타일: f2xl_Bold + gray00
+                attributed.addAttributes([
+                    .font: CustomUIFont.f2xl_Bold.font,
+                    .foregroundColor: UIColor.gray00,
+                    .paragraphStyle: paragraphStyle
+                ], range: nsFestivalRange)
+                
+                // 나머지 텍스트 스타일: f2xl_Medium + gray20
+                let fullNSRange = NSRange(fullText.startIndex..<fullText.endIndex, in: fullText)
+                
+                attributed.addAttributes([
+                    .font: CustomUIFont.f2xl_Medium.font,
+                    .foregroundColor: UIColor.gray20,
+                    .paragraphStyle: paragraphStyle
+                ], range: fullNSRange)
+                
+                // festivalName 부분을 덮어씌우기 (우선순위 때문에)
+                attributed.addAttributes([
+                    .font: CustomUIFont.f2xl_Bold.font,
+                    .foregroundColor: UIColor.gray00,
+                    .paragraphStyle: paragraphStyle
+                ], range: nsFestivalRange)
+                
+            } else {
+                // festivalName 못찾으면 전체에 medium+gray20 적용
+                let fullNSRange = NSRange(fullText.startIndex..<fullText.endIndex, in: fullText)
+                attributed.addAttributes([
+                    .font: CustomUIFont.f2xl_Medium.font,
+                    .foregroundColor: UIColor.gray20,
+                    .paragraphStyle: paragraphStyle
+                ], range: fullNSRange)
+            }
+            
+        default:
+            // 나머지 step: 전체에 f2xl_Bold + gray00 적용
+            let fullNSRange = NSRange(fullText.startIndex..<fullText.endIndex, in: fullText)
+            attributed.addAttributes([
+                .font: customFont.font,
+                .foregroundColor: UIColor.gray00,
+                .paragraphStyle: paragraphStyle
+            ], range: fullNSRange)
         }
         
         return attributed
     }
+    
 }

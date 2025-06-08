@@ -12,13 +12,13 @@ final class TimeCell: UICollectionViewCell {
     static let identifier = "TimeCell"
     
     private let dayLabel = UILabel().then {
-        $0.font = .boldSystemFont(ofSize: 20)
-        $0.textColor = .white
+        $0.customFont(.fxl_Bold)
+        $0.textColor = .gray05
     }
     
     private let dateLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 16, weight: .medium)
-        $0.textColor = .lightGray
+        $0.customFont(.fmd_Medium)
+        $0.textColor = .gray40
     }
     
     private let ticketLine = UIImageView().then {
@@ -28,34 +28,34 @@ final class TimeCell: UICollectionViewCell {
     
     private let enterTitle = UILabel().then {
         $0.text = "입장시간"
-        $0.textColor = .white
-        $0.font = .systemFont(ofSize: 16, weight: .medium)
+        $0.textColor = .gray00
+        $0.customFont(.fmd_Medium)
     }
     
     private let leaveTitle = UILabel().then {
         $0.text = "퇴장시간"
-        $0.textColor = .white
-        $0.font = .systemFont(ofSize: 16, weight: .medium)
+        $0.textColor = .gray00
+        $0.customFont(.fmd_Medium)
     }
     
     private let enterTimePicker = UIDatePicker().then {
         $0.datePickerMode = .time
         $0.preferredDatePickerStyle = .inline
-        $0.tintColor = .white
+        $0.tintColor = .gray00
         $0.locale = Locale(identifier: "ko_KR")
     }
     
     private let leaveTimePicker = UIDatePicker().then {
         $0.datePickerMode = .time
         $0.preferredDatePickerStyle = .inline
-        $0.tintColor = .white
+        $0.tintColor = .gray00
         $0.locale = Locale(identifier: "ko_KR")
     }
     
     private let wave = UILabel().then {
         $0.text = "~"
-        $0.textColor = .white
-        $0.font = .systemFont(ofSize: 32, weight: .regular)
+        $0.textColor = .gray00
+        $0.customFont(.f3xl_Regular)
     }
     
     override init(frame: CGRect) {
@@ -87,7 +87,7 @@ final class TimeCell: UICollectionViewCell {
     }
     
     private func setStyle() {
-        backgroundColor = .darkGray
+        backgroundColor = .gray90
         layer.cornerRadius = 16
     }
     

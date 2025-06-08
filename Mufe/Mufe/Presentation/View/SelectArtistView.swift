@@ -15,13 +15,13 @@ final class SelectArtistView: UIView {
     private var artists: [ArtistInfo] = []
     
     private let dayLabel = UILabel().then {
-        $0.font = .boldSystemFont(ofSize: 20)
-        $0.textColor = .white
+        $0.customFont(.fxl_Bold)
+        $0.textColor = .gray05
     }
     
     private let dateLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 16, weight: .medium)
-        $0.textColor = .lightGray
+        $0.customFont(.fmd_Medium)
+        $0.textColor = .gray40
     }
     
     private let collectionViewLayout: UICollectionViewFlowLayout = {

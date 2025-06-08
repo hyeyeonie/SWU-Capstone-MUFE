@@ -12,20 +12,20 @@ final class TicketCell: UICollectionViewCell {
     static let identifier = "TicketCell"
     
     private let ticketButton = UIButton().then {
-        $0.backgroundColor = .darkGray
+        $0.backgroundColor = .gray80
         $0.layer.cornerRadius = 16
         $0.isUserInteractionEnabled = false
         $0.clipsToBounds = true
     }
     
     private let dayLabel = UILabel().then {
-        $0.font = .boldSystemFont(ofSize: 18)
-        $0.textColor = .white
+        $0.customFont(.flg_Bold)
+        $0.textColor = .gray00
     }
     
     private let dateLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 14)
-        $0.textColor = .lightGray
+        $0.customFont(.fsm_Medium)
+        $0.textColor = .gray20
     }
     
     private let ticketLine = UIImageView().then {
