@@ -40,6 +40,7 @@ class OnboardingViewController: UIViewController {
     private let selectFestivalView = SelectFestivalView()
     private let selectDateView = SelectDateView()
     private let selectTimeView = SelectTimeView()
+    private let selectArtistView = SelectArtistView()
     
     private let nextButton = UIButton().then {
         $0.backgroundColor = .orange
@@ -67,25 +68,55 @@ class OnboardingViewController: UIViewController {
                 selectFestivalView.isHidden = false
                 selectDateView.isHidden = true
                 selectTimeView.isHidden = true
-
+                selectArtistView.isHidden = true
+                
             case .dateSelection:
                 selectFestivalView.isHidden = true
                 selectDateView.isHidden = false
                 selectTimeView.isHidden = true
-
+                selectArtistView.isHidden = true
+                
             case .timeSelection:
                 selectFestivalView.isHidden = true
                 selectDateView.isHidden = true
                 selectTimeView.isHidden = false
-
+                selectArtistView.isHidden = true
+                
             case .artistSelection:
                 selectFestivalView.isHidden = true
-                selectDateView.isHidden = false
+                selectDateView.isHidden = true
                 selectTimeView.isHidden = true
+                selectArtistView.isHidden = false
             }
             
             selectTimeView.updateItems([
                 DateItem(day: "1일차", date: "1월 7일 토요일", enterTime: "13:00", leaveTime: "21:00")
+            ])
+            
+            selectArtistView.configure(day: "1일차", date: "1월 7일 토요일")
+            
+            selectArtistView.updateArtists([
+                ArtistInfo(
+                    stage: "STAGE 1",
+                    location: "88잔디마당",
+                    artists: [
+                        (name: "잔나비", image: UIImage(named: "artistImg")),
+                        (name: "혁오", image: UIImage(named: "artistImg")),
+                        (name: "적재", image: UIImage(named: "artistImg")),
+                        (name: "NCT", image: UIImage(named: "artistImg")),
+                        (name: "재현", image: UIImage(named: "artistImg")),
+                        (name: "유우시", image: UIImage(named: "artistImg"))
+                    ]
+                ),
+                ArtistInfo(
+                    stage: "STAGE 2",
+                    location: "SK핸드볼경기장",
+                    artists: [
+                        (name: "10cm", image: UIImage(named: "artistImg")),
+                        (name: "새소년", image: UIImage(named: "artistImg")),
+                        (name: "볼빨간사춘기", image: UIImage(named: "artistImg"))
+                    ]
+                )
             ])
         }
     }
@@ -104,7 +135,7 @@ class OnboardingViewController: UIViewController {
     
     private func setStyle() {
         view.backgroundColor = .black
-        currentStep = .timeSelection
+        currentStep = .artistSelection
     }
     
     private func setUI() {
@@ -116,7 +147,7 @@ class OnboardingViewController: UIViewController {
             nextButton
         )
         scrollView.addSubview(contentView)
-        contentView.addSubviews(selectFestivalView, selectDateView, selectTimeView)
+        contentView.addSubviews(selectFestivalView, selectDateView, selectTimeView, selectArtistView)
     }
     
     private func setLayout() {
@@ -160,6 +191,11 @@ class OnboardingViewController: UIViewController {
         }
         
         selectTimeView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview()
+        }
+        
+        selectArtistView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview()
         }
