@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		246950C12DE573410044A86B /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 246950C02DE573410044A86B /* SnapKit */; };
+		246950C42DE573650044A86B /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 246950C32DE573650044A86B /* Then */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		247AC3262DD4817500A4B103 /* Mufe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mufe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				246950C12DE573410044A86B /* SnapKit in Frameworks */,
+				246950C42DE573650044A86B /* Then in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +85,8 @@
 			);
 			name = Mufe;
 			packageProductDependencies = (
+				246950C02DE573410044A86B /* SnapKit */,
+				246950C32DE573650044A86B /* Then */,
 			);
 			productName = Mufe;
 			productReference = 247AC3262DD4817500A4B103 /* Mufe.app */;
@@ -107,6 +116,10 @@
 			);
 			mainGroup = 247AC31D2DD4817500A4B103;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				246950BF2DE573410044A86B /* XCRemoteSwiftPackageReference "SnapKit" */,
+				246950C22DE573650044A86B /* XCRemoteSwiftPackageReference "Then" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 247AC3272DD4817500A4B103 /* Products */;
 			projectDirPath = "";
@@ -339,6 +352,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		246950BF2DE573410044A86B /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		246950C22DE573650044A86B /* XCRemoteSwiftPackageReference "Then" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devxoul/Then";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		246950C02DE573410044A86B /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 246950BF2DE573410044A86B /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		246950C32DE573650044A86B /* Then */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 246950C22DE573650044A86B /* XCRemoteSwiftPackageReference "Then" */;
+			productName = Then;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 247AC31E2DD4817500A4B103 /* Project object */;
 }
