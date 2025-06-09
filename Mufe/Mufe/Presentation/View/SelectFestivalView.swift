@@ -12,15 +12,86 @@ import Then
 
 final class SelectFestivalView: UIView {
     
-    let festivals: [Festival] = [
-        Festival(imageName: "fstImg", name: "2025 뷰티풀민트라이프", startDate: "2025.01.03", endDate: "2025.01.06", location: "올림픽공원"),
-        Festival(imageName: "fstImg", name: "2025 썸머페스트", startDate: "2025.06.15", endDate: "2025.06.18", location: "한강공원"),
-        Festival(imageName: "fstImg", name: "2025 록앤롤 나이트", startDate: "2025.08.02", endDate: "2025.08.04", location: "서울숲"),
-        Festival(imageName: "fstImg", name: "2025 록앤롤 나이트", startDate: "2025.08.02", endDate: "2025.08.04", location: "서울숲"),
-        Festival(imageName: "fstImg", name: "2025 록앤롤 나이트", startDate: "2025.08.02", endDate: "2025.08.04", location: "서울숲"),
-        Festival(imageName: "fstImg", name: "2025 록앤롤 나이트", startDate: "2025.08.02", endDate: "2025.08.04", location: "서울숲")
-    ]
+    weak var delegate: FestivalSelectionDelegate?
     
+    let festivals: [Festival] = [
+        Festival(
+            imageName: "fstImg",
+            name: "2025 뷰티풀민트라이프",
+            startDate: "2025.01.03",
+            endDate: "2025.01.06",
+            location: "올림픽공원",
+            artistSchedule: [
+                "1일차": [
+                    ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
+                        (name: "잔나비", image: UIImage(named: "artistImg")),
+                        (name: "혁오", image: UIImage(named: "artistImg"))
+                    ]),
+                    ArtistInfo(stage: "STAGE 2", location: "SK핸드볼경기장", artists: [
+                        (name: "10cm", image: UIImage(named: "artistImg")),
+                        (name: "볼빨간사춘기", image: UIImage(named: "artistImg"))
+                    ])
+                ],
+                "2일차": [
+                    ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
+                        (name: "적재", image: UIImage(named: "artistImg")),
+                        (name: "NCT", image: UIImage(named: "artistImg"))
+                    ])
+                ]
+            ]
+        ),
+        Festival(
+            imageName: "fstImg",
+            name: "2025 뷰티풀민트라이프",
+            startDate: "2025.01.03",
+            endDate: "2025.01.06",
+            location: "올림픽공원",
+            artistSchedule: [
+                "1일차": [
+                    ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
+                        (name: "잔나비", image: UIImage(named: "artistImg")),
+                        (name: "혁오", image: UIImage(named: "artistImg"))
+                    ]),
+                    ArtistInfo(stage: "STAGE 2", location: "SK핸드볼경기장", artists: [
+                        (name: "10cm", image: UIImage(named: "artistImg")),
+                        (name: "볼빨간사춘기", image: UIImage(named: "artistImg"))
+                    ])
+                ],
+                "2일차": [
+                    ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
+                        (name: "적재", image: UIImage(named: "artistImg")),
+                        (name: "NCT", image: UIImage(named: "artistImg"))
+                    ])
+                ]
+            ]
+        ),
+        Festival(
+            imageName: "fstImg",
+            name: "2025 NCT",
+            startDate: "2025.01.03",
+            endDate: "2025.01.06",
+            location: "올림픽공원",
+            artistSchedule: [
+                "1일차": [
+                    ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
+                        (name: "잔나비", image: UIImage(named: "artistImg")),
+                        (name: "혁오", image: UIImage(named: "artistImg"))
+                    ]),
+                    ArtistInfo(stage: "STAGE 2", location: "SK핸드볼경기장", artists: [
+                        (name: "10cm", image: UIImage(named: "artistImg")),
+                        (name: "볼빨간사춘기", image: UIImage(named: "artistImg"))
+                    ])
+                ],
+                "2일차": [
+                    ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
+                        (name: "적재", image: UIImage(named: "artistImg")),
+                        (name: "NCT", image: UIImage(named: "artistImg"))
+                    ])
+                ]
+            ]
+        )
+    ]
+
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout()).then {
         $0.backgroundColor = .black
         $0.isScrollEnabled = false
@@ -34,23 +105,10 @@ final class SelectFestivalView: UIView {
         
         setUI()
         setLayout()
-        
-        reloadAndResize()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    func reloadAndResize() {
-        collectionView.reloadData()
-        DispatchQueue.main.async {
-            let contentHeight = self.collectionView.collectionViewLayout.collectionViewContentSize.height
-            self.snp.remakeConstraints {
-                $0.edges.equalToSuperview()
-                $0.height.equalTo(contentHeight)
-            }
-        }
     }
     
     private func setUI() {
@@ -83,5 +141,10 @@ extension SelectFestivalView: UICollectionViewDataSource, UICollectionViewDelega
         }
         cell.configure(with: festivals[indexPath.item])
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedFestival = festivals[indexPath.item]
+        delegate?.didSelectFestival(selectedFestival)
     }
 }
