@@ -96,4 +96,25 @@ enum FestivalProgressStep: Int {
         return attributed
     }
     
+    func previous() -> FestivalProgressStep? {
+        switch self {
+        case .festivalSelection:
+            return nil
+        case .dateSelection:
+            return .festivalSelection
+        case .timeSelection:
+            return .dateSelection
+        case .artistSelection:
+            return .timeSelection
+        }
+    }
+    
+    func next() -> FestivalProgressStep? {
+        switch self {
+        case .festivalSelection: return .dateSelection
+        case .dateSelection: return .timeSelection
+        case .timeSelection: return .artistSelection
+        case .artistSelection: return nil
+        }
+    }
 }
