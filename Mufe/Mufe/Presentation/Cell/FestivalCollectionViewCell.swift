@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol FestivalSelectionDelegate: AnyObject {
+    func didSelectFestival(_ festival: Festival)
+}
+
 final class FestivalCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "FestivalCollectionViewCell"

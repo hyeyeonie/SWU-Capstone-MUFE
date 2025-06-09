@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol DateSelectionDelegate: AnyObject {
+    func didSelectDate(day: String, date: String)
+}
+
 final class TicketCell: UICollectionViewCell {
     
     static let identifier = "TicketCell"
