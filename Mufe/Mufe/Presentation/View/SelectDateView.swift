@@ -17,12 +17,7 @@ protocol SelectDateViewDelegate: AnyObject {
 final class SelectDateView: UIView {
     
     weak var delegate: SelectDateViewDelegate?
-    
-    private let dates: [DateItem] = [
-        DateItem(day: "1일차", date: "1월 7일 토요일"),
-        DateItem(day: "2일차", date: "1월 8일 일요일"),
-        DateItem(day: "3일차", date: "1월 9일 월요일")
-    ]
+    private var dates: [DateItem] = []
     
     private let ticketCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -49,6 +44,11 @@ final class SelectDateView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configure(with festival: Festival) {
+        self.dates = generateDateItems(from: festival)
+        ticketCollectionView.reloadData()
+    }
+    
     private func setUI() {
         addSubview(ticketCollectionView)
     }
@@ -62,6 +62,35 @@ final class SelectDateView: UIView {
     private func setDelegate() {
         ticketCollectionView.dataSource = self
         ticketCollectionView.delegate = self
+    }
+    
+    private func generateDateItems(from festival: Festival) -> [DateItem] {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy.MM.dd"
+        
+        guard let start = formatter.date(from: festival.startDate),
+              let end = formatter.date(from: festival.endDate) else {
+            return []
+        }
+        
+        var result: [DateItem] = []
+        var current = start
+        var index = 1
+        
+        let outputFormatter = DateFormatter()
+        outputFormatter.locale = Locale(identifier: "ko_KR")
+        outputFormatter.dateFormat = "M월 d일 EEEE"
+        
+        while current <= end {
+            let dateString = outputFormatter.string(from: current)
+            result.append(DateItem(day: "\(index)일차", date: dateString))
+            
+            index += 1
+            guard let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: current) else { break }
+            current = nextDay
+        }
+        
+        return result
     }
 }
 

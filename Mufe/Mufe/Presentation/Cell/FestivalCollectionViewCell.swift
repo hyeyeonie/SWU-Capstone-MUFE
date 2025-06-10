@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol FestivalSelectionDelegate: AnyObject {
+    func didSelectFestival(_ festival: Festival)
+}
+
 final class FestivalCollectionViewCell: UICollectionViewCell {
     
     static let identifier = "FestivalCollectionViewCell"
@@ -18,17 +22,17 @@ final class FestivalCollectionViewCell: UICollectionViewCell {
     }
     
     private let fstNameLabel = UILabel().then {
-        $0.font = .boldSystemFont(ofSize: 18)
-        $0.textColor = .white
+        $0.customFont(.flg_Bold)
+        $0.textColor = .gray00
     }
     
     private let fstDateLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 14)
-        $0.textColor = .lightGray
+        $0.customFont(.fsm_Medium)
+        $0.textColor = .gray50
     }
     private let fstLocationLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 14)
-        $0.textColor = .lightGray
+        $0.customFont(.fsm_Medium)
+        $0.textColor = .gray50
     }
     
     override init(frame: CGRect) {

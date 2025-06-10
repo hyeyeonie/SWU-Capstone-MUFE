@@ -7,25 +7,29 @@
 
 import UIKit
 
+protocol DateSelectionDelegate: AnyObject {
+    func didSelectDate(day: String, date: String)
+}
+
 final class TicketCell: UICollectionViewCell {
     
     static let identifier = "TicketCell"
     
     private let ticketButton = UIButton().then {
-        $0.backgroundColor = .darkGray
+        $0.backgroundColor = .gray80
         $0.layer.cornerRadius = 16
         $0.isUserInteractionEnabled = false
         $0.clipsToBounds = true
     }
     
     private let dayLabel = UILabel().then {
-        $0.font = .boldSystemFont(ofSize: 18)
-        $0.textColor = .white
+        $0.customFont(.flg_Bold)
+        $0.textColor = .gray00
     }
     
     private let dateLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 14)
-        $0.textColor = .lightGray
+        $0.customFont(.fsm_Medium)
+        $0.textColor = .gray20
     }
     
     private let ticketLine = UIImageView().then {
@@ -33,9 +37,8 @@ final class TicketCell: UICollectionViewCell {
         $0.image = UIImage(named: "ticketLine")
     }
     
-    private let plusLabel = UILabel().then {
+    private let isMadeLabel = UILabel().then {
         // 만약 이미 타임테이블을 만들었으면 "이미만들었어요"
-        $0.text = "+"
         $0.font = .systemFont(ofSize: 28)
         $0.textColor = .lightGray
     }
@@ -53,7 +56,7 @@ final class TicketCell: UICollectionViewCell {
     
     private func setUI() {
         addSubviews(ticketButton)
-        ticketButton.addSubviews(dayLabel, dateLabel, ticketLine, plusLabel)
+        ticketButton.addSubviews(dayLabel, dateLabel, ticketLine, isMadeLabel)
     }
     
     private func setLayout() {
@@ -78,7 +81,7 @@ final class TicketCell: UICollectionViewCell {
             $0.verticalEdges.equalToSuperview()
         }
         
-        plusLabel.snp.makeConstraints {
+        isMadeLabel.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.top.equalToSuperview().offset(30)
             $0.size.equalTo(CGSize(width: 20, height: 20))

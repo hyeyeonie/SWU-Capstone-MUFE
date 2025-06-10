@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct Festival {
     let imageName: String
@@ -13,4 +14,11 @@ struct Festival {
     let startDate: String
     let endDate: String
     let location: String
+    let artistSchedule: [String: [ArtistInfo]]
+}
+
+struct ArtistInfo {
+    let stage: String
+    let location: String
+    let artists: [(name: String, image: UIImage?)]
 }

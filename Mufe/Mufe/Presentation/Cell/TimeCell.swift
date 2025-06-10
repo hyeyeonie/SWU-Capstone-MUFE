@@ -12,13 +12,13 @@ final class TimeCell: UICollectionViewCell {
     static let identifier = "TimeCell"
     
     private let dayLabel = UILabel().then {
-        $0.font = .boldSystemFont(ofSize: 20)
-        $0.textColor = .white
+        $0.customFont(.fxl_Bold)
+        $0.textColor = .gray05
     }
     
     private let dateLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 16, weight: .medium)
-        $0.textColor = .lightGray
+        $0.customFont(.fmd_Medium)
+        $0.textColor = .gray40
     }
     
     private let ticketLine = UIImageView().then {
@@ -28,34 +28,34 @@ final class TimeCell: UICollectionViewCell {
     
     private let enterTitle = UILabel().then {
         $0.text = "입장시간"
-        $0.textColor = .white
-        $0.font = .systemFont(ofSize: 16, weight: .medium)
+        $0.textColor = .gray00
+        $0.customFont(.fmd_Medium)
     }
     
     private let leaveTitle = UILabel().then {
         $0.text = "퇴장시간"
-        $0.textColor = .white
-        $0.font = .systemFont(ofSize: 16, weight: .medium)
+        $0.textColor = .gray00
+        $0.customFont(.fmd_Medium)
     }
     
     private let enterTimePicker = UIDatePicker().then {
         $0.datePickerMode = .time
         $0.preferredDatePickerStyle = .inline
-        $0.tintColor = .white
+        $0.tintColor = .gray00
         $0.locale = Locale(identifier: "ko_KR")
     }
     
     private let leaveTimePicker = UIDatePicker().then {
         $0.datePickerMode = .time
         $0.preferredDatePickerStyle = .inline
-        $0.tintColor = .white
+        $0.tintColor = .gray00
         $0.locale = Locale(identifier: "ko_KR")
     }
     
     private let wave = UILabel().then {
         $0.text = "~"
-        $0.textColor = .white
-        $0.font = .systemFont(ofSize: 32, weight: .regular)
+        $0.textColor = .gray00
+        $0.customFont(.f3xl_Regular)
     }
     
     override init(frame: CGRect) {
@@ -64,6 +64,8 @@ final class TimeCell: UICollectionViewCell {
         setStyle()
         setUI()
         setLayout()
+        setAction()
+        setDefaultTime()
     }
     
     required init?(coder: NSCoder) {
@@ -79,6 +81,7 @@ final class TimeCell: UICollectionViewCell {
         
         if let enterDate = formatter.date(from: item.enterTime) {
             enterTimePicker.setDate(enterDate, animated: false)
+            leaveTimePicker.minimumDate = enterDate
         }
         
         if let leaveDate = formatter.date(from: item.leaveTime) {
@@ -87,7 +90,7 @@ final class TimeCell: UICollectionViewCell {
     }
     
     private func setStyle() {
-        backgroundColor = .darkGray
+        backgroundColor = .gray90
         layer.cornerRadius = 16
     }
     
@@ -137,6 +140,32 @@ final class TimeCell: UICollectionViewCell {
         leaveTimePicker.snp.makeConstraints {
             $0.centerY.equalTo(enterTimePicker)
             $0.centerX.equalTo(leaveTitle)
+        }
+    }
+    
+    private func setAction() {
+        enterTimePicker.addTarget(self, action: #selector(enterTimeChanged), for: .valueChanged)
+    }
+    
+    private func setDefaultTime() {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        if let enterDate = calendar.date(bySettingHour: 11, minute: 30, second: 0, of: now),
+           let leaveDate = calendar.date(bySettingHour: 22, minute: 30, second: 0, of: now) {
+            
+            enterTimePicker.setDate(enterDate, animated: false)
+            leaveTimePicker.setDate(leaveDate, animated: false)
+            leaveTimePicker.minimumDate = enterDate
+        }
+    }
+    
+    @objc private func enterTimeChanged() {
+        let newEnterTime = enterTimePicker.date
+        leaveTimePicker.minimumDate = newEnterTime
+        
+        if leaveTimePicker.date < newEnterTime {
+            leaveTimePicker.setDate(newEnterTime, animated: true)
         }
     }
 }

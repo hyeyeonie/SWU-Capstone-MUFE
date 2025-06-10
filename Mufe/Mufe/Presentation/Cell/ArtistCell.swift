@@ -15,13 +15,13 @@ final class ArtistCell: UICollectionViewCell {
     private var currentArtists: [(name: String, image: UIImage?)] = []
     
     private let stageLabel = UILabel().then {
-        $0.font = .boldSystemFont(ofSize: 18)
-        $0.textColor = .white
+        $0.customFont(.flg_Bold)
+        $0.textColor = .gray00
     }
     
     private let locationLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 16, weight: .medium)
-        $0.textColor = .lightGray
+        $0.customFont(.flg_Medium)
+        $0.textColor = .gray40
     }
     
     private let artistContainerView = UIStackView().then {
@@ -43,7 +43,7 @@ final class ArtistCell: UICollectionViewCell {
     }
     
     private func setStyle() {
-        backgroundColor = .darkGray
+        backgroundColor = .gray90
         layer.cornerRadius = 16
     }
     
@@ -100,13 +100,13 @@ final class ArtistCell: UICollectionViewCell {
                     $0.layer.cornerRadius = 40
                     $0.backgroundColor = .lightGray
                     $0.layer.borderWidth = isSelectedArtist(artist.name) ? 2 : 0
-                    $0.layer.borderColor = UIColor.orange.cgColor
+                    $0.layer.borderColor = UIColor.primary50.cgColor
                     $0.layer.masksToBounds = true
                     $0.accessibilityIdentifier = artist.name
                 }
                 
                 let checkBackgroundView = UIView().then {
-                    $0.backgroundColor = .orange
+                    $0.backgroundColor = .primary50
                     $0.layer.cornerRadius = 12
                     $0.clipsToBounds = true
                     $0.isHidden = !isSelectedArtist(artist.name)
@@ -114,14 +114,14 @@ final class ArtistCell: UICollectionViewCell {
 
                 let checkmark = UIImageView().then {
                     $0.image = UIImage(named: "check")
-                    $0.tintColor = .white
+                    $0.tintColor = .gray00
                     $0.contentMode = .scaleAspectFit
                 }
                 
                 let nameLabel = UILabel().then {
                     $0.text = artist.name
-                    $0.font = .systemFont(ofSize: 14, weight: .medium)
-                    $0.textColor = isSelectedArtist(artist.name) ? .orange : .white
+                    $0.customFont(.fsm_SemiBold)
+                    $0.textColor = isSelectedArtist(artist.name) ? .primary50 : .gray00
                     $0.textAlignment = .center
                 }
                 

@@ -31,8 +31,8 @@ final class ProgressBarView: UIView {
     }
     
     private func setupLayers() {
-        backgroundColor = UIColor.darkGray.withAlphaComponent(0.3)
-        progressLayer.backgroundColor = UIColor.orange.cgColor
+        backgroundColor = UIColor.gray80
+        progressLayer.backgroundColor = UIColor.primary40.cgColor
         layer.addSublayer(progressLayer)
     }
     
