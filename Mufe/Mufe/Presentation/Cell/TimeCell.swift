@@ -64,6 +64,8 @@ final class TimeCell: UICollectionViewCell {
         setStyle()
         setUI()
         setLayout()
+        setAction()
+        setDefaultTime()
     }
     
     required init?(coder: NSCoder) {
@@ -79,6 +81,7 @@ final class TimeCell: UICollectionViewCell {
         
         if let enterDate = formatter.date(from: item.enterTime) {
             enterTimePicker.setDate(enterDate, animated: false)
+            leaveTimePicker.minimumDate = enterDate
         }
         
         if let leaveDate = formatter.date(from: item.leaveTime) {
@@ -137,6 +140,32 @@ final class TimeCell: UICollectionViewCell {
         leaveTimePicker.snp.makeConstraints {
             $0.centerY.equalTo(enterTimePicker)
             $0.centerX.equalTo(leaveTitle)
+        }
+    }
+    
+    private func setAction() {
+        enterTimePicker.addTarget(self, action: #selector(enterTimeChanged), for: .valueChanged)
+    }
+    
+    private func setDefaultTime() {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        if let enterDate = calendar.date(bySettingHour: 11, minute: 30, second: 0, of: now),
+           let leaveDate = calendar.date(bySettingHour: 22, minute: 30, second: 0, of: now) {
+            
+            enterTimePicker.setDate(enterDate, animated: false)
+            leaveTimePicker.setDate(leaveDate, animated: false)
+            leaveTimePicker.minimumDate = enterDate
+        }
+    }
+    
+    @objc private func enterTimeChanged() {
+        let newEnterTime = enterTimePicker.date
+        leaveTimePicker.minimumDate = newEnterTime
+        
+        if leaveTimePicker.date < newEnterTime {
+            leaveTimePicker.setDate(newEnterTime, animated: true)
         }
     }
 }
