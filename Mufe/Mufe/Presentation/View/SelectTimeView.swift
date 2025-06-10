@@ -20,7 +20,7 @@ final class SelectTimeView: UIView {
         layout.itemSize = CGSize(width: 343, height: 191)
         
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.backgroundColor = .black
+        cv.backgroundColor = .grayBg
         cv.showsVerticalScrollIndicator = false
         cv.register(TimeCell.self, forCellWithReuseIdentifier: TimeCell.identifier)
         return cv

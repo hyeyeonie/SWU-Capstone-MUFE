@@ -41,7 +41,7 @@ final class SelectArtistView: UIView {
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = .grayBg
         collectionView.register(ArtistCell.self, forCellWithReuseIdentifier: ArtistCell.identifier)
         return collectionView
     }()

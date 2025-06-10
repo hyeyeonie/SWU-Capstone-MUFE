@@ -12,7 +12,7 @@ final class ArtistCell: UICollectionViewCell {
     static let identifier = "ArtistCell"
     
     private var selectedArtistNames: Set<String> = []
-    private var currentArtists: [(name: String, image: UIImage?)] = []
+    private var currentArtists: [ArtistSchedule] = []
     
     private let stageLabel = UILabel().then {
         $0.customFont(.flg_Bold)
@@ -68,7 +68,7 @@ final class ArtistCell: UICollectionViewCell {
         }
     }
     
-    func configure(stage: String, location: String, artists: [(name: String, image: UIImage?)]) {
+    func configure(stage: String, location: String, artists: [ArtistSchedule]) {
         stageLabel.text = stage
         locationLabel.text = location
         currentArtists = artists
@@ -111,7 +111,7 @@ final class ArtistCell: UICollectionViewCell {
                     $0.clipsToBounds = true
                     $0.isHidden = !isSelectedArtist(artist.name)
                 }
-
+                
                 let checkmark = UIImageView().then {
                     $0.image = UIImage(named: "check")
                     $0.tintColor = .gray00

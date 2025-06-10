@@ -20,7 +20,7 @@ class OnboardingViewController: UIViewController {
     private let backButton = UIButton().then {
         $0.contentMode = .scaleAspectFit
         $0.setImage(UIImage(systemName: "chevron.backward"), for: .normal)
-        $0.tintColor = .white
+        $0.tintColor = .gray00
     }
     
     private let progressBar = ProgressBarView()
@@ -36,7 +36,7 @@ class OnboardingViewController: UIViewController {
         $0.showsVerticalScrollIndicator = false
         $0.alwaysBounceVertical = true
         
-        $0.backgroundColor = .black
+        $0.backgroundColor = .grayBg
     }
 
     private let contentView = UIView()
@@ -80,12 +80,15 @@ class OnboardingViewController: UIViewController {
         setUI()
         setLayout()
         setDelegate()
+        
+        print("backButton isUserInteractionEnabled: \(backButton.isUserInteractionEnabled)")
     }
 
     // MARK: - UI Setting
     
     private func setStyle() {
-        view.backgroundColor = .black
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
+        view.backgroundColor = .grayBg
         currentStep = .festivalSelection
     }
     
@@ -137,27 +140,33 @@ class OnboardingViewController: UIViewController {
     }
     
     private func updateContentViewForCurrentStep() {
-            contentView.subviews.forEach { $0.removeFromSuperview() }
-            
-            let viewToShow: UIView
-            switch currentStep {
-            case .festivalSelection:
-                viewToShow = selectFestivalView
-            case .dateSelection:
-                viewToShow = selectDateView
-            case .timeSelection:
-                viewToShow = selectTimeView
-            case .artistSelection:
-                viewToShow = selectArtistView
-            }
-            
-            contentView.addSubview(viewToShow)
-            viewToShow.snp.makeConstraints {
-                $0.edges.equalToSuperview()
-                $0.height.equalTo(562)
-            }
-        print("Added \(viewToShow) to contentView")
+        contentView.subviews.forEach { $0.removeFromSuperview() }
+        
+        let viewToShow: UIView
+        
+        switch currentStep {
+        case .festivalSelection:
+            viewToShow = selectFestivalView
+        case .dateSelection:
+            viewToShow = selectDateView
+        case .timeSelection:
+            viewToShow = selectTimeView
+        case .artistSelection:
+            viewToShow = selectArtistView
         }
+        
+        viewToShow.isUserInteractionEnabled = true
+        contentView.addSubview(viewToShow)
+        
+        viewToShow.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+            $0.height.equalTo(562)
+        }
+        
+        scrollView.setContentOffset(.zero, animated: false)
+        
+        print("Added \(viewToShow) to contentView")
+    }
     
     private func setDelegate() {
         selectFestivalView.delegate = self
@@ -169,7 +178,7 @@ class OnboardingViewController: UIViewController {
     
     @objc private func didTapBackButton() {
         guard let previousStep = currentStep.previous() else {
-            self.dismiss(animated: true)
+            print("첫 단계라 뒤로 갈 수 없음")
             return
         }
         currentStep = previousStep
@@ -177,8 +186,19 @@ class OnboardingViewController: UIViewController {
     
     @objc private func didTapNextButton() {
         guard let nextStep = currentStep.next() else {
-            // 마지막 단계인 경우 (artistSelection) → 예: 완료 처리
-            print("온보딩 완료 또는 메인 화면 이동")
+            let personalVC = PersonalTimetableViewController()
+            personalVC.selectedFestival = self.selectedFestival
+            let nav = UINavigationController(rootViewController: personalVC)
+            nav.overrideUserInterfaceStyle = .dark
+            
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let sceneDelegate = scene.delegate as? SceneDelegate,
+               let window = sceneDelegate.window {
+                UIView.transition(with: window, duration: 0.3, options: [.transitionCrossDissolve], animations: {
+                    window.rootViewController = nav
+                })
+            }
+            
             return
         }
         
