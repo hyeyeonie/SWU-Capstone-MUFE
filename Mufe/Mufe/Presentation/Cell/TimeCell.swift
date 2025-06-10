@@ -113,7 +113,6 @@ final class TimeCell: UICollectionViewCell {
         ticketLine.snp.makeConstraints {
             $0.top.equalTo(dayLabel.snp.bottom).offset(6)
             $0.horizontalEdges.equalToSuperview()
-            $0.width.equalTo(363)
             $0.height.equalTo(20)
         }
         
