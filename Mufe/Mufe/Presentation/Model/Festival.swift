@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 
+import UIKit
+
 struct Festival {
     let imageName: String
     let name: String
@@ -20,5 +22,20 @@ struct Festival {
 struct ArtistInfo {
     let stage: String
     let location: String
-    let artists: [(name: String, image: UIImage?)]
+    let artists: [ArtistSchedule]
 }
+
+struct ArtistSchedule {
+    let name: String
+    let image: UIImage?
+    let startTime: String
+    let endTime: String
+    var duration: Int {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        guard let start = formatter.date(from: startTime),
+              let end = formatter.date(from: endTime) else { return 0 }
+        return Int(end.timeIntervalSince(start) / 60)
+    }
+}
+
