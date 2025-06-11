@@ -16,7 +16,7 @@ final class FestivalCollectionViewCell: UICollectionViewCell {
     static let identifier = "FestivalCollectionViewCell"
     
     private let posterImageView = UIImageView().then {
-        $0.contentMode = .scaleAspectFit
+        $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 4
     }
@@ -24,6 +24,7 @@ final class FestivalCollectionViewCell: UICollectionViewCell {
     private let fstNameLabel = UILabel().then {
         $0.customFont(.flg_Bold)
         $0.textColor = .gray00
+        $0.numberOfLines = 2
     }
     
     private let fstDateLabel = UILabel().then {
