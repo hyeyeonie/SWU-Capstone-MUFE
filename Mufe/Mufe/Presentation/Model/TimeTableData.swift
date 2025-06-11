@@ -13,6 +13,6 @@ struct TimetableData {
     let location: String
     let startTime: String
     let endTime: String
-    let duration: Int
-    let genre: String
+    let runningTime: Int
+    let script: String
 }

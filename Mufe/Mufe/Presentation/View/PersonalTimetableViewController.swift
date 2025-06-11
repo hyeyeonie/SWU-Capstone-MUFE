@@ -88,16 +88,17 @@ final class PersonalTimetableViewController: UIViewController {
     
     private func loadDummyData() {
         timetableDataList = [
-            TimetableData(artistName: "잔나비", location: "88잔디마당", startTime: "15:00", endTime: "16:30", duration: 90, genre: "인디"),
-            TimetableData(artistName: "혁오", location: "88잔디마당", startTime: "17:00", endTime: "18:00", duration: 60, genre: "록"),
-            TimetableData(artistName: "10cm", location: "SK핸드볼경기장", startTime: "14:00", endTime: "15:00", duration: 60, genre: "포크"),
+            TimetableData(artistName: "방예담", location: "88잔디마당", startTime: "14:10", endTime: "15:00", runningTime: 50, script: "감성적인 무대를 추천해요."),
+            TimetableData(artistName: "까치산", location: "88호수 수변무대", startTime: "16:00", endTime: "16:50", runningTime: 50, script: "까치산 무대 꼭 즐겨보세요!"),
+            TimetableData(artistName: "dori", location: "88호수 수변무대", startTime: "17:30", endTime: "18:20", runningTime: 50, script: "잔잔한 감성을 좋아한다면 추천해요."),
+            TimetableData(artistName: "권순관", location: "88호수 수변무대", startTime: "19:00", endTime: "20:00", runningTime: 60, script: "까치산을 좋아하시면 추천드려요."),
         ]
         collectionView.reloadData()
     }
     
     private func updateRunningTime() {
         let uniqueArtists = Set(timetableDataList.map { $0.artistName })
-        let totalMinutes = timetableDataList.reduce(0) { $0 + $1.duration }
+        let totalMinutes = timetableDataList.reduce(0) { $0 + $1.runningTime }
         
         updateRunningTimeLabel(count: uniqueArtists.count, minutes: totalMinutes)
     }
