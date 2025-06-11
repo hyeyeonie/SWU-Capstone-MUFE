@@ -42,6 +42,7 @@ final class SelectArtistView: UIView {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         collectionView.showsVerticalScrollIndicator = false
         collectionView.backgroundColor = .grayBg
+        collectionView.isScrollEnabled = false
         collectionView.register(ArtistCell.self, forCellWithReuseIdentifier: ArtistCell.identifier)
         return collectionView
     }()

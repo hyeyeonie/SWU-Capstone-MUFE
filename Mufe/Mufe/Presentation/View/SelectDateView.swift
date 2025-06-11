@@ -27,6 +27,7 @@ final class SelectDateView: UIView {
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .grayBg
+        collectionView.isScrollEnabled = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(TicketCell.self, forCellWithReuseIdentifier: TicketCell.identifier)
         return collectionView

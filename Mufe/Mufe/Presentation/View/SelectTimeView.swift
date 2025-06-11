@@ -21,6 +21,7 @@ final class SelectTimeView: UIView {
         
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.backgroundColor = .grayBg
+        cv.isScrollEnabled = false
         cv.showsVerticalScrollIndicator = false
         cv.register(TimeCell.self, forCellWithReuseIdentifier: TimeCell.identifier)
         return cv
