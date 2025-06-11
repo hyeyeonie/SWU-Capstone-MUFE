@@ -13,6 +13,7 @@ import Then
 final class SelectArtistView: UIView {
     
     private var artists: [ArtistInfo] = []
+    private var collectionViewHeightConstraint: Constraint?
     
     private let dayLabel = UILabel().then {
         $0.customFont(.fxl_Bold)
@@ -47,6 +48,12 @@ final class SelectArtistView: UIView {
         return collectionView
     }()
     
+    override var intrinsicContentSize: CGSize {
+        layoutIfNeeded()
+        return CGSize(width: UIView.noIntrinsicMetric,
+                      height: dayLabel.intrinsicContentSize.height + 20 + (collectionViewHeightConstraint?.layoutConstraints.first?.constant ?? 0))
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -77,6 +84,7 @@ final class SelectArtistView: UIView {
         collectionView.snp.makeConstraints {
             $0.top.equalTo(dayLabel.snp.bottom).offset(20)
             $0.leading.trailing.bottom.equalToSuperview()
+            collectionViewHeightConstraint = $0.height.equalTo(0).constraint
         }
     }
     
@@ -93,6 +101,18 @@ final class SelectArtistView: UIView {
     func updateArtists(_ artists: [ArtistInfo]) {
         self.artists = artists
         collectionView.reloadData()
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.layoutIfNeeded()
+            
+            let height = self.collectionView.collectionViewLayout.collectionViewContentSize.height
+            self.collectionViewHeightConstraint?.update(offset: height)
+            
+            self.invalidateIntrinsicContentSize()
+            self.layoutIfNeeded()
+        }
     }
 }
 

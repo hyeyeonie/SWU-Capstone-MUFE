@@ -33,6 +33,7 @@ class OnboardingViewController: UIViewController {
     }
     
     private let scrollView = UIScrollView().then {
+        $0.backgroundColor = .red
         $0.showsVerticalScrollIndicator = false
         $0.alwaysBounceVertical = true
         
@@ -80,8 +81,6 @@ class OnboardingViewController: UIViewController {
         setUI()
         setLayout()
         setDelegate()
-        
-        print("backButton isUserInteractionEnabled: \(backButton.isUserInteractionEnabled)")
     }
 
     // MARK: - UI Setting
@@ -160,7 +159,6 @@ class OnboardingViewController: UIViewController {
         
         viewToShow.snp.makeConstraints {
             $0.edges.equalToSuperview()
-            $0.height.equalTo(1100)
         }
         
         scrollView.setContentOffset(.zero, animated: false)

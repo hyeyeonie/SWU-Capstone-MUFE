@@ -27,6 +27,12 @@ final class SelectTimeView: UIView {
         return cv
     }()
     
+    override var intrinsicContentSize: CGSize {
+        layoutIfNeeded()
+        return CGSize(width: UIView.noIntrinsicMetric,
+                      height: collectionView.collectionViewLayout.collectionViewContentSize.height)
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -54,6 +60,10 @@ final class SelectTimeView: UIView {
     func updateItems(_ items: [DateItem]) {
         self.items = items
         collectionView.reloadData()
+        
+        DispatchQueue.main.async {
+            self.invalidateIntrinsicContentSize()
+        }
     }
 }
 

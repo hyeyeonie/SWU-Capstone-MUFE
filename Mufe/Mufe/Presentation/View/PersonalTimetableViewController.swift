@@ -13,7 +13,8 @@ import Then
 final class PersonalTimetableViewController: UIViewController {
     
     var selectedFestival: Festival?
-    private var timetableDataList: [TimetableData] = []
+    private var dummyTimetableData: [Timetable] = []
+    private var collectionViewHeightConstraint: Constraint?
     
     private let recommendLabel = UILabel().then {
         $0.text = "이 공연은 어때요?"
@@ -34,6 +35,7 @@ final class PersonalTimetableViewController: UIViewController {
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 343, height: 201)
+        layout.minimumLineSpacing = 12
         $0.collectionViewLayout = layout
         $0.backgroundColor = .grayBg
         $0.register(TimetableCell.self, forCellWithReuseIdentifier: TimetableCell.identifier)
@@ -83,22 +85,37 @@ final class PersonalTimetableViewController: UIViewController {
             $0.top.equalTo(mufeImageView.snp.bottom)
             $0.horizontalEdges.equalToSuperview()
             $0.bottom.equalToSuperview().offset(-24)
+            collectionViewHeightConstraint = $0.height.equalTo(0).constraint
         }
     }
     
+    private func updateCollectionViewHeight() {
+        let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
+        let itemHeight = layout?.itemSize.height ?? 201
+        let lineSpacing = layout?.minimumLineSpacing ?? 0
+        
+        let itemCount = dummyTimetableData.count
+        
+        guard itemCount > 0 else {
+            collectionViewHeightConstraint?.update(offset: 0)
+            return
+        }
+        
+        let totalHeight = CGFloat(itemCount) * itemHeight + CGFloat(itemCount - 1) * lineSpacing
+        
+        collectionViewHeightConstraint?.update(offset: totalHeight)
+        view.layoutIfNeeded()
+    }
+    
     private func loadDummyData() {
-        timetableDataList = [
-            TimetableData(artistName: "방예담", location: "88잔디마당", startTime: "14:10", endTime: "15:00", runningTime: 50, script: "감성적인 무대를 추천해요."),
-            TimetableData(artistName: "까치산", location: "88호수 수변무대", startTime: "16:00", endTime: "16:50", runningTime: 50, script: "까치산 무대 꼭 즐겨보세요!"),
-            TimetableData(artistName: "dori", location: "88호수 수변무대", startTime: "17:30", endTime: "18:20", runningTime: 50, script: "잔잔한 감성을 좋아한다면 추천해요."),
-            TimetableData(artistName: "권순관", location: "88호수 수변무대", startTime: "19:00", endTime: "20:00", runningTime: 60, script: "까치산을 좋아하시면 추천드려요."),
-        ]
+        dummyTimetableData = DummyTimetableData.personalTimetableList
         collectionView.reloadData()
+        updateCollectionViewHeight()
     }
     
     private func updateRunningTime() {
-        let uniqueArtists = Set(timetableDataList.map { $0.artistName })
-        let totalMinutes = timetableDataList.reduce(0) { $0 + $1.runningTime }
+        let uniqueArtists = Set(dummyTimetableData.map { $0.artistName })
+        let totalMinutes = dummyTimetableData.reduce(0) { $0 + $1.runningTime }
         
         updateRunningTimeLabel(count: uniqueArtists.count, minutes: totalMinutes)
     }
@@ -111,14 +128,14 @@ final class PersonalTimetableViewController: UIViewController {
 extension PersonalTimetableViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        timetableDataList.count
+        dummyTimetableData.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TimetableCell.identifier, for: indexPath) as? TimetableCell else {
             return UICollectionViewCell()
         }
-        cell.configure(with: timetableDataList[indexPath.item])
+        cell.configure(with: dummyTimetableData[indexPath.item])
         return cell
     }
 }
