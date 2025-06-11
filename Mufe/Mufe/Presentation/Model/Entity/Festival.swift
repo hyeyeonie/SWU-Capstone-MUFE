@@ -8,8 +8,6 @@
 import Foundation
 import UIKit
 
-import UIKit
-
 struct Festival {
     let imageName: String
     let name: String

@@ -15,7 +15,6 @@ final class TimetableCell: UICollectionViewCell {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 20
-        $0.image = UIImage(named: "artistImg")
     }
     
     private let nameLabel = UILabel().then {
@@ -124,12 +123,12 @@ final class TimetableCell: UICollectionViewCell {
         }
     }
     
-    func configure(with data: TimetableData) {
+    func configure(with data: Timetable) {
         nameLabel.text = data.artistName
         locationLabel.text = data.location
         timeLabel.text = "\(data.startTime) - \(data.endTime), \(data.runningTime)분"
         genreLabel.text = data.script
-        artistImageView.image = UIImage(named: "artistImg")
+        artistImageView.image = UIImage(named: data.imageName) ?? UIImage(named: "artistImg")
     }
     
     func hasFinalConsonant(_ word: String) -> Bool {
