@@ -127,22 +127,8 @@ final class TimetableCell: UICollectionViewCell {
     func configure(with data: TimetableData) {
         nameLabel.text = data.artistName
         locationLabel.text = data.location
-        timeLabel.text = "\(data.startTime) - \(data.endTime), \(data.duration)분"
-        let genre = data.genre
-        let particle = hasFinalConsonant(genre) ? "을" : "를"
-        let fullText = "\(genre)\(particle) 좋아하는 당신께 추천드려요!"
-        let attributedText = NSMutableAttributedString(string: fullText)
-        
-        if let genreRange = fullText.range(of: genre) {
-            let nsRange = NSRange(genreRange, in: fullText)
-            attributedText.addAttributes([
-                .font:  CustomUIFont.fmd_SemiBold.font,
-                .foregroundColor: UIColor.gray00
-            ], range: nsRange)
-        }
-        
-        genreLabel.attributedText = attributedText
-        
+        timeLabel.text = "\(data.startTime) - \(data.endTime), \(data.runningTime)분"
+        genreLabel.text = data.script
         artistImageView.image = UIImage(named: "artistImg")
     }
     
