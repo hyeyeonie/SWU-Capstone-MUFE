@@ -160,7 +160,7 @@ class OnboardingViewController: UIViewController {
         
         viewToShow.snp.makeConstraints {
             $0.edges.equalToSuperview()
-            $0.height.equalTo(562)
+            $0.height.equalTo(1100)
         }
         
         scrollView.setContentOffset(.zero, animated: false)
