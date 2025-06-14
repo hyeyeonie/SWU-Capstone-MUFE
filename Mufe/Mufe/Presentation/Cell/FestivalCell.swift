@@ -1,5 +1,5 @@
 //
-//  FestivalCollectionViewCell.swift
+//  FestivalCell.swift
 //  Mufe
 //
 //  Created by 신혜연 on 5/28/25.
@@ -11,12 +11,12 @@ protocol FestivalSelectionDelegate: AnyObject {
     func didSelectFestival(_ festival: Festival)
 }
 
-final class FestivalCollectionViewCell: UICollectionViewCell {
+final class FestivalCell: UICollectionViewCell {
     
     static let identifier = "FestivalCollectionViewCell"
     
     private let posterImageView = UIImageView().then {
-        $0.contentMode = .scaleAspectFit
+        $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 4
     }
@@ -24,6 +24,7 @@ final class FestivalCollectionViewCell: UICollectionViewCell {
     private let fstNameLabel = UILabel().then {
         $0.customFont(.flg_Bold)
         $0.textColor = .gray00
+        $0.numberOfLines = 2
     }
     
     private let fstDateLabel = UILabel().then {

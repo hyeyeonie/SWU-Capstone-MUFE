@@ -27,10 +27,17 @@ final class SelectDateView: UIView {
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .grayBg
+        collectionView.isScrollEnabled = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(TicketCell.self, forCellWithReuseIdentifier: TicketCell.identifier)
         return collectionView
     }()
+    
+    override var intrinsicContentSize: CGSize {
+        layoutIfNeeded()
+        return CGSize(width: UIView.noIntrinsicMetric,
+                      height: ticketCollectionView.collectionViewLayout.collectionViewContentSize.height)
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -47,6 +54,10 @@ final class SelectDateView: UIView {
     func configure(with festival: Festival) {
         self.dates = generateDateItems(from: festival)
         ticketCollectionView.reloadData()
+        
+        DispatchQueue.main.async {
+            self.invalidateIntrinsicContentSize()
+        }
     }
     
     private func setUI() {
@@ -99,7 +110,7 @@ extension SelectDateView: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return dates.count
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: TicketCell.identifier,

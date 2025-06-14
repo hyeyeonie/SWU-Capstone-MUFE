@@ -8,8 +8,6 @@
 import Foundation
 import UIKit
 
-import UIKit
-
 struct Festival {
     let imageName: String
     let name: String
@@ -27,7 +25,7 @@ struct ArtistInfo {
 
 struct ArtistSchedule {
     let name: String
-    let image: UIImage?
+    let image: String
     let startTime: String
     let endTime: String
     var duration: Int {
@@ -39,3 +37,19 @@ struct ArtistSchedule {
     }
 }
 
+extension Festival {
+    func toChatContent() -> String {
+        var content = "페스티벌 이름: \(name)\n"
+        content += "기간: \(startDate) ~ \(endDate)\n"
+        content += "장소: \(location)\n"
+        content += "아티스트 스케줄:\n"
+
+        for artistInfos in artistSchedule.values.flatMap({ $0 }) {
+            content += "- 무대: \(artistInfos.stage), 장소: \(artistInfos.location)\n"
+            for artist in artistInfos.artists {
+                content += "  * \(artist.name) (\(artist.startTime) ~ \(artist.endTime))\n"
+            }
+        }
+        return content
+    }
+}

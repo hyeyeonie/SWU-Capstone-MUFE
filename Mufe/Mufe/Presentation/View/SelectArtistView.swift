@@ -13,6 +13,8 @@ import Then
 final class SelectArtistView: UIView {
     
     private var artists: [ArtistInfo] = []
+    private var collectionViewHeightConstraint: Constraint?
+    private var selectedArtists: Set<String> = []
     
     private let dayLabel = UILabel().then {
         $0.customFont(.fxl_Bold)
@@ -42,9 +44,16 @@ final class SelectArtistView: UIView {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         collectionView.showsVerticalScrollIndicator = false
         collectionView.backgroundColor = .grayBg
+        collectionView.isScrollEnabled = false
         collectionView.register(ArtistCell.self, forCellWithReuseIdentifier: ArtistCell.identifier)
         return collectionView
     }()
+    
+    override var intrinsicContentSize: CGSize {
+        layoutIfNeeded()
+        return CGSize(width: UIView.noIntrinsicMetric,
+                      height: dayLabel.intrinsicContentSize.height + 20 + (collectionViewHeightConstraint?.layoutConstraints.first?.constant ?? 0))
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -76,6 +85,7 @@ final class SelectArtistView: UIView {
         collectionView.snp.makeConstraints {
             $0.top.equalTo(dayLabel.snp.bottom).offset(20)
             $0.leading.trailing.bottom.equalToSuperview()
+            collectionViewHeightConstraint = $0.height.equalTo(0).constraint
         }
     }
     
@@ -92,6 +102,22 @@ final class SelectArtistView: UIView {
     func updateArtists(_ artists: [ArtistInfo]) {
         self.artists = artists
         collectionView.reloadData()
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.layoutIfNeeded()
+            
+            let height = self.collectionView.collectionViewLayout.collectionViewContentSize.height
+            self.collectionViewHeightConstraint?.update(offset: height)
+            
+            self.invalidateIntrinsicContentSize()
+            self.layoutIfNeeded()
+        }
+    }
+    
+    func getSelectedArtistNames() -> [String] {
+        return Array(selectedArtists)
     }
 }
 
@@ -109,6 +135,7 @@ extension SelectArtistView: UICollectionViewDataSource {
         cell.configure(stage: artistInfo.stage,
                        location: artistInfo.location,
                        artists: artistInfo.artists)
+        cell.delegate = self
         return cell
     }
 }
@@ -138,5 +165,15 @@ extension SelectArtistView: UICollectionViewDelegateFlowLayout {
         let itemWidth = screenWidth - 32
         
         return CGSize(width: itemWidth, height: totalHeight)
+    }
+}
+
+extension SelectArtistView: ArtistCellDelegate {
+    func didToggleArtistSelection(name: String, isSelected: Bool) {
+        if isSelected {
+            selectedArtists.insert(name)
+        } else {
+            selectedArtists.remove(name)
+        }
     }
 }

@@ -15,7 +15,6 @@ final class TimetableCell: UICollectionViewCell {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 20
-        $0.image = UIImage(named: "artistImg")
     }
     
     private let nameLabel = UILabel().then {
@@ -124,26 +123,12 @@ final class TimetableCell: UICollectionViewCell {
         }
     }
     
-    func configure(with data: TimetableData) {
+    func configure(with data: Timetable) {
         nameLabel.text = data.artistName
         locationLabel.text = data.location
-        timeLabel.text = "\(data.startTime) - \(data.endTime), \(data.duration)분"
-        let genre = data.genre
-        let particle = hasFinalConsonant(genre) ? "을" : "를"
-        let fullText = "\(genre)\(particle) 좋아하는 당신께 추천드려요!"
-        let attributedText = NSMutableAttributedString(string: fullText)
-        
-        if let genreRange = fullText.range(of: genre) {
-            let nsRange = NSRange(genreRange, in: fullText)
-            attributedText.addAttributes([
-                .font:  CustomUIFont.fmd_SemiBold.font,
-                .foregroundColor: UIColor.gray00
-            ], range: nsRange)
-        }
-        
-        genreLabel.attributedText = attributedText
-        
-        artistImageView.image = UIImage(named: "artistImg")
+        timeLabel.text = "\(data.startTime) - \(data.endTime), \(data.runningTime)분"
+        genreLabel.text = data.script
+        artistImageView.image = UIImage(named: data.imageName) ?? UIImage(named: "artistImg")
     }
     
     func hasFinalConsonant(_ word: String) -> Bool {

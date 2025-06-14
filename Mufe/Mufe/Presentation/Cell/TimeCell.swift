@@ -168,3 +168,13 @@ final class TimeCell: UICollectionViewCell {
         }
     }
 }
+
+extension TimeCell {
+    var enterTime: Date {
+        return enterTimePicker.date
+    }
+    
+    var exitTime: Date {
+        return leaveTimePicker.date
+    }
+}

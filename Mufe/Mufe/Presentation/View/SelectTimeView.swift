@@ -21,10 +21,17 @@ final class SelectTimeView: UIView {
         
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.backgroundColor = .grayBg
+        cv.isScrollEnabled = false
         cv.showsVerticalScrollIndicator = false
         cv.register(TimeCell.self, forCellWithReuseIdentifier: TimeCell.identifier)
         return cv
     }()
+    
+    override var intrinsicContentSize: CGSize {
+        layoutIfNeeded()
+        return CGSize(width: UIView.noIntrinsicMetric,
+                      height: collectionView.collectionViewLayout.collectionViewContentSize.height)
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -53,6 +60,22 @@ final class SelectTimeView: UIView {
     func updateItems(_ items: [DateItem]) {
         self.items = items
         collectionView.reloadData()
+        
+        DispatchQueue.main.async {
+            self.invalidateIntrinsicContentSize()
+        }
+    }
+    
+    func selectedTime(for day: String) -> (String, String)? {
+        guard let index = items.firstIndex(where: { $0.day == day }),
+              let cell = collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? TimeCell else {
+            return nil
+        }
+        
+        let formatter = DateFormatter.hourMinute
+        let enterTime = formatter.string(from: cell.enterTime)
+        let exitTime = formatter.string(from: cell.exitTime)
+        return (enterTime, exitTime)
     }
 }
 
@@ -69,4 +92,19 @@ extension SelectTimeView: UICollectionViewDataSource {
         cell.configure(with: items[indexPath.item])
         return cell
     }
+}
+
+extension SelectTimeView {
+    var itemsList: [DateItem] {
+        return items
+    }
+}
+
+extension DateFormatter {
+    static let hourMinute: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter
+    }()
 }

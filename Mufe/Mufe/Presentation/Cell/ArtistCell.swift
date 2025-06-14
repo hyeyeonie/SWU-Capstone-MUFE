@@ -7,9 +7,14 @@
 
 import UIKit
 
+protocol ArtistCellDelegate: AnyObject {
+    func didToggleArtistSelection(name: String, isSelected: Bool)
+}
+
 final class ArtistCell: UICollectionViewCell {
     
     static let identifier = "ArtistCell"
+    weak var delegate: ArtistCellDelegate?
     
     private var selectedArtistNames: Set<String> = []
     private var currentArtists: [ArtistSchedule] = []
@@ -94,7 +99,7 @@ final class ArtistCell: UICollectionViewCell {
                 }
                 
                 let button = UIButton().then {
-                    $0.setImage(artist.image ?? UIImage(named: "artistImg"), for: .normal)
+                    $0.setImage(UIImage(named: artist.image), for: .normal)
                     $0.imageView?.contentMode = .scaleAspectFill
                     $0.clipsToBounds = true
                     $0.layer.cornerRadius = 40
@@ -160,12 +165,17 @@ final class ArtistCell: UICollectionViewCell {
     @objc private func artistButtonTapped(_ sender: UIButton) {
         guard let artistName = sender.accessibilityIdentifier else { return }
         
+        let isNowSelected: Bool
         if selectedArtistNames.contains(artistName) {
             selectedArtistNames.remove(artistName)
+            isNowSelected = false
         } else {
             selectedArtistNames.insert(artistName)
+            isNowSelected = true
         }
         
+        delegate?.didToggleArtistSelection(name: artistName, isSelected: isNowSelected)
+
         configure(
             stage: stageLabel.text ?? "",
             location: locationLabel.text ?? "",
