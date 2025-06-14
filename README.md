@@ -5,26 +5,26 @@
 
 ## 1. 프로젝트 소개
 
-#### "페스티벌을 즐기는 당신의 히루가 더 의미있도록"
+#### "뮤프가 당신의 취향에 꼭 맞는 타임테이블을 추천해 드려요!"
 
-🍀 단순한 기억을 넘은 소중한 추억
+**MUFE의 서비스 가치는 실패 없는 뮤직페스티벌 경험을 제공하는 것입니다.**
 
-MUFE는 페스티벌 현장에서의 경험을 의미있게 만들어주어 페스티벌을 가기 위해 투자한 시간과 돈보다 훨씬 가치있는 추억을 만들어 줄 수 있습니다.
+MUFE는 뮤직페스티벌을 혼자 즐기러 가는 관객이 수많은 무대가 동시에 펼쳐지는 현장에서
 
-🔥 취향의 확장을 통한 일상과의 연결
+무엇을 봐야 할지 망설이는 사이에 놓쳐버리는 무대가 없도록
 
-MUFE는 즐거운 페스티벌 경험으로 팬덤 활동과 같이 음악 관련 취미를 가지게 되는 등 취향의 확장을 통해 일상에까지 긍정적 영향을 제시합니다.
+**사용자의 음악 취향을 기반**으로 타임테이블을 추천하여 실패 없는 페스티벌을 즐기고 싶은 욕구를 충족시켜주고자 합니다.
 
 
 ## 2. 개발 환경
 
 (1). Front-end : Xcode, Swift UI, UIKit
 
-(2). Back-end :  Swift Data, Open AI API, 공연예술통합전산망 Open API, Melon Playlist API
+(2). Back-end :  Swift Data, OpenAI API, 공연예술통합전산망 Open API, Apple MusicKit
 
 (3). 버전 및 이슈 관리: Github, Github Issues, Github Project
 
-(4). 서비스 배포 환경 : App Store
+(4). 서비스 배포 환경 : iOS App Store
 
 (5). Design : Figma
 
@@ -34,7 +34,40 @@ MUFE는 즐거운 페스티벌 경험으로 팬덤 활동과 같이 음악 관�
 ## 3. 프로젝트 구조
 
 ~~~~
-프로젝트 구조가 들어 갈 예정입니다.
+프로젝트 구조 예시입니다 (수정 예정)
+├── Mufe
+│   ├── Mufe
+│   │   ├── Application
+│   │   │   ├── AppDelegate.swift
+│   │   │   └── SceneDelegate.swift
+│   │   ├── Assets.xcassets
+│   │   │   ├── AccentColor.colorset
+│   │   │   │   └── Contents.json
+│   │   │   ├── AppIcon.appiconset
+│   │   │   │   └── Contents.json
+│   │   │   └── Contents.json
+│   │   ├── Info.plist
+│   │   ├── Presentation
+│   │   │   └── ViewController.swift
+│   │   └── Resource
+│   │       └── Extension
+│   │           └── UIView+.swift
+│   └── Mufe.xcodeproj
+│       ├── project.pbxproj
+│       ├── project.xcworkspace
+│       │   ├── contents.xcworkspacedata
+│       │   ├── xcshareddata
+│       │   │   └── swiftpm
+│       │   │       └── configuration
+│       │   └── xcuserdata
+│       │       └── yoonsolbi.xcuserdatad
+│       │           └── UserInterfaceState.xcuserstate
+│       └── xcuserdata
+│           └── yoonsolbi.xcuserdatad
+│               └── xcschemes
+│                   └── xcschememanagement.plist
+└── README.md
+
 ~~~~
 
 ## 4. 팀원 소개
