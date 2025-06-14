@@ -1,5 +1,5 @@
 # 나의 뮤직페스티벌 프렌즈, MUFE
-안녕하세요. 서울여자대학교 캡스톤디자인설계1 기상청 팀의 깃허브입니다.
+안녕하세요. 서울여자대학교 캡스톤디자인설계1의 팀 기상청입니다🌈
 
 ![Image](https://github.com/user-attachments/assets/9f2dc913-2ee7-4310-b23d-fffd31a020d6)
 
