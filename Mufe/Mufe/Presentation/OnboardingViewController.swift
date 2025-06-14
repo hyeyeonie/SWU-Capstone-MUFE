@@ -46,6 +46,7 @@ class OnboardingViewController: UIViewController {
     private let selectDateView = SelectDateView()
     private let selectTimeView = SelectTimeView()
     private let selectArtistView = SelectArtistView()
+    private let loadingView = LoadingView()
     
     private let nextButton = UIButton().then {
         $0.backgroundColor = .primary50
@@ -89,6 +90,8 @@ class OnboardingViewController: UIViewController {
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = .grayBg
         currentStep = .festivalSelection
+        loadingView.isHidden = true
+        loadingView.alpha = 0
     }
     
     private func setUI() {
@@ -97,7 +100,8 @@ class OnboardingViewController: UIViewController {
             progressBar,
             titleLabel,
             scrollView,
-            nextButton
+            nextButton,
+            loadingView
         )
         scrollView.addSubview(contentView)
     }
@@ -135,6 +139,10 @@ class OnboardingViewController: UIViewController {
             $0.horizontalEdges.equalToSuperview().inset(16)
             $0.bottom.equalToSuperview().offset(-24)
             $0.height.equalTo(53)
+        }
+        
+        loadingView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
     }
     
@@ -185,12 +193,15 @@ class OnboardingViewController: UIViewController {
     @objc private func didTapNextButton() {
         guard let nextStep = currentStep.next() else {
             
+            showLoadingView()
+            
             // currentStep이 마지막 단계인 경우 -> GPT API 호출 후 결과 화면으로 이동
             Task {
                 do {
                     guard let preference = makePreference(),
                           let selectedFestival = selectedFestival else {
                         print("사용자 설정 또는 페스티벌 정보 누락")
+                        hideLoadingView()
                         return
                     }
                     
@@ -220,6 +231,8 @@ class OnboardingViewController: UIViewController {
                     print("타임테이블 불러오기 실패: \(error)")
                     // 필요하면 에러 알림 UI 추가
                 }
+                
+                hideLoadingView()
             }
             
             return
@@ -285,5 +298,26 @@ extension OnboardingViewController: SelectDateViewDelegate {
         selectedDateItem = dateItem
         selectTimeView.updateItems([dateItem])
         currentStep = .timeSelection
+    }
+}
+
+private extension OnboardingViewController {
+    
+    func showLoadingView() {
+        loadingView.alpha = 0
+        loadingView.isHidden = false
+        view.bringSubviewToFront(loadingView)
+        
+        UIView.animate(withDuration: 0.25) {
+            self.loadingView.alpha = 1
+        }
+    }
+    
+    func hideLoadingView() {
+        UIView.animate(withDuration: 0.25, animations: {
+            self.loadingView.alpha = 0
+        }, completion: { _ in
+            self.loadingView.isHidden = true
+        })
     }
 }
