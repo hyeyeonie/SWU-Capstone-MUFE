@@ -6,14 +6,22 @@
 //
 
 import UIKit
-
 import SnapKit
 import Then
 
 final class PersonalTimetableViewController: UIViewController {
     
     var selectedFestival: Festival?
-    private var dummyTimetableData: [Timetable] = []
+    
+    // 외부에서 할당 가능, 할당 시 컬렉션뷰 및 UI 자동 갱신
+    var timetables: [Timetable] = [] {
+        didSet {
+            collectionView.reloadData()
+            updateCollectionViewHeight()
+            updateRunningTime()
+        }
+    }
+    
     private var collectionViewHeightConstraint: Constraint?
     
     private let recommendLabel = UILabel().then {
@@ -32,17 +40,19 @@ final class PersonalTimetableViewController: UIViewController {
         $0.image = UIImage(named: "mufe")
     }
     
-    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).then {
+    private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 343, height: 201)
         layout.minimumLineSpacing = 12
-        $0.collectionViewLayout = layout
-        $0.backgroundColor = .grayBg
-        $0.register(TimetableCell.self, forCellWithReuseIdentifier: TimetableCell.identifier)
-        $0.showsVerticalScrollIndicator = false
-        $0.dataSource = self
-        $0.delegate = self
-    }
+
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.backgroundColor = .grayBg
+        cv.register(TimetableCell.self, forCellWithReuseIdentifier: TimetableCell.identifier)
+        cv.showsVerticalScrollIndicator = false
+        cv.dataSource = self
+        cv.delegate = self
+        return cv
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +61,6 @@ final class PersonalTimetableViewController: UIViewController {
         setUI()
         setLayout()
         
-        loadDummyData()
         updateRunningTime()
     }
     
@@ -85,7 +94,6 @@ final class PersonalTimetableViewController: UIViewController {
             $0.top.equalTo(mufeImageView.snp.bottom)
             $0.horizontalEdges.equalToSuperview()
             $0.bottom.equalToSuperview().offset(-24)
-            collectionViewHeightConstraint = $0.height.equalTo(0).constraint
         }
     }
     
@@ -94,10 +102,11 @@ final class PersonalTimetableViewController: UIViewController {
         let itemHeight = layout?.itemSize.height ?? 201
         let lineSpacing = layout?.minimumLineSpacing ?? 0
         
-        let itemCount = dummyTimetableData.count
+        let itemCount = timetables.count
         
         guard itemCount > 0 else {
             collectionViewHeightConstraint?.update(offset: 0)
+            view.layoutIfNeeded()
             return
         }
         
@@ -107,15 +116,9 @@ final class PersonalTimetableViewController: UIViewController {
         view.layoutIfNeeded()
     }
     
-    private func loadDummyData() {
-        dummyTimetableData = DummyTimetableData.personalTimetableList
-        collectionView.reloadData()
-        updateCollectionViewHeight()
-    }
-    
     private func updateRunningTime() {
-        let uniqueArtists = Set(dummyTimetableData.map { $0.artistName })
-        let totalMinutes = dummyTimetableData.reduce(0) { $0 + $1.runningTime }
+        let uniqueArtists = Set(timetables.map { $0.artistName })
+        let totalMinutes = timetables.reduce(0) { $0 + $1.runningTime }
         
         updateRunningTimeLabel(count: uniqueArtists.count, minutes: totalMinutes)
     }
@@ -128,18 +131,21 @@ final class PersonalTimetableViewController: UIViewController {
 extension PersonalTimetableViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        dummyTimetableData.count
+        return timetables.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TimetableCell.identifier, for: indexPath) as? TimetableCell else {
             return UICollectionViewCell()
         }
-        cell.configure(with: dummyTimetableData[indexPath.item])
+        
+        let timetable = timetables[indexPath.item]
+        cell.configure(with: timetable)
         return cell
     }
 }
 
 extension PersonalTimetableViewController: UICollectionViewDelegate {
-
+    
 }
