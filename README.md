@@ -1,8 +1,7 @@
 # SWU-Capstone-MUFE
 서울여자대학교 캡스톤디자인설계1 기상청 팀입니다.
 
-![Image](https://github.com/user-attachments/assets/1a367599-80cf-4116-ac94-c61b7274f63f)
-
+![Image](https://github.com/user-attachments/assets/9f2dc913-2ee7-4310-b23d-fffd31a020d6)
 
 ## 1. 프로젝트 소개
 
