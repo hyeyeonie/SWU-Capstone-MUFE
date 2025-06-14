@@ -184,22 +184,48 @@ class OnboardingViewController: UIViewController {
     
     @objc private func didTapNextButton() {
         guard let nextStep = currentStep.next() else {
-            let personalVC = PersonalTimetableViewController()
-            personalVC.selectedFestival = self.selectedFestival
-            let nav = UINavigationController(rootViewController: personalVC)
-            nav.overrideUserInterfaceStyle = .dark
             
-            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let sceneDelegate = scene.delegate as? SceneDelegate,
-               let window = sceneDelegate.window {
-                UIView.transition(with: window, duration: 0.3, options: [.transitionCrossDissolve], animations: {
-                    window.rootViewController = nav
-                })
+            // currentStep이 마지막 단계인 경우 -> GPT API 호출 후 결과 화면으로 이동
+            Task {
+                do {
+                    guard let preference = makePreference(),
+                          let selectedFestival = selectedFestival else {
+                        print("사용자 설정 또는 페스티벌 정보 누락")
+                        return
+                    }
+                    
+                    print("🎯 사용자 선택 정보: \(preference)")
+                    
+                    // 1. GPT API 호출해서 Timetable 받아오기
+                    let timetables = try await GetInfoService.shared.fetchFestivalTimetable(preference: preference, festival: selectedFestival)
+                    
+                    // 2. 결과 화면 VC 생성 및 데이터 전달
+                    let personalVC = PersonalTimetableViewController()
+                    personalVC.selectedFestival = selectedFestival
+                    personalVC.timetables = timetables
+                    
+                    let nav = UINavigationController(rootViewController: personalVC)
+                    nav.overrideUserInterfaceStyle = .dark
+                    
+                    // 3. 메인 윈도우의 rootViewController 변경 (애니메이션 포함)
+                    if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let sceneDelegate = scene.delegate as? SceneDelegate,
+                       let window = sceneDelegate.window {
+                        UIView.transition(with: window, duration: 0.3, options: [.transitionCrossDissolve], animations: {
+                            window.rootViewController = nav
+                        })
+                    }
+                    
+                } catch {
+                    print("타임테이블 불러오기 실패: \(error)")
+                    // 필요하면 에러 알림 UI 추가
+                }
             }
             
             return
         }
         
+        // 다음 스텝이 artistSelection일 때 UI 업데이트
         if nextStep == .artistSelection,
            let selectedDate = selectedDateItem,
            let selectedFestival = selectedFestival {
@@ -211,6 +237,37 @@ class OnboardingViewController: UIViewController {
         }
         
         currentStep = nextStep
+    }
+
+    
+    private func makePreference() -> Preference? {
+        // 선택한 페스티벌과 일자 확인
+        guard let festival = selectedFestival,
+              let dateItem = selectedDateItem else {
+            return nil
+        }
+        
+        // artistSchedule의 key 배열에서 선택된 날짜의 인덱스를 찾음
+        let sortedDates = festival.artistSchedule.keys.sorted() // 정렬 보장 필요 시
+        guard sortedDates.firstIndex(of: dateItem.day) != nil else {
+            return nil
+        }
+        
+        // 선택한 시간        
+        guard let (entryTime, exitTime) = selectTimeView.selectedTime(for: dateItem.day) else {
+            return nil
+        }
+        
+        // 선택한 아티스트
+        let favoriteArtists = selectArtistView.getSelectedArtistNames()
+
+        return Preference(
+            selectedFestival: festival.name,
+            selectedDay: dateItem.day,
+            entryTime: entryTime,
+            exitTime: exitTime,
+            favoriteArtist: favoriteArtists
+        )
     }
 }
 
