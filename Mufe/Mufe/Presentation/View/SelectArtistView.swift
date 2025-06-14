@@ -14,6 +14,7 @@ final class SelectArtistView: UIView {
     
     private var artists: [ArtistInfo] = []
     private var collectionViewHeightConstraint: Constraint?
+    private var selectedArtists: Set<String> = []
     
     private let dayLabel = UILabel().then {
         $0.customFont(.fxl_Bold)
@@ -114,6 +115,10 @@ final class SelectArtistView: UIView {
             self.layoutIfNeeded()
         }
     }
+    
+    func getSelectedArtistNames() -> [String] {
+        return Array(selectedArtists)
+    }
 }
 
 extension SelectArtistView: UICollectionViewDataSource {
@@ -130,6 +135,7 @@ extension SelectArtistView: UICollectionViewDataSource {
         cell.configure(stage: artistInfo.stage,
                        location: artistInfo.location,
                        artists: artistInfo.artists)
+        cell.delegate = self
         return cell
     }
 }
@@ -159,5 +165,15 @@ extension SelectArtistView: UICollectionViewDelegateFlowLayout {
         let itemWidth = screenWidth - 32
         
         return CGSize(width: itemWidth, height: totalHeight)
+    }
+}
+
+extension SelectArtistView: ArtistCellDelegate {
+    func didToggleArtistSelection(name: String, isSelected: Bool) {
+        if isSelected {
+            selectedArtists.insert(name)
+        } else {
+            selectedArtists.remove(name)
+        }
     }
 }

@@ -19,7 +19,7 @@ final class SelectFestivalView: UIView {
     private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout()).then {
         $0.backgroundColor = .grayBg
         $0.isScrollEnabled = false
-        $0.register(FestivalCollectionViewCell.self, forCellWithReuseIdentifier: FestivalCollectionViewCell.identifier)
+        $0.register(FestivalCell.self, forCellWithReuseIdentifier: FestivalCell.identifier)
         $0.dataSource = self
         $0.delegate = self
     }
@@ -65,7 +65,7 @@ extension SelectFestivalView: UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FestivalCollectionViewCell.identifier, for: indexPath) as? FestivalCollectionViewCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FestivalCell.identifier, for: indexPath) as? FestivalCell else {
             return UICollectionViewCell()
         }
         cell.configure(with: festivals[indexPath.item])
