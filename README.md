@@ -1,5 +1,5 @@
-# SWU-Capstone-MUFE
-서울여자대학교 캡스톤디자인설계1 기상청 팀입니다.
+# 나의 뮤직페스티벌 프렌즈 MUFE
+안녕하세요. 서울여자대학교 캡스톤디자인설계1 기상청 팀의 깃허브입니다.
 
 ![Image](https://github.com/user-attachments/assets/9f2dc913-2ee7-4310-b23d-fffd31a020d6)
 
@@ -18,17 +18,17 @@ MUFE는 뮤직페스티벌을 혼자 즐기러 가는 관객이 수많은 무대
 
 ## 2. 개발 환경
 
-(1). Front-end : Xcode, Swift UI, UIKit
+(1). ⚒️ Front-end : Xcode, Swift UI, UIKit
 
-(2). Back-end :  Swift Data, OpenAI API, 공연예술통합전산망 Open API, Apple MusicKit
+(2). ⚙️ Back-end :  Swift Data, OpenAi(Chat GPT) API, 공연예술통합전산망 API
 
-(3). 버전 및 이슈 관리: Github, Github Issues, Github Project
+(3). 📁 버전 및 이슈 관리: Github, Github Issues, Github Project
 
-(4). 서비스 배포 환경 : iOS App Store
+(4). 📱 서비스 배포 환경 : iOS App Store
 
-(5). Design : Figma
+(5). 🎨 Design : Figma
 
-(6) 협업 툴: Figma, Notion, Discord
+(6). 🧩 협업: Notion, Discord
 
 
 ## 3. 프로젝트 구조
@@ -74,5 +74,5 @@ MUFE는 뮤직페스티벌을 혼자 즐기러 가는 관객이 수많은 무대
 
 |☁️구름|☁️최하늘|☁️신혜연|☁️윤솔비|
 |---|---|---|---|
-|이미지|이미지|이미지|<img src="https://github.com/user-attachments/assets/400d0fb7-0e7d-4e56-9255-6fd852b9ce84" width="110" height="120" />|
+|이미지|이미지|<img src="https://github.com/user-attachments/assets/33dfbcc6-1db9-43ff-8ca4-889be3b4190d" width="120" height="120" />|<img src="https://github.com/user-attachments/assets/9588eb2e-6e7d-4b80-b1f6-02895eefd6c8" width="120" height="120" />|
 |GUI,기획|UX,기획|개발,기획|기획,개발|
