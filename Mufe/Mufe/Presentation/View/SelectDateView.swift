@@ -120,11 +120,16 @@ extension SelectDateView: UICollectionViewDataSource, UICollectionViewDelegate {
         }
         
         let item = dates[indexPath.item]
-        cell.setDate(day: item.day, date: item.date)
+        let isFirstDay = indexPath.item == 0
+        cell.configure(day: item.day, date: item.date, isFirstDay: isFirstDay)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.item == 0 {
+               return
+           }
+        
         let selectedItem = dates[indexPath.item]
         delegate?.didSelectDate(selectedItem)
     }
