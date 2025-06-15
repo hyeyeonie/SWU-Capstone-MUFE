@@ -38,9 +38,10 @@ final class TicketCell: UICollectionViewCell {
     }
     
     private let isMadeLabel = UILabel().then {
-        // 만약 이미 타임테이블을 만들었으면 "이미만들었어요"
-        $0.font = .systemFont(ofSize: 28)
-        $0.textColor = .lightGray
+        $0.text = "이미 만들었어요"
+        $0.customFont(.fsm_Medium)
+        $0.textColor = .gray60
+        $0.isHidden = true
     }
     
     override init(frame: CGRect) {
@@ -84,12 +85,13 @@ final class TicketCell: UICollectionViewCell {
         isMadeLabel.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.top.equalToSuperview().offset(30)
-            $0.size.equalTo(CGSize(width: 20, height: 20))
         }
     }
     
-    func setDate(day: String, date: String) {
+    func configure(day: String, date: String, isFirstDay: Bool) {
         dayLabel.text = day
         dateLabel.text = date
+        isMadeLabel.isHidden = !isFirstDay
+        ticketButton.backgroundColor = isFirstDay ? .gray90 : .gray80
     }
 }
