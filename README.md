@@ -36,41 +36,48 @@ MUFE의 서비스 가치는 「실패 없는 뮤직페스티벌 경험을 제공
 ## 3. 프로젝트 구조
 
 ~~~~
-프로젝트 구조 예시입니다 (수정 예정)
-├── Mufe
-│   ├── Mufe
-│   │   ├── Application
-│   │   │   ├── AppDelegate.swift
-│   │   │   └── SceneDelegate.swift
-│   │   ├── Assets.xcassets
-│   │   │   ├── AccentColor.colorset
-│   │   │   │   └── Contents.json
-│   │   │   ├── AppIcon.appiconset
-│   │   │   │   └── Contents.json
-│   │   │   └── Contents.json
-│   │   ├── Info.plist
-│   │   ├── Presentation
-│   │   │   └── ViewController.swift
-│   │   └── Resource
-│   │       └── Extension
-│   │           └── UIView+.swift
-│   └── Mufe.xcodeproj
-│       ├── project.pbxproj
-│       ├── project.xcworkspace
-│       │   ├── contents.xcworkspacedata
-│       │   ├── xcshareddata
-│       │   │   └── swiftpm
-│       │   │       └── configuration
-│       │   └── xcuserdata
-│       │       └── yoonsolbi.xcuserdatad
-│       │           └── UserInterfaceState.xcuserstate
-│       └── xcuserdata
-│           └── yoonsolbi.xcuserdatad
-│               └── xcschemes
-│                   └── xcschememanagement.plist
-└── README.md
 
-
+📁 Mufe
+├── Application
+│   ├── AppDelegate.swift
+│   └── SceneDelegate.swift
+├── Assets.xcassets
+│   ├── AccentColor.colorset
+│   ├── AppIcon.appiconset
+│   ├── artistImg.imageset
+│   ├── check.imageset
+│   ├── Contents.json
+│   ├── Day1
+│   ├── Day2
+│   ├── Day3
+│   ├── FestivalPoster
+│   ├── fstImg.imageset
+│   ├── Gray
+│   ├── loading.imageset
+│   ├── mufe.imageset
+│   ├── Primary
+│   ├── ticketLine.imageset
+│   └── ticketLine2.imageset
+├── Config.xcconfig
+├── Extension
+│   ├── Color+.swift
+│   ├── Font+.swift
+│   └── UIVIew+.swift
+├── Info.plist
+├── Network
+│   ├── DTO
+│   ├── FestivalPromptBuilder.swift
+│   ├── GetInfoService.swift
+│   └── NetworkError.swift
+├── Presentation
+│   ├── Cell
+│   ├── Model
+│   ├── OnboardingViewController.swift
+│   ├── PersonalTimetableViewController.swift
+│   ├── View
+│   └── ViewController.swift
+└── Resource
+    └── Font
 
 ~~~~
 
@@ -79,4 +86,4 @@ MUFE의 서비스 가치는 「실패 없는 뮤직페스티벌 경험을 제공
 |☁️구름|☁️최하늘|☁️신혜연|☁️윤솔비|
 |---|---|---|---|
 |<img src="https://github.com/user-attachments/assets/faf344a1-e75a-4628-8524-ac76e9a6ba6a" width="120" height="120" />|<img src="https://github.com/user-attachments/assets/a23729a0-e158-43e4-b613-08d645b00036" width="120" height="120" />|<img src="https://github.com/user-attachments/assets/33dfbcc6-1db9-43ff-8ca4-889be3b4190d" width="120" height="120" />|<img src="https://github.com/user-attachments/assets/9588eb2e-6e7d-4b80-b1f6-02895eefd6c8" width="120" height="120" />|
-|GUI 설계,기획|UX 설계,기획|개발 전체,기획|기획,인공지능 프롬프팅|
+|GUI 설계, 기획|UX 설계, 기획|개발 전체, 기획|기획, AI프롬프팅|
