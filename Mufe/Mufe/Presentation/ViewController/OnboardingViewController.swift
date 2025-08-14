@@ -170,8 +170,6 @@ class OnboardingViewController: UIViewController {
         }
         
         scrollView.setContentOffset(.zero, animated: false)
-        
-        print("Added \(viewToShow) to contentView")
     }
     
     private func setDelegate() {
@@ -183,11 +181,11 @@ class OnboardingViewController: UIViewController {
     }
     
     @objc private func didTapBackButton() {
-        guard let previousStep = currentStep.previous() else {
-            print("첫 단계라 뒤로 갈 수 없음")
-            return
+        if let previousStep = currentStep.previous() {
+            currentStep = previousStep
+        } else {
+            navigationController?.popViewController(animated: true)
         }
-        currentStep = previousStep
     }
     
     @objc private func didTapNextButton() {
