@@ -48,6 +48,10 @@ class OnboardingViewController: UIViewController {
     private let selectArtistView = SelectArtistView()
     private let loadingView = LoadingView()
     
+    private let buttonBackgroundView = UIImageView().then {
+        $0.image = UIImage(named: "buttonBackground")
+    }
+    
     private let nextButton = UIButton().then {
         $0.backgroundColor = .primary50
         $0.setTitle("다음으로", for: .normal)
@@ -68,7 +72,7 @@ class OnboardingViewController: UIViewController {
             progressBar.progress = currentStep.progress
             titleLabel.attributedText = currentStep.attributedTitle(with: selectedFestivalName, customFont: CustomUIFont.f2xl_Bold)
             nextButton.isHidden = !(currentStep == .timeSelection || currentStep == .artistSelection)
-            
+            buttonBackgroundView.isHidden = !(currentStep == .timeSelection || currentStep == .artistSelection)
             updateContentViewForCurrentStep()
         }
     }
@@ -100,6 +104,7 @@ class OnboardingViewController: UIViewController {
             progressBar,
             titleLabel,
             scrollView,
+            buttonBackgroundView,
             nextButton,
             loadingView
         )
@@ -135,9 +140,15 @@ class OnboardingViewController: UIViewController {
             $0.width.equalTo(scrollView.frameLayoutGuide)
         }
         
+        buttonBackgroundView.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalToSuperview()
+            
+        }
+        
         nextButton.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview().inset(16)
-            $0.bottom.equalToSuperview().offset(-24)
+            $0.bottom.equalTo(buttonBackgroundView.snp.bottom).offset(-24)
             $0.height.equalTo(53)
         }
         
@@ -193,7 +204,6 @@ class OnboardingViewController: UIViewController {
             
             showLoadingView()
             
-            // currentStep이 마지막 단계인 경우 -> GPT API 호출 후 결과 화면으로 이동
             Task {
                 do {
                     guard let preference = makePreference(),
@@ -205,10 +215,9 @@ class OnboardingViewController: UIViewController {
                     
                     print("🎯 사용자 선택 정보: \(preference)")
                     
-                    // 1. GPT API 호출해서 Timetable 받아오기
+                    // GPT API 호출
                     let timetables = try await GetInfoService.shared.fetchFestivalTimetable(preference: preference, festival: selectedFestival)
                     
-                    // 2. 결과 화면 VC 생성 및 데이터 전달
                     let personalVC = PersonalTimetableViewController()
                     personalVC.selectedFestival = selectedFestival
                     personalVC.timetables = timetables
@@ -216,7 +225,6 @@ class OnboardingViewController: UIViewController {
                     let nav = UINavigationController(rootViewController: personalVC)
                     nav.overrideUserInterfaceStyle = .dark
                     
-                    // 3. 메인 윈도우의 rootViewController 변경 (애니메이션 포함)
                     if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                        let sceneDelegate = scene.delegate as? SceneDelegate,
                        let window = sceneDelegate.window {
@@ -227,7 +235,6 @@ class OnboardingViewController: UIViewController {
                     
                 } catch {
                     print("타임테이블 불러오기 실패: \(error)")
-                    // 필요하면 에러 알림 UI 추가
                 }
                 
                 hideLoadingView()
@@ -236,7 +243,6 @@ class OnboardingViewController: UIViewController {
             return
         }
         
-        // 다음 스텝이 artistSelection일 때 UI 업데이트
         if nextStep == .artistSelection,
            let selectedDate = selectedDateItem,
            let selectedFestival = selectedFestival {
@@ -252,14 +258,14 @@ class OnboardingViewController: UIViewController {
 
     
     private func makePreference() -> Preference? {
-        // 선택한 페스티벌과 일자 확인
+        // 선택한 페스티벌과 일자
         guard let festival = selectedFestival,
               let dateItem = selectedDateItem else {
             return nil
         }
         
-        // artistSchedule의 key 배열에서 선택된 날짜의 인덱스를 찾음
-        let sortedDates = festival.artistSchedule.keys.sorted() // 정렬 보장 필요 시
+        // 선택된 날짜의 인덱스
+        let sortedDates = festival.artistSchedule.keys.sorted()
         guard sortedDates.firstIndex(of: dateItem.day) != nil else {
             return nil
         }
