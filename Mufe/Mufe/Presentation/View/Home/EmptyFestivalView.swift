@@ -7,6 +7,9 @@
 
 import UIKit
 
+import SnapKit
+import Then
+
 protocol EmptyFestivalViewDelegate: AnyObject {
     func didTapRegisterFestButton()
 }
