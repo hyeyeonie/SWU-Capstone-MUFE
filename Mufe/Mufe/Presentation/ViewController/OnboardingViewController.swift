@@ -143,7 +143,6 @@ class OnboardingViewController: UIViewController {
         buttonBackgroundView.snp.makeConstraints {
             $0.horizontalEdges.equalToSuperview()
             $0.bottom.equalToSuperview()
-            
         }
         
         nextButton.snp.makeConstraints {

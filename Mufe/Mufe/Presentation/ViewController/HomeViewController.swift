@@ -14,24 +14,7 @@ final class HomeViewController: UIViewController {
     
     // MARK: - UI Components
 
-    private let mufeImageView = UIImageView().then {
-        $0.image = UIImage(named: "mufeMain")
-        $0.contentMode = .scaleAspectFit
-    }
-    
-    private let contentLabel = UILabel().then {
-        $0.text = "어떤 페스티벌에 참여하세요?"
-        $0.textColor = .gray40
-        $0.customFont(.fmd_Medium)
-    }
-    
-    private let registerFestButton = UIButton().then {
-        $0.setTitle("페스티벌 등록하기", for: .normal)
-        $0.titleLabel?.customFont(.flg_SemiBold)
-        $0.layer.cornerRadius = 12
-        $0.setTitleColor(.gray80, for: .normal)
-        $0.backgroundColor = .gray05
-    }
+    private let emptyFestivalView = EmptyFestivalView()
     
     // MARK: - Life Cycle
     
@@ -41,7 +24,7 @@ final class HomeViewController: UIViewController {
         setStyle()
         setUI()
         setLayout()
-        setAction()
+        setDelegate()
     }
     
     // MARK: - Setup Methods
@@ -51,38 +34,22 @@ final class HomeViewController: UIViewController {
     }
     
     private func setUI() {
-        view.addSubviews(mufeImageView,
-                         contentLabel,
-                         registerFestButton)
+        view.addSubviews(emptyFestivalView)
     }
     
     private func setLayout() {
-        mufeImageView.snp.makeConstraints {
-            $0.size.equalTo(160)
-            $0.top.equalToSuperview().inset(280)
-            $0.centerX.equalToSuperview()
-        }
-        
-        contentLabel.snp.makeConstraints {
-            $0.top.equalTo(mufeImageView.snp.bottom).offset(24)
-            $0.centerX.equalToSuperview()
-        }
-        
-        registerFestButton.snp.makeConstraints {
-            $0.top.equalTo(contentLabel.snp.bottom).offset(10)
-            $0.centerX.equalToSuperview()
-            $0.width.equalTo(158)
-            $0.height.equalTo(43)
+        emptyFestivalView.snp.makeConstraints{
+            $0.edges.equalToSuperview()
         }
     }
     
-    // MARK: - Action
-    
-    private func setAction() {
-        registerFestButton.addTarget(self, action: #selector(didTapRegisterFestButton), for: .touchUpInside)
+    private func setDelegate() {
+        emptyFestivalView.delegate = self
     }
+}
 
-    @objc private func didTapRegisterFestButton() {
+extension HomeViewController: EmptyFestivalViewDelegate {
+    func didTapRegisterFestButton() {
         let registerVC = OnboardingViewController()
         navigationController?.pushViewController(registerVC, animated: true)
     }
