@@ -27,10 +27,10 @@ final class HomeViewController: UIViewController {
     
     private let registerFestButton = UIButton().then {
         $0.setTitle("페스티벌 등록하기", for: .normal)
-        $0.titleLabel?.customFont(.flg_Bold)
+        $0.titleLabel?.customFont(.flg_SemiBold)
         $0.layer.cornerRadius = 12
-        $0.setTitleColor(.gray00, for: .normal)
-        $0.backgroundColor = .gray80
+        $0.setTitleColor(.gray80, for: .normal)
+        $0.backgroundColor = .gray05
     }
     
     // MARK: - Life Cycle
@@ -69,10 +69,10 @@ final class HomeViewController: UIViewController {
         }
         
         registerFestButton.snp.makeConstraints {
-            $0.top.equalTo(contentLabel.snp.bottom).offset(7)
+            $0.top.equalTo(contentLabel.snp.bottom).offset(10)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(159)
-            $0.height.equalTo(38)
+            $0.width.equalTo(158)
+            $0.height.equalTo(43)
         }
     }
     
