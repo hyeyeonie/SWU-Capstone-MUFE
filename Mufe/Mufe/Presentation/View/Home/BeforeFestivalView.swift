@@ -17,14 +17,6 @@ final class BeforeFestivalView: UIView {
     
     
     // MARK: - UI Components
-    
-    private let titleLabel = UILabel().then {
-        $0.text = "두근두근!\n페스티벌이 29일 남았어요." // 날짜 statea 변수 지정, 글자 나눠서 볼드처리
-        $0.numberOfLines = 2
-        $0.textColor = .gray20
-        $0.customFont(.fxl_Medium)
-    }
-    
     private lazy var festivalCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -59,19 +51,14 @@ final class BeforeFestivalView: UIView {
     }
     
     private func setUI() {
-        addSubviews(titleLabel, festivalCollectionView)
+        addSubviews(festivalCollectionView)
     }
     
     private func setLayout() {
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(74)
-            $0.leading.equalToSuperview().inset(16)
-        }
-        
         festivalCollectionView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
+            $0.top.equalToSuperview().offset(20)
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(300)
+            $0.bottom.equalToSuperview()
         }
     }
     
@@ -82,7 +69,7 @@ final class BeforeFestivalView: UIView {
 
 extension BeforeFestivalView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 1
+        return 4
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
