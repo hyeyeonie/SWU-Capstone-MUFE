@@ -18,13 +18,14 @@ final class AfterFestivalCell: UICollectionViewCell {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         
+        let now = Date()
+        
         guard
             let start = formatter.date(from: startTime),
-            let end = formatter.date(from: endTime),
-            let testNow = formatter.date(from: "17:54")
+            let end = formatter.date(from: endTime)
         else { return false }
         
-        return testNow >= start && testNow <= end
+        return now >= start && now <= end
     }
     
     private let stageNumber = UILabel().then {
