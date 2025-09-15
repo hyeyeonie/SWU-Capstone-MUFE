@@ -1,5 +1,5 @@
 //
-//  AfterFestivalView.swift
+//  DdayFestivalView.swift
 //  Mufe
 //
 //  Created by 신혜연 on 8/30/25.
@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class AfterFestivalView: UIView {
+final class DdayFestivalView: UIView {
     
     // MARK: - Properties
     
@@ -29,7 +29,7 @@ final class AfterFestivalView: UIView {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.register(AfterFestivalCell.self, forCellWithReuseIdentifier: AfterFestivalCell.identifier)
+        collectionView.register(DdayFestivalCell.self, forCellWithReuseIdentifier: DdayFestivalCell.identifier)
         return collectionView
     }()
     
@@ -71,16 +71,16 @@ final class AfterFestivalView: UIView {
     }
 }
 
-extension AfterFestivalView: UICollectionViewDataSource {
+extension DdayFestivalView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 2
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: AfterFestivalCell.identifier,
+            withReuseIdentifier: DdayFestivalCell.identifier,
             for: indexPath
-        ) as? AfterFestivalCell else {
+        ) as? DdayFestivalCell else {
             return UICollectionViewCell()
         }
         
@@ -92,5 +92,5 @@ extension AfterFestivalView: UICollectionViewDataSource {
 }
 
 #Preview {
-    AfterFestivalView()
+    DdayFestivalView()
 }
