@@ -42,7 +42,6 @@ final class LoadingView: UIView {
     }
     
     private func setStyle() {
-        //        self.navigationController?.setNavigationBarHidden(true, animated: false)
         backgroundColor = .grayBg
     }
     

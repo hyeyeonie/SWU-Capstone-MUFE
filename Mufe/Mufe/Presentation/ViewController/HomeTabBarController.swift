@@ -24,6 +24,16 @@ final class HomeTabBarController: UITabBarController {
         tabBar.tintColor = .primary50
         tabBar.unselectedItemTintColor = .gray60
         
+        if #available(iOS 15.0, *) {
+            let appearance = UITabBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = .grayBg
+            tabBar.standardAppearance = appearance
+            tabBar.scrollEdgeAppearance = appearance
+        } else {
+            tabBar.barTintColor = .grayBg
+        }
+        
         // 홈 탭
         let homeVC = HomeViewController()
         homeVC.tabBarItem = UITabBarItem(

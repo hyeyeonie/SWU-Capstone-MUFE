@@ -22,7 +22,7 @@ final class DayInfoView: UIView {
     
     private let daysLabel = UILabel().then {
         $0.textColor = .gray00
-        $0.customFont(.flg_Bold)
+        $0.customFont(.fsm_SemiBold)
         $0.textAlignment = .center
     }
     

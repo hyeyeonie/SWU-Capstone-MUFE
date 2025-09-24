@@ -24,7 +24,7 @@ final class BeforeFestivalView: UIView {
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
-        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.register(BeforeFestivalCell.self, forCellWithReuseIdentifier: BeforeFestivalCell.identifier)
         return collectionView
     }()

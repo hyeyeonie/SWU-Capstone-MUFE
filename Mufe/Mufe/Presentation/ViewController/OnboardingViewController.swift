@@ -17,6 +17,8 @@ class OnboardingViewController: UIViewController {
     private var selectedDateItem: DateItem?
     private var selectedFestival: Festival?
     
+    // MARK: - UI Components
+    
     private let backButton = UIButton().then {
         $0.contentMode = .scaleAspectFit
         $0.setImage(UIImage(systemName: "chevron.backward"), for: .normal)
@@ -220,13 +222,14 @@ class OnboardingViewController: UIViewController {
                     let personalVC = PersonalTimetableViewController()
                     personalVC.selectedFestival = selectedFestival
                     personalVC.timetables = timetables
-                    
-                    let nav = UINavigationController(rootViewController: personalVC)
-                    nav.overrideUserInterfaceStyle = .dark
-                    
+
                     if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                        let sceneDelegate = scene.delegate as? SceneDelegate,
                        let window = sceneDelegate.window {
+                        
+                        let nav = UINavigationController(rootViewController: personalVC)
+                        nav.overrideUserInterfaceStyle = .dark
+                        
                         UIView.transition(with: window, duration: 0.3, options: [.transitionCrossDissolve], animations: {
                             window.rootViewController = nav
                         })
@@ -305,7 +308,6 @@ extension OnboardingViewController: SelectDateViewDelegate {
 }
 
 private extension OnboardingViewController {
-    
     func showLoadingView() {
         loadingView.alpha = 0
         loadingView.isHidden = false
