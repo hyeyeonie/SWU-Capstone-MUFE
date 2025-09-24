@@ -13,7 +13,6 @@ final class PersonalTimetableViewController: UIViewController {
     
     var selectedFestival: Festival?
     
-    // 외부에서 할당 가능, 할당 시 컬렉션뷰 및 UI 자동 갱신
     var timetables: [Timetable] = [] {
         didSet {
             collectionView.reloadData()
@@ -54,12 +53,41 @@ final class PersonalTimetableViewController: UIViewController {
         return cv
     }()
     
+    // Buttons
+    private let buttonBackgroundView = UIImageView().then {
+        $0.image = UIImage(named: "buttonBackground")
+        $0.isUserInteractionEnabled = true
+    }
+
+    private let leftButton = UIButton().then {
+        $0.setTitle("수정하기", for: .normal)
+        $0.setTitleColor(.gray60, for: .normal)
+        $0.titleLabel?.customFont(.flg_SemiBold)
+        $0.backgroundColor = .gray90
+        $0.layer.cornerRadius = 16
+    }
+
+    private let rightButton = UIButton().then {
+        $0.setTitle("완료하기", for: .normal)
+        $0.setTitleColor(.gray00, for: .normal)
+        $0.titleLabel?.customFont(.flg_SemiBold)
+        $0.backgroundColor = .primary50
+        $0.layer.cornerRadius = 16
+    }
+
+    private lazy var buttonStackView = UIStackView(arrangedSubviews: [leftButton, rightButton]).then {
+        $0.axis = .horizontal
+        $0.spacing = 12
+        $0.distribution = .fillEqually
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setStyle()
         setUI()
         setLayout()
+        setAction()
         
         updateRunningTime()
     }
@@ -70,7 +98,8 @@ final class PersonalTimetableViewController: UIViewController {
     }
     
     private func setUI() {
-        view.addSubviews(recommendLabel, runningTimeLabel, mufeImageView, collectionView)
+        view.addSubviews(recommendLabel, runningTimeLabel, mufeImageView, collectionView, buttonBackgroundView)
+        buttonBackgroundView.addSubview(buttonStackView)
     }
     
     private func setLayout() {
@@ -93,8 +122,46 @@ final class PersonalTimetableViewController: UIViewController {
         collectionView.snp.makeConstraints {
             $0.top.equalTo(mufeImageView.snp.bottom)
             $0.horizontalEdges.equalToSuperview()
-            $0.bottom.equalToSuperview().offset(-24)
+            $0.bottom.equalTo(buttonBackgroundView.snp.top)
         }
+        
+        // Buttons
+        buttonBackgroundView.snp.makeConstraints {
+            $0.horizontalEdges.bottom.equalToSuperview()
+            $0.height.equalTo(101)
+        }
+
+        buttonStackView.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(16)
+            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.bottom.equalToSuperview().inset(24)
+        }
+    }
+    
+    private func setAction() {
+        leftButton.addTarget(self, action: #selector(didTapEdit), for: .touchUpInside)
+        rightButton.addTarget(self, action: #selector(didTapComplete), for: .touchUpInside)
+    }
+    
+    @objc private func didTapComplete() {
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let sceneDelegate = scene.delegate as? SceneDelegate,
+           let window = sceneDelegate.window {
+            
+            let tabBar = HomeTabBarController()
+            window.rootViewController = tabBar
+            window.makeKeyAndVisible()
+            
+            if let homeVC = tabBar.viewControllers?.first(where: { $0 is HomeViewController }) as? HomeViewController {
+                homeVC.updateState(.beforeFestival)
+                tabBar.selectedIndex = 0
+            }
+        }
+    }
+    
+    @objc private func didTapEdit() {
+        // TODO: 수정하기 버튼 로직 구현
+        navigationController?.popViewController(animated: true)
     }
     
     private func updateCollectionViewHeight() {
