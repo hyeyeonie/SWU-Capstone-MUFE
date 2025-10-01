@@ -46,7 +46,6 @@ final class emptyFestivalView: UIView {
     
     private func setLayout() {
         mufeImageView.snp.makeConstraints{
-            $0.top.equalToSuperview().inset(191)
             $0.centerX.equalToSuperview()
             $0.size.equalTo(160)
         }
@@ -59,5 +58,12 @@ final class emptyFestivalView: UIView {
     
     func setContentText(_ text: String) {
         contentLabel.text = text
+    }
+    
+    func setImageSize(_ size: CGFloat) {
+        mufeImageView.snp.remakeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.width.height.equalTo(size)
+        }
     }
 }

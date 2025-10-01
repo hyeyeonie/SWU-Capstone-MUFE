@@ -52,7 +52,7 @@ final class HistoryViewController: UIViewController {
         }
         
         emptyView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(10)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(201)
             $0.horizontalEdges.bottom.equalToSuperview()
         }
     }
