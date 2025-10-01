@@ -36,24 +36,27 @@ final class HomeTabBarController: UITabBarController {
         
         // 홈 탭
         let homeVC = HomeViewController()
-        homeVC.tabBarItem = UITabBarItem(
+        homeVC.title = "홈" // 탭 타이틀
+        let homeTabItem = UITabBarItem(
             title: "홈",
             image: UIImage(resource: .unselectedHome).withRenderingMode(.alwaysOriginal),
             selectedImage: UIImage(resource: .selectedHome).withRenderingMode(.alwaysOriginal)
         )
+        homeVC.tabBarItem = homeTabItem
 
         // 시간표 탭
-        let timetableVC = UIViewController()
-        timetableVC.view.backgroundColor = UIColor.grayBg
-        timetableVC.tabBarItem = UITabBarItem(
+        let timetableVC = TimetableViewController()
+        timetableVC.title = "시간표"
+        let timetableTabItem = UITabBarItem(
             title: "시간표",
             image: UIImage(resource: .unselectedTimetable).withRenderingMode(.alwaysTemplate),
             selectedImage: UIImage(resource: .selectedTimetable).withRenderingMode(.alwaysTemplate)
         )
+        timetableVC.tabBarItem = timetableTabItem
 
         // 추억 탭
-        let memoryVC = UIViewController()
-        memoryVC.view.backgroundColor = UIColor.grayBg
+        let memoryVC = HistoryViewController()
+        memoryVC.title = "추억"
         memoryVC.tabBarItem = UITabBarItem(
             title: "추억",
             image: UIImage(resource: .unselectedMemory).withRenderingMode(.alwaysOriginal),
