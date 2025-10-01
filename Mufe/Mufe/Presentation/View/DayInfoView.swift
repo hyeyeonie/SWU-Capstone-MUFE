@@ -10,7 +10,16 @@ import UIKit
 import SnapKit
 import Then
 
+protocol DayInfoViewDelegate: AnyObject {
+    func didTapDay(dayNumber: Int, dayOfWeek: String, date: String)
+}
+
 final class DayInfoView: UIView {
+    
+    // MARK: - Properties
+    
+    weak var delegate: DayInfoViewDelegate?
+    private lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
     
     // MARK: - UI Components
     
@@ -54,6 +63,7 @@ final class DayInfoView: UIView {
         super.init(frame: frame)
         setupUI()
         setupLayout()
+        setDelegate()
     }
     
     required init?(coder: NSCoder) {
@@ -90,5 +100,15 @@ final class DayInfoView: UIView {
         daysLabel.text = "\(dayNumber)일차"
         dayOfWeekLabel.text = dayOfWeek
         eachDayLabel.text = date
+    }
+    
+    private func setDelegate() {
+        addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func didTapView() {
+        guard let dayText = daysLabel.text else { return }
+        let dayNumber = Int(dayText.replacingOccurrences(of: "일차", with: "")) ?? 0
+        delegate?.didTapDay(dayNumber: dayNumber, dayOfWeek: dayOfWeekLabel.text ?? "", date: eachDayLabel.text ?? "")
     }
 }

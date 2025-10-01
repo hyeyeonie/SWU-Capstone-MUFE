@@ -14,10 +14,7 @@ final class DdayFestivalView: UIView {
     
     // MARK: - Properties
     
-    private let festivalTimes: [(start: String, end: String)] = [
-        ("17:50", "18:20"),
-        ("18:30", "19:00")
-    ]
+    private var festivalTimes: [(artist: ArtistSchedule, stage: ArtistInfo)] = []
     
     // MARK: - UI Components
     
@@ -28,7 +25,7 @@ final class DdayFestivalView: UIView {
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
-        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.register(DdayFestivalCell.self, forCellWithReuseIdentifier: DdayFestivalCell.identifier)
         return collectionView
     }()
@@ -68,25 +65,32 @@ final class DdayFestivalView: UIView {
     
     private func setDelegate() {
         festivalCollectionView.dataSource = self
+        festivalCollectionView.contentInset.bottom = 33
+    }
+    
+    func updateFestivalTimes(_ times: [(artist: ArtistSchedule, stage: ArtistInfo)]) {
+        DispatchQueue.main.async {
+            self.festivalTimes = times
+            self.festivalCollectionView.reloadData()
+        }
     }
 }
 
 extension DdayFestivalView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 2
+        return festivalTimes.count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: DdayFestivalCell.identifier,
-            for: indexPath
-        ) as? DdayFestivalCell else {
+            for: indexPath) as? DdayFestivalCell else {
             return UICollectionViewCell()
         }
-        
-        let time = festivalTimes[indexPath.item]
-        cell.configure(start: time.start, end: time.end)
-        
+
+        let (artist, stage) = festivalTimes[indexPath.item]
+        cell.configure(with: artist, stage: stage)
+
         return cell
     }
 }
