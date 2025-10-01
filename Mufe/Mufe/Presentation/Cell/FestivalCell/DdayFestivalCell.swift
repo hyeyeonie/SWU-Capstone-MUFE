@@ -199,10 +199,17 @@ final class DdayFestivalCell: UICollectionViewCell {
         }
     }
     
-    func configure(start: String, end: String) {
-        self.startTime = start
-        self.endTime = end
+    func configure(with artist: ArtistSchedule, stage: ArtistInfo) {
+        self.startTime = artist.startTime
+        self.endTime = artist.endTime
         runningTime.text = "\(startTime) - \(endTime)"
+        
+        artistName.text = artist.name
+        artistImage.image = UIImage(named: artist.image)
+        
+        stageNumber.text = stage.stage
+        stageName.text = stage.location
+        
         updateCurrent()
     }
 }

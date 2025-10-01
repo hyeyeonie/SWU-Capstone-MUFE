@@ -10,6 +10,7 @@ import UIKit
 final class BeforeFestivalCell: UICollectionViewCell {
     
     static let identifier = "BeforeFestivalCell"
+    weak var delegate: DateSelectionDelegate?
     
     private let posterImage = UIImageView().then {
         $0.contentMode = .scaleAspectFill
@@ -75,7 +76,6 @@ final class BeforeFestivalCell: UICollectionViewCell {
         setStyle()
         setUI()
         setLayout()
-        setupDayInfoViewsForLayout()
     }
     
     required init?(coder: NSCoder) {
@@ -131,13 +131,25 @@ final class BeforeFestivalCell: UICollectionViewCell {
         }
     }
     
-    private func setupDayInfoViewsForLayout() {
-        let day1 = DayInfoView()
-        day1.configure(dayNumber: 1, dayOfWeek: "토", date: "2025.09.13")
+    func configure(with festival: Festival) {
+        posterImage.image = UIImage(named: festival.imageName)
+        festivalName.text = festival.name
+        festivalTime.text = "\(festival.startDate) - \(festival.endDate)"
+        festivalLocation.text = festival.location
+        dDayLabel.text = FestivalUtils.calculateDDay(from: festival.startDate)
+        daysStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        let day2 = DayInfoView()
-        day2.configure(dayNumber: 2, dayOfWeek: "일", date: "2025.09.14")
-        
-        daysStackView.addArrangedSubviews(day1, day2)
+        for (index, day) in festival.days.enumerated() {
+            let dayView = DayInfoView()
+            dayView.configure(dayNumber: index + 1, dayOfWeek: day.dayOfWeek, date: day.date)
+            dayView.delegate = self
+            daysStackView.addArrangedSubview(dayView)
+        }
+    }
+}
+
+extension BeforeFestivalCell: DayInfoViewDelegate {
+    func didTapDay(dayNumber: Int, dayOfWeek: String, date: String) {
+        delegate?.didSelectDate(DateItem(day: "\(dayNumber)일차", date: date, isMade: false))
     }
 }

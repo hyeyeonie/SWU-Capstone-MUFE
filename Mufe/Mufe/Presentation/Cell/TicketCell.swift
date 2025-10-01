@@ -8,12 +8,13 @@
 import UIKit
 
 protocol DateSelectionDelegate: AnyObject {
-    func didSelectDate(day: String, date: String)
+    func didSelectDate(_ dateItem: DateItem)
 }
 
 final class TicketCell: UICollectionViewCell {
     
     static let identifier = "TicketCell"
+    weak var delegate: DateSelectionDelegate?
     
     private let ticketButton = UIButton().then {
         $0.backgroundColor = .gray80
@@ -49,6 +50,7 @@ final class TicketCell: UICollectionViewCell {
         
         setUI()
         setLayout()
+        addTarget()
     }
     
     required init?(coder: NSCoder) {
@@ -86,6 +88,19 @@ final class TicketCell: UICollectionViewCell {
             $0.trailing.equalToSuperview().inset(20)
             $0.top.equalToSuperview().offset(30)
         }
+    }
+    
+    private func addTarget() {
+        ticketButton.addTarget(self, action: #selector(didTapTicket), for: .touchUpInside)
+    }
+    
+    @objc private func didTapTicket() {
+        let dateItem = DateItem(
+            day: dayLabel.text ?? "",
+            date: dateLabel.text ?? "",
+            isMade: !isMadeLabel.isHidden
+        )
+        delegate?.didSelectDate(dateItem)
     }
     
     func configure(day: String, date: String, isMade: Bool) {
