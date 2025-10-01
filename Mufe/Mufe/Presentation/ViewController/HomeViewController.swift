@@ -21,9 +21,13 @@ final class HomeViewController: UIViewController {
     
     // MARK: - Properties
     
+    private var timer: Timer?
+    
     private var currentState: HomeViewState = .emptyFestival {
         didSet { updateView() }
     }
+    
+    private var selectedFestival: Festival?
     
     // MARK: - UI Components
     
@@ -48,7 +52,27 @@ final class HomeViewController: UIViewController {
         setUI()
         setLayout()
         setDelegate()
+        
+        if let firstFestival = DummyFestivalData.festivals.first {
+            setFestival(firstFestival)
+            
+            // DdayFestivalView에 오늘 날짜 기준으로 공연 시간 전달
+            if let day1Stages = firstFestival.artistSchedule["1일차"] {
+                var times: [(ArtistSchedule, ArtistInfo)] = []
+                for stage in day1Stages {
+                    for artist in stage.artists {
+                        times.append((artist, stage))
+                    }
+                }
+                dDayFestivalView.updateFestivalTimes(times)
+            }
+            
+            // 오늘 날짜 기준으로 상태 업데이트
+            updateFestivalState()
+        }
+        
         updateView()
+        startTimer()
     }
     
     // MARK: - Setup Methods
@@ -95,17 +119,22 @@ final class HomeViewController: UIViewController {
         switch currentState {
         case .beforeFestival:
             titleLabel.isHidden = false
-            let remainingDays = 29
-            let text = "두근두근!\n페스티벌이 \(remainingDays)일 남았어요."
             
-            let attributedText = NSMutableAttributedString(string: text)
-            
-            if let range = text.range(of: "\(remainingDays)") {
-                let nsRange = NSRange(range, in: text)
-                attributedText.addAttribute(.font, value: CustomUIFont.fxl_Bold.font, range: nsRange)
+            if let festival = selectedFestival {
+                let dDayText = FestivalUtils.calculateDDay(from: festival.startDate)
+                let text = "두근두근!\n페스티벌이 \(dDayText) 남았어요."
+                
+                let attributedText = NSMutableAttributedString(string: text)
+                if let range = text.range(of: dDayText) {
+                    let nsRange = NSRange(range, in: text)
+                    attributedText.addAttribute(.font, value: CustomUIFont.fxl_Bold.font, range: nsRange)
+                }
+                
+                titleLabel.attributedText = attributedText
+            } else {
+                titleLabel.attributedText = nil
             }
-            
-            titleLabel.attributedText = attributedText
+
         case .dDayFestival:
             titleLabel.isHidden = false
             let artistName = "아사달"
@@ -119,13 +148,49 @@ final class HomeViewController: UIViewController {
             }
             
             titleLabel.attributedText = attributedText
+            
         default:
             titleLabel.isHidden = true
         }
     }
     
+    private func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
+            self?.updateFestivalState()
+        }
+    }
+    
+    @objc private func updateFestivalState() {
+        guard let festival = selectedFestival else { return }
+        let now = Date()
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy.MM.dd HH:mm"
+        
+        if let start = formatter.date(from: "\(festival.startDate) 00:00"),
+           let end = formatter.date(from: "\(festival.endDate) 23:59") {
+            if now < start {
+                updateState(.beforeFestival)
+            } else if now >= start && now <= end {
+                updateState(.dDayFestival)
+            } else {
+                updateState(.afterFestival)
+            }
+        }
+    }
+
+    deinit {
+        timer?.invalidate()
+    }
+    
     func updateState(_ newState: HomeViewState) {
         currentState = newState
+    }
+    
+    func setFestival(_ festival: Festival) {
+        selectedFestival = festival
+        beforeFestivalView.setFestival(festival)
+        updateView()
     }
 }
 

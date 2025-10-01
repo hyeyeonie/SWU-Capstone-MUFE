@@ -24,7 +24,7 @@ final class PersonalTimetableViewController: UIViewController {
     private var collectionViewHeightConstraint: Constraint?
     
     private let recommendLabel = UILabel().then {
-        $0.text = "이 공연은 어때요?"
+        $0.text = "이 공연들은 어때요?"
         $0.customFont(.f2xl_Bold)
         $0.textColor = .gray00
     }
@@ -58,27 +58,13 @@ final class PersonalTimetableViewController: UIViewController {
         $0.image = UIImage(named: "buttonBackground")
         $0.isUserInteractionEnabled = true
     }
-
-    private let leftButton = UIButton().then {
-        $0.setTitle("수정하기", for: .normal)
-        $0.setTitleColor(.gray60, for: .normal)
-        $0.titleLabel?.customFont(.flg_SemiBold)
-        $0.backgroundColor = .gray90
-        $0.layer.cornerRadius = 16
-    }
-
-    private let rightButton = UIButton().then {
-        $0.setTitle("완료하기", for: .normal)
+    
+    private let completeButton = UIButton().then {
+        $0.backgroundColor = .primary50
+        $0.setTitle("무대 담기", for: .normal)
         $0.setTitleColor(.gray00, for: .normal)
         $0.titleLabel?.customFont(.flg_SemiBold)
-        $0.backgroundColor = .primary50
         $0.layer.cornerRadius = 16
-    }
-
-    private lazy var buttonStackView = UIStackView(arrangedSubviews: [leftButton, rightButton]).then {
-        $0.axis = .horizontal
-        $0.spacing = 12
-        $0.distribution = .fillEqually
     }
     
     override func viewDidLoad() {
@@ -98,8 +84,7 @@ final class PersonalTimetableViewController: UIViewController {
     }
     
     private func setUI() {
-        view.addSubviews(recommendLabel, runningTimeLabel, mufeImageView, collectionView, buttonBackgroundView)
-        buttonBackgroundView.addSubview(buttonStackView)
+        view.addSubviews(recommendLabel, runningTimeLabel, mufeImageView, collectionView, buttonBackgroundView, completeButton)
     }
     
     private func setLayout() {
@@ -131,16 +116,15 @@ final class PersonalTimetableViewController: UIViewController {
             $0.height.equalTo(101)
         }
 
-        buttonStackView.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(16)
-            $0.leading.trailing.equalToSuperview().inset(16)
-            $0.bottom.equalToSuperview().inset(24)
+        completeButton.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview().inset(16)
+            $0.bottom.equalTo(buttonBackgroundView.snp.bottom).offset(-24)
+            $0.height.equalTo(53)
         }
     }
     
     private func setAction() {
-        leftButton.addTarget(self, action: #selector(didTapEdit), for: .touchUpInside)
-        rightButton.addTarget(self, action: #selector(didTapComplete), for: .touchUpInside)
+        completeButton.addTarget(self, action: #selector(didTapComplete), for: .touchUpInside)
     }
     
     @objc private func didTapComplete() {
@@ -153,7 +137,9 @@ final class PersonalTimetableViewController: UIViewController {
             window.makeKeyAndVisible()
             
             if let homeVC = tabBar.viewControllers?.first(where: { $0 is HomeViewController }) as? HomeViewController {
+                guard let selectedFestival = selectedFestival else { return }
                 homeVC.updateState(.beforeFestival)
+                homeVC.setFestival(selectedFestival)
                 tabBar.selectedIndex = 0
             }
         }

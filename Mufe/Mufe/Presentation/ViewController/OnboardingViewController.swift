@@ -75,6 +75,11 @@ class OnboardingViewController: UIViewController {
             titleLabel.attributedText = currentStep.attributedTitle(with: selectedFestivalName, customFont: CustomUIFont.f2xl_Bold)
             nextButton.isHidden = !(currentStep == .timeSelection || currentStep == .artistSelection)
             buttonBackgroundView.isHidden = !(currentStep == .timeSelection || currentStep == .artistSelection)
+            if currentStep == .artistSelection {
+                nextButton.setTitle("완료", for: .normal)
+            } else if currentStep == .timeSelection {
+                nextButton.setTitle("다음으로", for: .normal)
+            }
             updateContentViewForCurrentStep()
         }
     }
@@ -195,8 +200,31 @@ class OnboardingViewController: UIViewController {
     @objc private func didTapBackButton() {
         if let previousStep = currentStep.previous() {
             currentStep = previousStep
+            return
+        }
+        
+        // 루트 화면으로 갈지, 그냥 pop할지 구분
+        if let nav = navigationController, nav.viewControllers.first != self {
+            // navigation stack 안에서 push된 경우
+            nav.popViewController(animated: true)
+        } else if presentingViewController != nil {
+            // 모달로 present된 경우
+            dismiss(animated: true)
         } else {
-            navigationController?.popViewController(animated: true)
+            // 정말 루트일 때만 앱 루트로 이동
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let sceneDelegate = scene.delegate as? SceneDelegate,
+               let window = sceneDelegate.window {
+                
+                let homeTabBar = HomeTabBarController()
+                
+                UIView.transition(with: window,
+                                  duration: 0.3,
+                                  options: [.transitionCrossDissolve],
+                                  animations: {
+                    window.rootViewController = homeTabBar
+                })
+            }
         }
     }
     
