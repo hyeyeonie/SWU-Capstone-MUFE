@@ -50,7 +50,7 @@ final class DdayFestivalCell: UICollectionViewCell {
     }
     
     private let artistName = UILabel().then {
-        $0.customFont(.fmd_Bold)
+        $0.customFont(.flg_Bold)
         $0.text = "Tuesday Beach Club"
         $0.textColor = .gray00
     }
