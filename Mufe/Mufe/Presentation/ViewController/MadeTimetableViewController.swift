@@ -16,6 +16,8 @@ class MadeTimetableViewController: UIViewController {
     
     var festival: Festival!
     var selectedDateItem: DateItem!
+    var timetables: [Timetable] = []
+    var selectedArtistNames: [String] = []
     
     // MARK: - UI Components
     
@@ -41,6 +43,8 @@ class MadeTimetableViewController: UIViewController {
     private let timetableView = MadeTimetableView()
     private let emptyView = MadeTimetableEmptyView()
     
+    // MARK: - Life Cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -49,6 +53,19 @@ class MadeTimetableViewController: UIViewController {
         setLayout()
         addTarget()
         setInit()
+        
+        print("✅ 받은 festival: \(festival?.name ?? "없음")")
+        print("✅ 받은 date: \(selectedDateItem?.day ?? "없음")")
+        print("✅ 받은 timetables: \(timetables.count)개")
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            guard let self = self else { return }
+            self.showModal()
+        }
     }
     
     private func setStyle() {
@@ -103,8 +120,16 @@ class MadeTimetableViewController: UIViewController {
         for (index, day) in festival.days.enumerated() {
             let dayKey = "\(index + 1)일차"
             
+            let dateText: String
+            if let dotIndex = day.date.lastIndex(of: ".") {
+                let startIndex = day.date.index(day.date.startIndex, offsetBy: 5)
+                dateText = String(day.date[startIndex...])
+            } else {
+                dateText = day.date
+            }
+            
             let button = DaySelectionButton()
-            button.configure(with: DayItem(title: dayKey, date: day.date))
+            button.configure(with: DayItem(title: dayKey, date: dateText))
             button.addTarget(self, action: #selector(dayButtonTapped(_:)), for: .touchUpInside)
             
             daySelectionStackView.addArrangedSubview(button)
@@ -118,22 +143,73 @@ class MadeTimetableViewController: UIViewController {
         dayButtons.forEach { $0.isSelected = ($0.dayTitle.text == selectedDateItem.day) }
 
         let stageGroups = festival.artistSchedule[selectedDateItem.day] ?? []
-
-        if stageGroups.isEmpty {
+        
+        let filteredStageGroups: [ArtistInfo] = stageGroups.map { stage in
+            let filteredArtists = stage.artists.filter { artist in
+                selectedArtistNames.contains(artist.name)
+            }
+            return ArtistInfo(
+                stage: stage.stage,
+                location: stage.location,
+                artists: filteredArtists
+            )
+        }.filter { !$0.artists.isEmpty }
+        
+        if filteredStageGroups.isEmpty {
             timetableView.isHidden = true
             emptyView.isHidden = false
         } else {
             timetableView.isHidden = false
             emptyView.isHidden = true
-            timetableView.configure(with: stageGroups)
+            timetableView.configure(with: filteredStageGroups)
         }
+    }
+    
+    private func showModal() {
+        let modalView = ModalView(frame: self.view.bounds)
+        
+        // 모달 버튼 콜백 설정
+        modalView.onDenyButtonTapped = { [weak self] in
+            self?.dismissModal(modalView)
+        }
+        
+        modalView.onAcceptButtonTapped = { [weak self] in
+            // 추천받기 액션 처리
+            self?.dismissModal(modalView)
+            // 필요하면 추가 로직 실행
+        }
+        
+        modalView.alpha = 0
+        view.addSubview(modalView)
+        
+        UIView.animate(withDuration: 0.25) {
+            modalView.alpha = 1
+        }
+    }
+
+    private func dismissModal(_ modalView: ModalView) {
+        UIView.animate(withDuration: 0.25, animations: {
+            modalView.alpha = 0
+        }, completion: { _ in
+            modalView.removeFromSuperview()
+        })
     }
     
     // MARK: - Action Handlers
     
     @objc private func didTapBackButton() {
-        if let navigationController = self.navigationController {
-            navigationController.popToRootViewController(animated: true)
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let sceneDelegate = scene.delegate as? SceneDelegate,
+           let window = sceneDelegate.window {
+            
+            let homeTabBar = HomeTabBarController()
+            
+            UIView.transition(with: window,
+                              duration: 0.3,
+                              options: [.transitionCrossDissolve],
+                              animations: {
+                window.rootViewController = homeTabBar
+            })
         }
     }
     

@@ -231,7 +231,7 @@ class OnboardingViewController: UIViewController {
     @objc private func didTapNextButton() {
         guard let nextStep = currentStep.next() else {
             
-            showLoadingView()
+//            showLoadingView()
             
             Task {
                 do {
@@ -245,23 +245,37 @@ class OnboardingViewController: UIViewController {
                     print("🎯 사용자 선택 정보: \(preference)")
                     
                     // GPT API 호출
-                    let timetables = try await GetInfoService.shared.fetchFestivalTimetable(preference: preference, festival: selectedFestival)
+//                    let timetables = try await GetInfoService.shared.fetchFestivalTimetable(preference: preference, festival: selectedFestival)
                     
-                    let personalVC = PersonalTimetableViewController()
-                    personalVC.selectedFestival = selectedFestival
-                    personalVC.timetables = timetables
-
-                    if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                       let sceneDelegate = scene.delegate as? SceneDelegate,
-                       let window = sceneDelegate.window {
+//                    let personalVC = PersonalTimetableViewController()
+//                    personalVC.selectedFestival = selectedFestival
+//                    personalVC.timetables = timetables
+                    
+                    let timetables: [Timetable] = []
+                    let selectedArtists = selectArtistView.getSelectedArtistNames()
+                    
+                    DispatchQueue.main.async {
+                        self.hideLoadingView()
                         
-                        let nav = UINavigationController(rootViewController: personalVC)
-                        nav.overrideUserInterfaceStyle = .dark
-                        
-                        UIView.transition(with: window, duration: 0.3, options: [.transitionCrossDissolve], animations: {
-                            window.rootViewController = nav
-                        })
+                        let madeVC = MadeTimetableViewController()
+                        madeVC.festival = selectedFestival
+                        madeVC.selectedDateItem = self.selectedDateItem
+                        madeVC.timetables = timetables
+                        madeVC.selectedArtistNames = selectedArtists
+                        self.navigationController?.pushViewController(madeVC, animated: true)
                     }
+
+//                    if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+//                       let sceneDelegate = scene.delegate as? SceneDelegate,
+//                       let window = sceneDelegate.window {
+//                        
+//                        let nav = UINavigationController(rootViewController: personalVC)
+//                        nav.overrideUserInterfaceStyle = .dark
+//                        
+//                        UIView.transition(with: window, duration: 0.3, options: [.transitionCrossDissolve], animations: {
+//                            window.rootViewController = nav
+//                        })
+//                    }
                     
                 } catch {
                     print("타임테이블 불러오기 실패: \(error)")
