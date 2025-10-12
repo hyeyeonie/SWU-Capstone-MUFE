@@ -14,125 +14,106 @@ final class MadeTimetableView: UIView {
     
     // MARK: - Properties
     
-    private var startTime = "11:50"
-    private var endTime = "12:20"
+    private var stageGroups: [ArtistInfo] = []
     
     // MARK: - UI Components
     
-    private let scrollView = UIScrollView()
-    private let contentView = UIView()
-    
-    // 동적으로 생성
-    private lazy var dayOneButton = createDayButton(title: "1일차", date: "9.13", isSelected: true)
-    private lazy var dayTwoButton = createDayButton(title: "2일차", date: "9.14", isSelected: false)
-    
-    private let daySelectionStackView = UIStackView().then {
-        $0.axis = .horizontal
-        $0.spacing = 8
-        $0.distribution = .fillEqually
-    }
-    
     private let summaryLabel = UILabel().then {
-        $0.text = "총 5개, 270분"
         $0.textColor = .gray40
         $0.customFont(.flg_SemiBold)
     }
     
-    // cell
-    private let stageNumber = UILabel().then {
-        $0.customFont(.fmd_Bold)
-        $0.text = "STAGE 1"
-        $0.textColor = .gray00
-    }
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 16
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.register(MadeTimetableCell.self, forCellWithReuseIdentifier: MadeTimetableCell.identifier)
+        cv.backgroundColor = .clear
+        cv.dataSource = self
+        cv.delegate = self
+        return cv
+    }()
     
-    private let stageName = UILabel().then {
-        $0.customFont(.fmd_Medium)
-        $0.text = "SOUND PLANET"
-        $0.textColor = .gray40
-    }
-    
-    private let contentContainerView = UIView()
-    
-    private let artistImage = UIImageView().then {
-        $0.contentMode = .scaleAspectFill
-        $0.image = UIImage(resource: .artistImg)
-        $0.clipsToBounds = true
-        $0.layer.cornerRadius = 27
-    }
-    
-    private let artistName = UILabel().then {
-        $0.customFont(.fmd_Bold)
-        $0.text = "Tuesday Beach Club"
-        $0.textColor = .gray00
-    }
-    
-    private let timeIcon = UIImageView().then {
-        $0.image = UIImage(resource: .timeIcon)
-        $0.contentMode = .scaleAspectFit
-    }
-    
-    private lazy var runningTime = UILabel().then {
-        $0.customFont(.fmd_Medium)
-        $0.text = "\(startTime) - \(endTime)"
-        $0.textColor = .gray40
-    }
-    
-    private let duration = UILabel().then {
-        $0.customFont(.fmd_Medium)
-        $0.text = "30분" // TODO: runningTime 계산로직
-        $0.textColor = .gray40
-    }
+    // MARK: - Init
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         setStyle()
         setUI()
         setLayout()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    // MARK: - Setup & Layout
     
     private func setStyle() {
         backgroundColor = .grayBg
     }
     
     private func setUI() {
-        addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        contentView.addSubviews(
-            stageNumber, stageName,
-            contentContainerView
-        )
-        
-        contentContainerView.addSubviews(
-            artistImage, artistName,
-            timeIcon, runningTime, duration
-        )
-        
-        daySelectionStackView.addArrangedSubviews(dayOneButton, dayTwoButton)
+        addSubviews(summaryLabel, collectionView)
     }
     
     private func setLayout() {
+        summaryLabel.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.leading.equalToSuperview().inset(16)
+        }
         
+        collectionView.snp.makeConstraints {
+            $0.top.equalTo(summaryLabel.snp.bottom).offset(30)
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview()
+        }
     }
     
-    private func createDayButton(title: String, date: String, isSelected: Bool) -> UIButton {
-        let button = UIButton(type: .system)
-        let attributedString = NSMutableAttributedString(
-            string: "\(title)\n\(date)",
-            attributes: [
-                .font: UIFont.systemFont(ofSize: 14, weight: .bold),
-                .foregroundColor: isSelected ? UIColor.white : UIColor.gray
-            ]
-        )
-        button.setAttributedTitle(attributedString, for: .normal)
-        button.titleLabel?.numberOfLines = 2
-        button.titleLabel?.textAlignment = .center
-        button.backgroundColor = isSelected ? .orange : .darkGray
-        button.layer.cornerRadius = 12
-        return button
+    func configure(with stageGroups: [ArtistInfo]) {
+        self.stageGroups = stageGroups
+
+        let totalCount = stageGroups.flatMap { $0.artists }.count
+        let totalMinutes = stageGroups.flatMap { $0.artists }.reduce(0) { $0 + $1.duration }
+        summaryLabel.text = "총 \(totalCount)개, \(totalMinutes)분"
+
+        collectionView.reloadData()
+    }
+}
+
+// MARK: - Extensions (CollectionView)
+
+extension MadeTimetableView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return stageGroups.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MadeTimetableCell.identifier, for: indexPath) as? MadeTimetableCell else {
+            return UICollectionViewCell()
+        }
+        
+        let stage = stageGroups[indexPath.item]
+        cell.configure(stageNumber: stage.stage, stageName: stage.location, artists: stage.artists)
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let artistCount = stageGroups[indexPath.item].artists.count
+
+        let topPadding: CGFloat = 20
+        let stageHeaderHeight: CGFloat = 24
+        let spacingAfterHeader: CGFloat = 12
+        let artistRowHeight: CGFloat = 54
+        let spacingBetweenArtists: CGFloat = 16
+        let bottomPadding: CGFloat = 20
+        let artistsSectionHeight = (CGFloat(artistCount) * artistRowHeight) + (CGFloat(max(0, artistCount - 1)) * spacingBetweenArtists)
+        let totalHeight = topPadding + stageHeaderHeight + spacingAfterHeader + artistsSectionHeight + bottomPadding
+
+        let collectionViewWidth = collectionView.bounds.width
+        let horizontalInsets: CGFloat = 16 * 2
+        let cellWidth = collectionViewWidth - horizontalInsets
+
+        return CGSize(width: cellWidth, height: totalHeight)
     }
 }
