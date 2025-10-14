@@ -53,16 +53,18 @@ final class TimetableTabCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with festival: Festival)  {
-        posterImageView.image = UIImage(named: festival.imageName)
-        fstNameLabel.text = festival.name
+    func configure(with festival: SavedFestival) {
+        // 1. SavedFestival 모델에 맞게 프로퍼티 이름 변경
+        posterImageView.image = UIImage(named: festival.festivalImageName)
+        fstNameLabel.text = festival.festivalName
         fstDateLabel.text = "\(festival.startDate) - \(festival.endDate)"
         fstLocationLabel.text = festival.location
-        
+
+        // 2. ⭐️ 'days' 배열 대신 'selectedDay'를 사용하도록 로직 변경
         dayTagStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        
-        for i in 0..<festival.days.count {
-            let dayNumber = i + 1
+
+        // "1일차" 같은 문자열에서 숫자 "1"만 안전하게 추출합니다.
+        if let dayNumber = Int(festival.selectedDay.filter { "0"..."9" ~= $0 }) {
             let tag = Daytag()
             tag.configure(day: dayNumber)
             dayTagStackView.addArrangedSubview(tag)

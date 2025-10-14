@@ -133,25 +133,44 @@ final class PersonalTimetableViewController: UIViewController {
     }
     
     @objc private func didTapComplete() {
+        guard let festival = self.selectedFestival,
+              let dateItem = self.selectedDateItem else {
+            print("Error: 저장할 정보가 부족합니다.")
+            return
+        }
+
+        // 1. [Timetable]을 DB에 저장할 [SavedTimetable] 형태로 변환합니다.
+        let savedTimetables: [SavedTimetable] = self.timetables.map { timetable in
+            // 원본 Festival 데이터에서 정확한 아티스트 정보를 찾아옵니다.
+            let originalArtistInfo = festival.artistSchedule[dateItem.day]?
+                .first { stage in stage.artists.contains(where: { $0.name == timetable.artistName }) }
+            let originalArtist = originalArtistInfo?.artists.first { $0.name == timetable.artistName }
+
+            let artistImage = originalArtist?.image ?? "defaultArtistImage"
+            let stage = originalArtistInfo?.stage ?? "알 수 없는 스테이지"
+
+            return SavedTimetable(from: timetable, artistImage: artistImage, stage: stage)
+        }
+
+        // 2. 최종적으로 저장할 SavedFestival 객체를 만듭니다.
+        let newSavedFestival = SavedFestival(
+            festival: festival,
+            selectedDateItem: dateItem,
+            timetables: savedTimetables
+        )
+
+        // 3. ⭐️ 중앙 관리자를 통해 DB에 데이터를 '삽입(저장)'합니다.
+        SwiftDataManager.shared.context.insert(newSavedFestival)
+        print("💾 \(newSavedFestival.festivalName) 타임테이블 저장 완료!")
+
+        // 4. 기존처럼 최종 확인 화면으로 이동합니다.
         let finalTimetableVC = MadeTimetableViewController()
+        finalTimetableVC.festival = festival
+        finalTimetableVC.selectedDateItem = dateItem
+        finalTimetableVC.timetables = self.timetables
+        finalTimetableVC.timetablePreference = self.timetablePreference
 
-            // 2. 필수 데이터가 있는지 확인합니다.
-            guard let festival = self.selectedFestival,
-                  let dateItem = self.selectedDateItem else {
-                print("Error: 최종 타임테이블을 만들 정보가 부족합니다.")
-                // 문제가 생기면 온보딩 첫 화면으로 보냅니다.
-                navigationController?.popToRootViewController(animated: true)
-                return
-            }
-
-            // 3. 데이터를 넘겨줍니다. 가장 중요한 것은 AI가 만들어준 self.timetables를 그대로 넘기는 것입니다.
-            finalTimetableVC.festival = festival
-            finalTimetableVC.selectedDateItem = dateItem
-            finalTimetableVC.timetables = self.timetables
-            finalTimetableVC.timetablePreference = self.timetablePreference
-
-            // 4. 최종 화면을 띄웁니다.
-            navigationController?.pushViewController(finalTimetableVC, animated: true)
+        navigationController?.pushViewController(finalTimetableVC, animated: true)
     }
     
     @objc private func didTapEdit() {

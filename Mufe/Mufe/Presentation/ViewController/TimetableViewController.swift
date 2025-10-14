@@ -8,8 +8,11 @@
 import UIKit
 import SnapKit
 import Then
+import SwiftData
 
 final class TimetableViewController: UIViewController {
+    
+    private var savedFestivals: [SavedFestival] = []
     
     // MARK: - UI Components
     
@@ -46,7 +49,16 @@ final class TimetableViewController: UIViewController {
         $0.setContentText("페스티벌 시간표를 만들어볼까요?")
     }
     
+    private let timetableTabView = TimetableTabView()
+    
     // MARK: - Life Cycle
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        loadSavedData()
+        updateViewState()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,7 +77,7 @@ final class TimetableViewController: UIViewController {
     }
     
     private func setUI() {
-        view.addSubviews(emptyView, titleLabel, addButton)
+        view.addSubviews(emptyView, titleLabel, addButton, timetableTabView)
     }
     
     private func setLayout() {
@@ -81,6 +93,11 @@ final class TimetableViewController: UIViewController {
         
         emptyView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(201)
+            $0.horizontalEdges.bottom.equalToSuperview()
+        }
+        
+        timetableTabView.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(10)
             $0.horizontalEdges.bottom.equalToSuperview()
         }
     }
@@ -99,5 +116,31 @@ final class TimetableViewController: UIViewController {
         nav.setNavigationBarHidden(true, animated: false)
         
         self.present(nav, animated: true)
+    }
+    
+    private func updateViewState() {
+        if savedFestivals.isEmpty {
+            emptyView.isHidden = false
+            timetableTabView.isHidden = true
+        } else {
+            emptyView.isHidden = true
+            timetableTabView.isHidden = false
+            // ⭐️ TimetableTabView가 [SavedFestival] 데이터를 받도록 수정해야 합니다.
+            timetableTabView.configure(with: savedFestivals)
+        }
+    }
+    
+    private func loadSavedData() {
+        do {
+            // 데이터베이스에서 모든 SavedFestival 데이터를 가져오라는 '요청서(Descriptor)'를 만듭니다.
+            let descriptor = FetchDescriptor<SavedFestival>()
+
+            // 중앙 관리자를 통해 요청서를 실행하고, 결과를 받아와 배열에 저장합니다.
+            self.savedFestivals = try SwiftDataManager.shared.context.fetch(descriptor)
+
+            print("📚 \(savedFestivals.count)개의 저장된 페스티벌을 불러왔습니다.")
+        } catch {
+            print("🚨 페스티벌 데이터 불러오기 실패: \(error)")
+        }
     }
 }
