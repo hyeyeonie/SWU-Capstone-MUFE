@@ -147,9 +147,8 @@ final class PersonalTimetableViewController: UIViewController {
             // 3. 데이터를 넘겨줍니다. 가장 중요한 것은 AI가 만들어준 self.timetables를 그대로 넘기는 것입니다.
             finalTimetableVC.festival = festival
             finalTimetableVC.selectedDateItem = dateItem
-            finalTimetableVC.timetables = self.timetables // ⭐️ AI가 추천한 최종 결과!
+            finalTimetableVC.timetables = self.timetables
             finalTimetableVC.timetablePreference = self.timetablePreference
-            // finalTimetableVC.selectedArtistNames는 비워둬도 됩니다. 어차피 최종 결과가 있으니까요.
 
             // 4. 최종 화면을 띄웁니다.
             navigationController?.pushViewController(finalTimetableVC, animated: true)

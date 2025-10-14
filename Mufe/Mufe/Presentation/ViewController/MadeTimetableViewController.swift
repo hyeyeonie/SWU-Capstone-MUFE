@@ -303,19 +303,24 @@ class MadeTimetableViewController: UIViewController {
     // MARK: - Action Handlers
     
     @objc private func didTapBackButton() {
-        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let sceneDelegate = scene.delegate as? SceneDelegate,
-           let window = sceneDelegate.window {
-            
-            let homeTabBar = HomeTabBarController()
-            
-            UIView.transition(with: window,
-                              duration: 0.3,
-                              options: [.transitionCrossDissolve],
-                              animations: {
-                window.rootViewController = homeTabBar
-            })
+        // 현재 앱의 메인 윈도우와 SceneDelegate를 가져옵니다.
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let sceneDelegate = scene.delegate as? SceneDelegate,
+              let window = sceneDelegate.window else {
+            // 만약 못찾으면, 안전하게 앱의 첫 화면으로 돌아갑니다.
+            navigationController?.popToRootViewController(animated: true)
+            return
         }
+
+        // 1. 메인 화면인 TabBar Controller를 찾습니다.
+        if let tabBarController = window.rootViewController as? HomeTabBarController {
+            // 2. TabBar의 선택된 탭을 두 번째 탭(index: 1)으로 변경합니다.
+            tabBarController.selectedIndex = 1
+        }
+
+        // 3. 현재의 Navigation Controller 스택(Onboarding > ...)을 모두 닫고 메인 화면을 보여줍니다.
+        // Onboarding 흐름이 modally present 되었다고 가정합니다.
+        self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     @objc private func dayButtonTapped(_ sender: DaySelectionButton) {
