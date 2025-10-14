@@ -12,12 +12,12 @@ import Then
 final class PersonalTimetableViewController: UIViewController {
     
     var selectedFestival: Festival?
+    var selectedDateItem: DateItem?
+    var timetablePreference: Preference?
     
     var timetables: [Timetable] = [] {
         didSet {
             collectionView.reloadData()
-            updateCollectionViewHeight()
-            updateRunningTime()
         }
     }
     
@@ -67,6 +67,13 @@ final class PersonalTimetableViewController: UIViewController {
         $0.layer.cornerRadius = 16
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        updateCollectionViewHeight()
+        updateRunningTime()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -74,8 +81,6 @@ final class PersonalTimetableViewController: UIViewController {
         setUI()
         setLayout()
         setAction()
-        
-        updateRunningTime()
     }
     
     private func setStyle() {
@@ -128,21 +133,26 @@ final class PersonalTimetableViewController: UIViewController {
     }
     
     @objc private func didTapComplete() {
-        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let sceneDelegate = scene.delegate as? SceneDelegate,
-           let window = sceneDelegate.window {
-            
-            let tabBar = HomeTabBarController()
-            window.rootViewController = tabBar
-            window.makeKeyAndVisible()
-            
-            if let homeVC = tabBar.viewControllers?.first(where: { $0 is HomeViewController }) as? HomeViewController {
-                guard let selectedFestival = selectedFestival else { return }
-                homeVC.updateState(.beforeFestival)
-                homeVC.setFestival(selectedFestival)
-                tabBar.selectedIndex = 0
+        let finalTimetableVC = MadeTimetableViewController()
+
+            // 2. 필수 데이터가 있는지 확인합니다.
+            guard let festival = self.selectedFestival,
+                  let dateItem = self.selectedDateItem else {
+                print("Error: 최종 타임테이블을 만들 정보가 부족합니다.")
+                // 문제가 생기면 온보딩 첫 화면으로 보냅니다.
+                navigationController?.popToRootViewController(animated: true)
+                return
             }
-        }
+
+            // 3. 데이터를 넘겨줍니다. 가장 중요한 것은 AI가 만들어준 self.timetables를 그대로 넘기는 것입니다.
+            finalTimetableVC.festival = festival
+            finalTimetableVC.selectedDateItem = dateItem
+            finalTimetableVC.timetables = self.timetables // ⭐️ AI가 추천한 최종 결과!
+            finalTimetableVC.timetablePreference = self.timetablePreference
+            // finalTimetableVC.selectedArtistNames는 비워둬도 됩니다. 어차피 최종 결과가 있으니까요.
+
+            // 4. 최종 화면을 띄웁니다.
+            navigationController?.pushViewController(finalTimetableVC, animated: true)
     }
     
     @objc private func didTapEdit() {
