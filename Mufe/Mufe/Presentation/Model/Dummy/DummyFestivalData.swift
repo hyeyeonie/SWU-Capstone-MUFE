@@ -42,9 +42,9 @@ struct DummyFestivalData {
                 ]
             ],
             days: [
-                FestivalDay(dayOfWeek: "토", date: "2025.06.13"),
-                FestivalDay(dayOfWeek: "일", date: "2025.06.14"),
-                FestivalDay(dayOfWeek: "월", date: "2025.06.15")
+                FestivalDay(dayOfWeek: "토", date: "2025.09.29"),
+                FestivalDay(dayOfWeek: "일", date: "2025.09.30"),
+                FestivalDay(dayOfWeek: "월", date: "2025.10.01")
             ]
         ),
         
