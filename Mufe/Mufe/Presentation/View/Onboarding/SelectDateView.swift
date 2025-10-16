@@ -128,6 +128,8 @@ extension SelectDateView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedItem = dates[indexPath.item]
+        guard !selectedItem.isMade else { return }
+        
         delegate?.didSelectDate(selectedItem)
     }
 }

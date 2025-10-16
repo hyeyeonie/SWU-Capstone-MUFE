@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol DateSelectionDelegate: AnyObject {
+    func didSelectDate(_ dateItem: DateItem)
+}
+
 final class BeforeFestivalCell: UICollectionViewCell {
     
     static let identifier = "BeforeFestivalCell"
