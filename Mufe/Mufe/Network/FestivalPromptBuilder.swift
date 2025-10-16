@@ -51,7 +51,11 @@ struct FestivalPromptBuilder {
         
         return """
         당신은 페스티벌 타임테이블 큐레이터입니다.
-
+        
+        **규칙:**
+        - 반드시 아래 '오늘의 전체 라인업' JSON 목록에 있는 아티스트'만'을 사용해야 합니다.
+        - 목록에 없는 아티스트를 절대로 추가하거나 생성해서는 안 됩니다.
+        
         사용자 정보:
         - 선호 아티스트: \(preference.favoriteArtist)
         - 입장시간: \(preference.entryTime)
