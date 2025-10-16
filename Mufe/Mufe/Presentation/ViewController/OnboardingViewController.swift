@@ -9,6 +9,7 @@ import UIKit
 
 import SnapKit
 import Then
+import SwiftData
 
 class OnboardingViewController: UIViewController {
     
@@ -16,6 +17,7 @@ class OnboardingViewController: UIViewController {
     
     private var selectedDateItem: DateItem?
     private var selectedFestival: Festival?
+    private var savedFestivals: [SavedFestival] = []
     
     // MARK: - UI Components
     
@@ -74,11 +76,21 @@ class OnboardingViewController: UIViewController {
             titleLabel.attributedText = currentStep.attributedTitle(with: selectedFestivalName, customFont: CustomUIFont.f2xl_Bold)
             nextButton.isHidden = !(currentStep == .timeSelection || currentStep == .artistSelection)
             buttonBackgroundView.isHidden = !(currentStep == .timeSelection || currentStep == .artistSelection)
+            
             if currentStep == .artistSelection {
                 nextButton.setTitle("완료", for: .normal)
+                
+                let hasSelection = selectArtistView.hasSelectedArtists
+                nextButton.isEnabled = hasSelection
+                nextButton.backgroundColor = hasSelection ? .primary50 : .gray70
+                
             } else if currentStep == .timeSelection {
                 nextButton.setTitle("다음으로", for: .normal)
+                
+                nextButton.isEnabled = true
+                nextButton.backgroundColor = .primary50
             }
+            
             updateContentViewForCurrentStep()
         }
     }
@@ -88,6 +100,8 @@ class OnboardingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        loadSavedData()
+        
         setStyle()
         setUI()
         setLayout()
@@ -95,6 +109,15 @@ class OnboardingViewController: UIViewController {
     }
     
     // MARK: - UI Setting
+    
+    private func loadSavedData() {
+        do {
+            let descriptor = FetchDescriptor<SavedFestival>()
+            self.savedFestivals = try SwiftDataManager.shared.context.fetch(descriptor)
+        } catch {
+            print("🚨 Onboarding에서 페스티벌 데이터 불러오기 실패: \(error)")
+        }
+    }
     
     private func setStyle() {
         self.navigationController?.setNavigationBarHidden(true, animated: false)
@@ -184,6 +207,7 @@ class OnboardingViewController: UIViewController {
     private func setDelegate() {
         selectFestivalView.delegate = self
         selectDateView.delegate = self
+        selectArtistView.delegate = self
         
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         nextButton.addTarget(self, action: #selector(didTapNextButton), for: .touchUpInside)
@@ -291,7 +315,21 @@ extension OnboardingViewController: FestivalSelectionDelegate {
     func didSelectFestival(_ festival: Festival) {
         selectedFestival = festival
         selectedFestivalName = festival.name
-        selectDateView.configure(with: festival)
+        
+        // 1. 현재 선택한 페스티벌에 대해 저장된 모든 시간표를 찾습니다.
+        let savedForThisFestival = savedFestivals.filter { $0.festivalName == festival.name }
+        
+        // 2. ⭐️⭐️⭐️ 핵심 수정 ⭐️⭐️⭐️
+        // 저장된 날짜("1일차", "2일차") 문자열에서 숫자만 추출하여 [Int] 배열로 만듭니다.
+        let madeDayIndices: [Int] = savedForThisFestival.compactMap {
+            // "1일차" -> "1" -> 1
+            let dayString = $0.selectedDay.replacingOccurrences(of: "일차", with: "")
+            return Int(dayString)
+        }
+        
+        // 3. SelectDateView의 configure 함수에 정확한 타입으로 데이터를 전달합니다.
+        selectDateView.configure(with: festival, madeDays: madeDayIndices)
+        
         currentStep = .dateSelection
     }
 }
@@ -301,5 +339,13 @@ extension OnboardingViewController: SelectDateViewDelegate {
         selectedDateItem = dateItem
         selectTimeView.updateItems([dateItem])
         currentStep = .timeSelection
+    }
+}
+
+extension OnboardingViewController: SelectArtistViewDelegate {
+    func didChangeArtistSelection(hasSelection: Bool) {
+        // SelectArtistView로부터 신호를 받으면 버튼 상태를 업데이트합니다.
+        nextButton.isEnabled = hasSelection
+        nextButton.backgroundColor = hasSelection ? .primary50 : .gray70 // 상태에 따라 색상 변경
     }
 }
