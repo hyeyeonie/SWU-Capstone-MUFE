@@ -69,7 +69,7 @@ final class EmptyFestivalView: UIView {
     private func setLayout() {
         mufeImageView.snp.makeConstraints {
             $0.size.equalTo(160)
-            $0.top.equalToSuperview().inset(280)
+            $0.top.equalToSuperview().inset(278)
             $0.centerX.equalToSuperview()
         }
         
