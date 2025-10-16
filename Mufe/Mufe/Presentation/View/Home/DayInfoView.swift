@@ -104,6 +104,7 @@ final class DayInfoView: UIView {
     
     private func setDelegate() {
         addGestureRecognizer(tapGesture)
+        moreInfoButton.addTarget(self, action: #selector(didTapView), for: .touchUpInside)
     }
     
     @objc private func didTapView() {
