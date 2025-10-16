@@ -105,43 +105,43 @@ final class TimetableViewController: UIViewController {
     }
     
     // MARK: - Actions
-
     private func setAction() {
         addButton.addTarget(self, action: #selector(didTapAddButton), for: .touchUpInside)
         
-        timetableTabView.didSelectFestival = { [weak self] selectedSavedFestival in
+        timetableTabView.didSelectFestival = { [weak self] festivalName, allSavedFestivals in
             guard let self = self else { return }
             
-            // ⭐️ 3. 수정된 로직 전체
-            
-            // a. DB에서 가져온 savedFestivals 배열에서 일치하는 객체를 다시 한번 확인합니다.
-            guard let saved = self.savedFestivals.first(where: { $0.id == selectedSavedFestival.id }) else {
-                print("🚨 일치하는 저장된 페스티벌을 찾지 못했습니다.")
+            guard let originalFestival = self.originalFestivals.first(where: { $0.name == festivalName }) else {
+                print("🚨 원본 페스티벌 데이터를 찾지 못했습니다: \(festivalName)")
                 return
             }
             
-            // b. '원본' Festival 배열에서 이름이 같은 객체를 찾습니다.
-            guard let originalFestival = self.originalFestivals.first(where: { $0.name == saved.festivalName }) else {
-                print("🚨 원본 페스티벌 데이터를 찾지 못했습니다: \(saved.festivalName)")
+            guard let firstDayFestival = allSavedFestivals.first else {
+                print("🚨 저장된 페스티벌 객체가 비어있습니다.")
                 return
             }
             
             let madeVC = MadeTimetableViewController()
             
-            // c. UI 구성을 위해 '원본' Festival 객체를 전달합니다.
             madeVC.festival = originalFestival
+            madeVC.savedFestival = firstDayFestival // 초기 화면 구성을 위해 여전히 필요합니다.
             
-            // d. 시간표 내용을 채우기 위해 '저장된' SavedFestival 객체를 전달합니다.
-            madeVC.savedFestival = saved
+            madeVC.allSavedDays = allSavedFestivals
             
-            // e. '저장된' 날짜를 기준으로 초기 선택 날짜를 설정합니다.
             madeVC.selectedDateItem = DateItem(
-                day: saved.selectedDay,
-                date: saved.selectedDate,
+                day: firstDayFestival.selectedDay,
+                date: firstDayFestival.selectedDate,
                 isMade: true
             )
             
             madeVC.isFromCellSelection = true
+            madeVC.onAddNewTimetableTapped = { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    self?.didTapAddButton()
+                }
+            }
+            
             self.navigationController?.pushViewController(madeVC, animated: true)
         }
     }
@@ -157,14 +157,15 @@ final class TimetableViewController: UIViewController {
     }
     
     private func updateViewState() {
-        if savedFestivals.isEmpty {
+        let groupedFestivals = Dictionary(grouping: savedFestivals) { $0.festivalName }
+
+        if groupedFestivals.isEmpty {
             emptyView.isHidden = false
             timetableTabView.isHidden = true
         } else {
             emptyView.isHidden = true
             timetableTabView.isHidden = false
-            // ⭐️ TimetableTabView가 [SavedFestival] 데이터를 받도록 수정해야 합니다.
-            timetableTabView.configure(with: savedFestivals)
+            timetableTabView.configure(with: groupedFestivals)
         }
     }
     

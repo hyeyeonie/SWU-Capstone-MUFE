@@ -12,8 +12,10 @@ import Then
 
 final class TimetableTabView: UIView {
     
+    private var festivalGroups: [String: [SavedFestival]] = [:]
     private var festivalList: [SavedFestival] = []
-    var didSelectFestival: ((SavedFestival) -> Void)?
+    private var festivalNames: [String] = []
+    var didSelectFestival: ((String, [SavedFestival]) -> Void)?
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -59,8 +61,9 @@ final class TimetableTabView: UIView {
         collectionView.delegate = self
     }
     
-    func configure(with festivals: [SavedFestival]) {
-        self.festivalList = festivals
+    func configure(with festivalGroups: [String: [SavedFestival]]) {
+        self.festivalGroups = festivalGroups
+        self.festivalNames = festivalGroups.keys.sorted()
         collectionView.reloadData()
     }
 }
@@ -68,14 +71,20 @@ final class TimetableTabView: UIView {
 extension TimetableTabView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return festivalList.count
+        // ⭐️ 3. 셀 개수는 페스티벌 그룹의 개수
+        return festivalNames.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TimetableTabCell.identifier, for: indexPath) as? TimetableTabCell else {
             return UICollectionViewCell()
         }
-        cell.configure(with: festivalList[indexPath.item])
+        
+        // ⭐️ 4. 해당 페스티벌에 속한 모든 SavedFestival 객체들을 셀에 전달
+        let festivalName = festivalNames[indexPath.item]
+        if let festivalsForName = festivalGroups[festivalName] {
+            cell.configure(with: festivalsForName)
+        }
         return cell
     }
     
@@ -84,9 +93,12 @@ extension TimetableTabView: UICollectionViewDataSource, UICollectionViewDelegate
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("셀 클릭됨: \(indexPath.item)")
-        let selectedFestival = festivalList[indexPath.item]
-        // delegate(TimetableViewController)에게 선택된 페스티벌을 알립니다.
-        didSelectFestival?(selectedFestival)
+        let festivalName = festivalNames[indexPath.item]
+        
+        if let festivalsForName = festivalGroups[festivalName] {
+            // 💡 수정 2: .first로 첫 번째 객체만 보내는 대신, 정렬된 '배열 전체'를 전달
+            let sortedFestivals = festivalsForName.sorted(by: { $0.selectedDay < $1.selectedDay })
+            didSelectFestival?(festivalName, sortedFestivals)
+        }
     }
 }

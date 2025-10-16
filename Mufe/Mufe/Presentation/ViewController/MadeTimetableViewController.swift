@@ -21,6 +21,7 @@ class MadeTimetableViewController: UIViewController {
     var timetablePreference: Preference?
     var isFromCellSelection: Bool = false
     var savedFestival: SavedFestival?
+    var allSavedDays: [SavedFestival] = []
     
     var onAddNewTimetableTapped: (() -> Void)?
     
@@ -54,26 +55,13 @@ class MadeTimetableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let savedFestival = savedFestival { // savedFestival은 TimetableViewController에서 전달
-            self.timetables = savedFestival.timetables.map { saved in
-                Timetable(
-                    artistName: saved.artistName,
-                    imageName: saved.artistImage,
-                    location: saved.location,
-                    startTime: saved.startTime,
-                    endTime: saved.endTime,
-                    runningTime: saved.runningTime,
-                    script: ""
-                )
-            }
-        }
-        
         setStyle()
         setUI()
         setLayout()
         addTarget()
         setInit()
         
+        print("📦 MadeVC에 전달된 모든 날짜 정보: \(allSavedDays.map { $0.selectedDay })")
         print("✅ 받은 festival: \(festival?.name ?? "없음")")
         print("✅ 받은 date: \(selectedDateItem?.day ?? "없음")")
         print("✅ 받은 timetables: \(timetables.count)개")
@@ -225,13 +213,27 @@ class MadeTimetableViewController: UIViewController {
     }
     
     private func updateContentForSelectedDate() {
-        // 1. 버튼 UI 상태 업데이트
+        // 1. 버튼 UI 상태 업데이트 (어떤 모드든 공통)
         dayButtons.forEach { $0.isSelected = ($0.dayTitle.text == selectedDateItem.day) }
-        
-        // 2. timetables 배열이 비어있는지 확인하여 "모드"를 결정
-        if timetables.isEmpty {
-            // "선택 확인 모드": Onboarding에서 넘어온 경우
-            // 이 로직은 특정 날짜의 아티스트만 보여주므로 기존 로직을 유지합니다.
+
+        // 💡✨ 2. 핵심 로직: 현재 선택한 날짜(selectedDateItem.day)에 해당하는 저장된 데이터가 allSavedDays 배열에 있는지 확인합니다.
+        if let savedDataForThisDay = allSavedDays.first(where: { $0.selectedDay == selectedDateItem.day }) {
+            // ✅ 있다면, "결과 표시 모드"로 동작합니다. (예: 1일차 탭을 눌렀을 경우)
+            
+            // 해당 날짜의 타임테이블을 가져와 화면에 표시합니다.
+            let timetables = savedDataForThisDay.timetables.map { saved in
+                Timetable(artistName: saved.artistName, imageName: saved.artistImage, location: saved.location, startTime: saved.startTime, endTime: saved.endTime, runningTime: saved.runningTime, script: "")
+            }
+            
+            let finalArtistInfo = convertTimetablesToArtistInfo(timetables)
+            timetableView.isHidden = false
+            emptyView.isHidden = true
+            timetableView.configure(with: finalArtistInfo)
+            
+        } else {
+            // ❌ 없다면, "선택 확인 모드"로 동작합니다. (예: 새로 만드는 2일차 탭을 눌렀을 경우)
+            
+            // Onboarding에서 막 선택한 아티스트 목록(selectedArtistNames)을 사용해 화면을 구성합니다.
             let stageGroups = festival.artistSchedule[selectedDateItem.day] ?? []
             let filteredStageGroups = stageGroups.map { stage in
                 let filteredArtists = stage.artists.filter { selectedArtistNames.contains($0.name) }
@@ -244,29 +246,6 @@ class MadeTimetableViewController: UIViewController {
             
             if !shouldShowEmptyView {
                 timetableView.configure(with: filteredStageGroups)
-            }
-        } else {
-            // "결과 표시 모드": DB에 저장된 시간표를 보여주는 경우
-            
-            // 3. ⭐️ 이 시간표가 '실제로 등록된 날짜'를 가져옵니다.
-            guard let registeredDay = savedFestival?.selectedDay else {
-                // 만약의 경우, 등록된 날짜 정보가 없으면 그냥 빈 화면을 보여줍니다.
-                timetableView.isHidden = true
-                emptyView.isHidden = false
-                return
-            }
-            
-            // 4. ⭐️ 현재 '보고 있는 날짜'와 '등록된 날짜'를 비교합니다.
-            if selectedDateItem.day == registeredDay {
-                // 날짜가 일치하면, 시간표를 가공해서 보여줍니다.
-                let finalArtistInfo = convertTimetablesToArtistInfo(timetables)
-                timetableView.isHidden = false
-                emptyView.isHidden = true
-                timetableView.configure(with: finalArtistInfo)
-            } else {
-                // 날짜가 일치하지 않으면, 무조건 emptyView를 보여줍니다.
-                timetableView.isHidden = true
-                emptyView.isHidden = false
             }
         }
     }

@@ -261,6 +261,9 @@ class OnboardingViewController: UIViewController {
             madeVC.selectedDateItem = selectedDateItem
             madeVC.selectedArtistNames = selectedArtists
             madeVC.timetablePreference = preference
+            
+            let existingSavedDays = self.savedFestivals.filter { $0.festivalName == selectedFestival.name }
+            madeVC.allSavedDays = existingSavedDays
 
             self.navigationController?.pushViewController(madeVC, animated: true)
             
