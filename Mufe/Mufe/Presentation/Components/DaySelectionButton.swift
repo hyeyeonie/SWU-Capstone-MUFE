@@ -90,6 +90,13 @@ final class DaySelectionButton: UIControl {
     
     func configure(with item: DayItem) {
         dayTitle.text = item.title
-        dayText.text = item.date
+        
+        let formattedDate = item.date
+            .split(separator: ".") // 1. "."을 기준으로 문자열을 나눕니다. -> ["09", "29"]
+            .compactMap { Int($0) } // 2. 각 부분을 숫자로 변환합니다. -> [9, 29] (앞의 0이 사라짐)
+            .map { String($0) }    // 3. 다시 문자열로 바꿉니다. -> ["9", "29"]
+            .joined(separator: ".") // 4. "."으로 다시 합칩니다. -> "9.29"
+        
+        dayText.text = formattedDate
     }
 }

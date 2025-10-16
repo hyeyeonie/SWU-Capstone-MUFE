@@ -13,6 +13,7 @@ import SwiftData
 final class TimetableViewController: UIViewController {
     
     private var savedFestivals: [SavedFestival] = []
+    private var originalFestivals: [Festival] = []
     
     // MARK: - UI Components
     
@@ -57,11 +58,12 @@ final class TimetableViewController: UIViewController {
         super.viewWillAppear(animated)
         
         loadSavedData()
-        updateViewState()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        loadOriginalFestivalData()
         
         setStyle()
         setUI()
@@ -77,7 +79,7 @@ final class TimetableViewController: UIViewController {
     }
     
     private func setUI() {
-        view.addSubviews(emptyView, titleLabel, addButton, timetableTabView)
+        view.addSubviews(titleLabel, addButton, timetableTabView, emptyView)
     }
     
     private func setLayout() {
@@ -103,9 +105,45 @@ final class TimetableViewController: UIViewController {
     }
     
     // MARK: - Actions
-    
+
     private func setAction() {
         addButton.addTarget(self, action: #selector(didTapAddButton), for: .touchUpInside)
+        
+        timetableTabView.didSelectFestival = { [weak self] selectedSavedFestival in
+            guard let self = self else { return }
+            
+            // ⭐️ 3. 수정된 로직 전체
+            
+            // a. DB에서 가져온 savedFestivals 배열에서 일치하는 객체를 다시 한번 확인합니다.
+            guard let saved = self.savedFestivals.first(where: { $0.id == selectedSavedFestival.id }) else {
+                print("🚨 일치하는 저장된 페스티벌을 찾지 못했습니다.")
+                return
+            }
+            
+            // b. '원본' Festival 배열에서 이름이 같은 객체를 찾습니다.
+            guard let originalFestival = self.originalFestivals.first(where: { $0.name == saved.festivalName }) else {
+                print("🚨 원본 페스티벌 데이터를 찾지 못했습니다: \(saved.festivalName)")
+                return
+            }
+            
+            let madeVC = MadeTimetableViewController()
+            
+            // c. UI 구성을 위해 '원본' Festival 객체를 전달합니다.
+            madeVC.festival = originalFestival
+            
+            // d. 시간표 내용을 채우기 위해 '저장된' SavedFestival 객체를 전달합니다.
+            madeVC.savedFestival = saved
+            
+            // e. '저장된' 날짜를 기준으로 초기 선택 날짜를 설정합니다.
+            madeVC.selectedDateItem = DateItem(
+                day: saved.selectedDay,
+                date: saved.selectedDate,
+                isMade: true
+            )
+            
+            madeVC.isFromCellSelection = true
+            self.navigationController?.pushViewController(madeVC, animated: true)
+        }
     }
     
     @objc private func didTapAddButton() {
@@ -139,8 +177,13 @@ final class TimetableViewController: UIViewController {
             self.savedFestivals = try SwiftDataManager.shared.context.fetch(descriptor)
 
             print("📚 \(savedFestivals.count)개의 저장된 페스티벌을 불러왔습니다.")
+            updateViewState()
         } catch {
             print("🚨 페스티벌 데이터 불러오기 실패: \(error)")
         }
+    }
+    
+    private func loadOriginalFestivalData() {
+            self.originalFestivals = DummyFestivalData.festivals
     }
 }

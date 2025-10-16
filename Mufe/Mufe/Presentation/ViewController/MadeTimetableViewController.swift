@@ -19,6 +19,10 @@ class MadeTimetableViewController: UIViewController {
     var timetables: [Timetable] = []
     var selectedArtistNames: [String] = []
     var timetablePreference: Preference?
+    var isFromCellSelection: Bool = false
+    var savedFestival: SavedFestival?
+    
+    var onAddNewTimetableTapped: (() -> Void)?
     
     // MARK: - UI Components
     
@@ -50,6 +54,20 @@ class MadeTimetableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if let savedFestival = savedFestival { // savedFestival은 TimetableViewController에서 전달
+            self.timetables = savedFestival.timetables.map { saved in
+                Timetable(
+                    artistName: saved.artistName,
+                    imageName: saved.artistImage,
+                    location: saved.location,
+                    startTime: saved.startTime,
+                    endTime: saved.endTime,
+                    runningTime: saved.runningTime,
+                    script: ""
+                )
+            }
+        }
+        
         setStyle()
         setUI()
         setLayout()
@@ -62,33 +80,28 @@ class MadeTimetableViewController: UIViewController {
     }
     
     private func convertTimetablesToArtistInfo(_ timetables: [Timetable]) -> [ArtistInfo] {
-        // 1. "아티스트-스테이지"와 "아티스트-이미지" 정보를 담을 지도를 미리 만듭니다.
+        // 1. '현재 선택된 날짜'의 스테이지 정보만으로 지도를 만듭니다.
         var artistStageMap: [String: String] = [:]
-        var artistImageMap: [String: String] = [:] // ⭐️ 이미지 정보를 담을 지도 추가
-
+        var artistImageMap: [String: String] = [:]
+        
         if let stageGroups = festival.artistSchedule[selectedDateItem.day] {
             for stageInfo in stageGroups {
                 for artist in stageInfo.artists {
                     artistStageMap[artist.name] = stageInfo.stage
-                    artistImageMap[artist.name] = artist.image // ⭐️ 아티스트 이름과 이미지 짝 저장
+                    artistImageMap[artist.name] = artist.image
                 }
             }
         }
-
+        
         // 2. 스테이지 이름으로 그룹핑합니다.
         let groupedByStage = Dictionary(grouping: timetables) {
             return artistStageMap[$0.artistName] ?? "분류되지 않은 스테이지"
         }
-
-        // 3. 그룹핑된 데이터를 화면에 필요한 [ArtistInfo] 형태로 최종 변환합니다.
+        
+        // 3. 그룹핑된 데이터를 화면 형태로 최종 변환합니다.
         let artistInfoArray = groupedByStage.map { (stageName, timetablesForStage) -> ArtistInfo in
-
-            // ⭐️ 이 부분이 수정된 핵심입니다.
             let artists = timetablesForStage.map { timetable -> ArtistSchedule in
-                // 지도에서 아티스트 이미지를 찾아오고, 없으면 기본 이미지를 사용합니다.
-                let imageName = artistImageMap[timetable.artistName] ?? "defaultArtistImage" // "defaultArtistImage"는 placeholder 이미지 이름으로 변경하세요.
-
-                // 찾은 이미지 정보로 ArtistSchedule을 안전하게 생성합니다.
+                let imageName = artistImageMap[timetable.artistName] ?? "defaultArtistImage"
                 return ArtistSchedule(
                     name: timetable.artistName,
                     image: imageName,
@@ -96,24 +109,24 @@ class MadeTimetableViewController: UIViewController {
                     endTime: timetable.endTime
                 )
             }
-
+            
             let location = festival.artistSchedule[selectedDateItem.day]?
                 .first { $0.stage == stageName }?.location ?? "위치 정보 없음"
-
+            
             return ArtistInfo(
                 stage: stageName,
                 location: location,
                 artists: artists.sorted { $0.startTime < $1.startTime }
             )
         }
-
+        
         return artistInfoArray.sorted { $0.stage < $1.stage }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if timetables.isEmpty {
+        if !isFromCellSelection, timetables.isEmpty {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                 self?.showModal()
             }
@@ -169,6 +182,18 @@ class MadeTimetableViewController: UIViewController {
     
     private func addTarget() {
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+        
+        emptyView.onRegisterButtonTapped = { [weak self] in
+            self?.navigateToOnboarding()
+        }
+    }
+    
+    private func navigateToOnboarding() {
+        let onboardingVC = OnboardingViewController()
+        let nav = UINavigationController(rootViewController: onboardingVC)
+        nav.modalPresentationStyle = .fullScreen
+        nav.setNavigationBarHidden(true, animated: false)
+        self.present(nav, animated: true)
     }
     
     private func setInit() {
@@ -200,40 +225,50 @@ class MadeTimetableViewController: UIViewController {
     }
     
     private func updateContentForSelectedDate() {
+        // 1. 버튼 UI 상태 업데이트
         dayButtons.forEach { $0.isSelected = ($0.dayTitle.text == selectedDateItem.day) }
-
-          // ⭐️ 핵심 로직: AI가 만들어준 timetables 데이터가 있는지 먼저 확인합니다.
-          if !timetables.isEmpty {
-              // 데이터가 있다면, "최종 결과 화면" 모드입니다.
-              let finalArtistInfo = convertTimetablesToArtistInfo(timetables)
-
-              if finalArtistInfo.isEmpty {
-                  timetableView.isHidden = true
-                  emptyView.isHidden = false
-              } else {
-                  timetableView.isHidden = false
-                  emptyView.isHidden = true
-                  timetableView.configure(with: finalArtistInfo)
-              }
-
-          } else {
-              // 데이터가 없다면, "초기 선택 화면" 모드입니다. (기존 로직)
-              let stageGroups = festival.artistSchedule[selectedDateItem.day] ?? []
-              let filteredStageGroups = stageGroups.map { stage in
-                  // ... (기존 필터링 코드와 동일)
-                  let filteredArtists = stage.artists.filter { selectedArtistNames.contains($0.name) }
-                  return ArtistInfo(stage: stage.stage, location: stage.location, artists: filteredArtists)
-              }.filter { !$0.artists.isEmpty }
-
-              if filteredStageGroups.isEmpty {
-                  timetableView.isHidden = true
-                  emptyView.isHidden = false
-              } else {
-                  timetableView.isHidden = false
-                  emptyView.isHidden = true
-                  timetableView.configure(with: filteredStageGroups)
-              }
-          }
+        
+        // 2. timetables 배열이 비어있는지 확인하여 "모드"를 결정
+        if timetables.isEmpty {
+            // "선택 확인 모드": Onboarding에서 넘어온 경우
+            // 이 로직은 특정 날짜의 아티스트만 보여주므로 기존 로직을 유지합니다.
+            let stageGroups = festival.artistSchedule[selectedDateItem.day] ?? []
+            let filteredStageGroups = stageGroups.map { stage in
+                let filteredArtists = stage.artists.filter { selectedArtistNames.contains($0.name) }
+                return ArtistInfo(stage: stage.stage, location: stage.location, artists: filteredArtists)
+            }.filter { !$0.artists.isEmpty }
+            
+            let shouldShowEmptyView = filteredStageGroups.isEmpty
+            timetableView.isHidden = shouldShowEmptyView
+            emptyView.isHidden = !shouldShowEmptyView
+            
+            if !shouldShowEmptyView {
+                timetableView.configure(with: filteredStageGroups)
+            }
+        } else {
+            // "결과 표시 모드": DB에 저장된 시간표를 보여주는 경우
+            
+            // 3. ⭐️ 이 시간표가 '실제로 등록된 날짜'를 가져옵니다.
+            guard let registeredDay = savedFestival?.selectedDay else {
+                // 만약의 경우, 등록된 날짜 정보가 없으면 그냥 빈 화면을 보여줍니다.
+                timetableView.isHidden = true
+                emptyView.isHidden = false
+                return
+            }
+            
+            // 4. ⭐️ 현재 '보고 있는 날짜'와 '등록된 날짜'를 비교합니다.
+            if selectedDateItem.day == registeredDay {
+                // 날짜가 일치하면, 시간표를 가공해서 보여줍니다.
+                let finalArtistInfo = convertTimetablesToArtistInfo(timetables)
+                timetableView.isHidden = false
+                emptyView.isHidden = true
+                timetableView.configure(with: finalArtistInfo)
+            } else {
+                // 날짜가 일치하지 않으면, 무조건 emptyView를 보여줍니다.
+                timetableView.isHidden = true
+                emptyView.isHidden = false
+            }
+        }
     }
     
     private func showModal() {
@@ -241,7 +276,23 @@ class MadeTimetableViewController: UIViewController {
         
         // 모달 버튼 콜백 설정
         modalView.onDenyButtonTapped = { [weak self] in
-            self?.dismissModal(modalView)
+            guard let self = self else { return }
+            
+            self.dismissModal(modalView)
+            
+            // 1. Onboarding에서 선택한 아티스트 목록으로 [Timetable] 배열을 생성합니다.
+            let initialTimetables = self.createTimetablesFromSelectedArtists()
+            
+            // 2. 생성된 시간표를 DB에 저장하고, 저장된 객체를 받아옵니다.
+            let newSavedFestival = self.saveTimetablesToDatabase(with: initialTimetables)
+            
+            // 3. 현재 뷰컨트롤러의 상태를 '결과 표시 모드'로 업데이트합니다.
+            self.timetables = initialTimetables
+            self.savedFestival = newSavedFestival
+            self.isFromCellSelection = true // 모달이 다시 뜨지 않도록 설정
+            
+            // 4. UI를 새로고침하여 시간표를 표시합니다.
+            self.updateContentForSelectedDate()
         }
         
         modalView.onAcceptButtonTapped = { [weak self] in
@@ -292,6 +343,67 @@ class MadeTimetableViewController: UIViewController {
         }
     }
     
+    private func createTimetablesFromSelectedArtists() -> [Timetable] {
+        guard let stageGroups = festival.artistSchedule[selectedDateItem.day] else { return [] }
+        
+        var timetables: [Timetable] = []
+        
+        // 페스티벌의 모든 스테이지와 아티스트를 순회
+        for stageInfo in stageGroups {
+            for artist in stageInfo.artists {
+                // 만약 아티스트가 사용자가 선택한 목록에 포함되어 있다면
+                if selectedArtistNames.contains(artist.name) {
+                    // Timetable 객체를 만들어 배열에 추가
+                    let timetable = Timetable(
+                        artistName: artist.name,
+                        imageName: artist.image,
+                        location: stageInfo.location,
+                        startTime: artist.startTime,
+                        endTime: artist.endTime,
+                        runningTime: artist.duration, // ArtistSchedule의 duration 계산 속성 사용
+                        script: "직접 선택한 아티스트예요." // 기본 스크립트
+                    )
+                    timetables.append(timetable)
+                }
+            }
+        }
+        // 시간순으로 정렬하여 반환
+        return timetables.sorted { $0.startTime < $1.startTime }
+    }
+    
+    // Helper 2: [Timetable] 배열을 받아 DB에 저장하고 최종 결과 화면으로 이동하는 함수
+    // (PersonalTimetableViewController의 didTapComplete 로직과 거의 동일)
+    private func saveTimetablesToDatabase(with timetables: [Timetable]) -> SavedFestival? {
+        guard let festival = self.festival,
+              let dateItem = self.selectedDateItem else {
+            print("Error: 저장할 정보가 부족합니다.")
+            return nil
+        }
+
+        // 1. [Timetable]을 DB에 저장할 [SavedTimetable] 형태로 변환
+        let savedTimetables: [SavedTimetable] = timetables.map { timetable in
+            let originalArtistInfo = festival.artistSchedule[dateItem.day]?
+                .first { stage in stage.artists.contains(where: { $0.name == timetable.artistName }) }
+            let stage = originalArtistInfo?.stage ?? "알 수 없는 스테이지"
+            
+            return SavedTimetable(from: timetable, artistImage: timetable.imageName, stage: stage)
+        }
+
+        // 2. 최종적으로 저장할 SavedFestival 객체 생성
+        let newSavedFestival = SavedFestival(
+            festival: festival,
+            selectedDateItem: dateItem,
+            timetables: savedTimetables
+        )
+
+        // 3. SwiftData를 통해 DB에 저장
+        SwiftDataManager.shared.context.insert(newSavedFestival)
+        print("💾 \(newSavedFestival.festivalName) 타임테이블 저장 완료! (AI 추천 없음)")
+        
+        // 4. 저장된 객체를 반환
+        return newSavedFestival
+    }
+    
     private func dismissModal(_ modalView: ModalView) {
         UIView.animate(withDuration: 0.25, animations: {
             modalView.alpha = 0
@@ -301,27 +413,36 @@ class MadeTimetableViewController: UIViewController {
     }
     
     // MARK: - Action Handlers
-    
     @objc private func didTapBackButton() {
-        // 현재 앱의 메인 윈도우와 SceneDelegate를 가져옵니다.
-        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let sceneDelegate = scene.delegate as? SceneDelegate,
-              let window = sceneDelegate.window else {
-            // 만약 못찾으면, 안전하게 앱의 첫 화면으로 돌아갑니다.
-            navigationController?.popToRootViewController(animated: true)
+        // 1. 모달이면 먼저 dismiss
+        if let presentingVC = self.presentingViewController {
+            presentingVC.dismiss(animated: true) {
+                // dismiss 완료 후 TabBarController 선택
+                self.selectTimetableTab()
+            }
             return
         }
-
-        // 1. 메인 화면인 TabBar Controller를 찾습니다.
-        if let tabBarController = window.rootViewController as? HomeTabBarController {
-            // 2. TabBar의 선택된 탭을 두 번째 탭(index: 1)으로 변경합니다.
-            tabBarController.selectedIndex = 1
+        
+        // 2. navigation stack이면 popToRoot
+        if let nav = self.navigationController {
+            nav.popToRootViewController(animated: true)
+            // pop 완료 후 TabBarController 선택
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.selectTimetableTab()
+            }
+            return
         }
-
-        // 3. 현재의 Navigation Controller 스택(Onboarding > ...)을 모두 닫고 메인 화면을 보여줍니다.
-        // Onboarding 흐름이 modally present 되었다고 가정합니다.
-        self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
+        
+        // 3. 루트가 TabBarController면 바로 선택
+        selectTimetableTab()
     }
+    
+    private func selectTimetableTab() {
+        if let tabBar = self.view.window?.rootViewController as? HomeTabBarController {
+            tabBar.selectedIndex = 1
+        }
+    }
+    
     
     @objc private func dayButtonTapped(_ sender: DaySelectionButton) {
         guard let dayTitle = sender.dayTitle.text,
@@ -332,45 +453,6 @@ class MadeTimetableViewController: UIViewController {
         selectedDateItem = DateItem(day: dayTitle, date: dateText, isMade: false)
         updateContentForSelectedDate()
     }
-}
-
-// MARK: - Preview
-
-#Preview {
-    // --- 1. 더미 데이터 생성 ---
-    let dummyArtistSchedule1 = ArtistSchedule(name: "Tuesday Beach Club", image: "artistImg1", startTime: "11:50", endTime: "12:20")
-    let dummyArtistSchedule2 = ArtistSchedule(name: "Lazy Afternoon", image: "artistImg2", startTime: "12:30", endTime: "13:00")
-    let dummyArtistInfo1 = ArtistInfo(stage: "STAGE 1", location: "SOUND PLANET", artists: [dummyArtistSchedule1, dummyArtistSchedule2])
-    
-    let dummyArtistSchedule3 = ArtistSchedule(name: "Night Owls", image: "artistImg3", startTime: "13:10", endTime: "13:40")
-    let dummyArtistSchedule4 = ArtistSchedule(name: "Star Chasers", image: "artistImg4", startTime: "13:40", endTime: "14:20")
-    let dummyArtistInfo2 = ArtistInfo(stage: "STAGE 2", location: "SUNSHINE", artists: [dummyArtistSchedule3, dummyArtistSchedule4])
-    
-    let dummyFestival = Festival(
-        imageName: "festivalImg",
-        name: "Summer Fest",
-        startDate: "6.11",
-        endDate: "6.12",
-        location: "Seoul",
-        // "2일차"는 비어있는 상태를 테스트하기 위해 일부러 비워둠
-        artistSchedule: ["1일차": [dummyArtistInfo1, dummyArtistInfo2]],
-        days: [
-            FestivalDay(dayOfWeek: "금", date: "6.11"),
-            FestivalDay(dayOfWeek: "토", date: "6.12"),
-        ]
-    )
-    
-    // --- 2. 뷰 컨트롤러 생성 및 데이터 주입 ---
-    let vc = MadeTimetableViewController()
-    vc.festival = dummyFestival
-    
-    // "1일차"를 먼저 보여주도록 설정
-    //    vc.selectedDateItem = DateItem(day: "1일차", date: "6.11", isMade: false)
-    
-    // 만약 "2일차"(빈 화면)를 먼저 보고 싶다면 아래 코드로 교체
-    vc.selectedDateItem = DateItem(day: "2일차", date: "6.12", isMade: false)
-    
-    return vc
 }
 
 private extension MadeTimetableViewController {

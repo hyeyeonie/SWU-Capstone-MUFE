@@ -13,6 +13,7 @@ import Then
 final class TimetableTabView: UIView {
     
     private var festivalList: [SavedFestival] = []
+    var didSelectFestival: ((SavedFestival) -> Void)?
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -22,6 +23,7 @@ final class TimetableTabView: UIView {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.register(TimetableTabCell.self, forCellWithReuseIdentifier: TimetableTabCell.identifier)
+        collectionView.isUserInteractionEnabled = true
         return collectionView
     }()
     
@@ -79,5 +81,12 @@ extension TimetableTabView: UICollectionViewDataSource, UICollectionViewDelegate
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.bounds.width, height: 136)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("셀 클릭됨: \(indexPath.item)")
+        let selectedFestival = festivalList[indexPath.item]
+        // delegate(TimetableViewController)에게 선택된 페스티벌을 알립니다.
+        didSelectFestival?(selectedFestival)
     }
 }

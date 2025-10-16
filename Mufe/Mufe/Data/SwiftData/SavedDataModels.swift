@@ -20,6 +20,7 @@ final class SavedFestival {
     var endDate: String
     var location: String
     var selectedDay: String
+    var selectedDate: String
 
     // ⭐️ 이 페스티벌에 속한 타임테이블 목록 (1:N 관계)
     // 페스티벌이 삭제되면, 속한 타임테이블도 함께 삭제됩니다.
@@ -34,6 +35,7 @@ final class SavedFestival {
         self.endDate = festival.endDate
         self.location = festival.location
         self.selectedDay = selectedDateItem.day
+        self.selectedDate = selectedDateItem.date
         self.timetables = timetables
     }
 }
@@ -58,5 +60,49 @@ final class SavedTimetable {
         self.startTime = timetable.startTime
         self.endTime = timetable.endTime
         self.runningTime = timetable.runningTime
+    }
+}
+
+extension SavedFestival {
+    func toFestivalModel() -> Festival {
+        // timetables를 stage 이름으로 그룹핑합니다. -> ["Main Stage": [공연1, 공연2], "Sub Stage": [공연3]]
+        let groupedByStage = Dictionary(grouping: timetables) { $0.stage }
+        
+        // 그룹핑된 데이터를 [ArtistInfo] 형태로 변환합니다.
+        let artistInfos = groupedByStage.map { (stageName, timetablesForStage) -> ArtistInfo in
+            let artistSchedules = timetablesForStage.map {
+                ArtistSchedule(
+                    name: $0.artistName,
+                    image: $0.artistImage,
+                    startTime: $0.startTime,
+                    endTime: $0.endTime
+                )
+            }
+            
+            return ArtistInfo(
+                stage: stageName,
+                location: timetablesForStage.first?.location ?? "",
+                artists: artistSchedules.sorted { $0.startTime < $1.startTime }
+            )
+        }
+        
+        // Festival 객체가 요구하는 [String: [ArtistInfo]] 형태로 최종 변환합니다.
+        // 여기서는 저장된 날짜(selectedDay) 하나에 대한 정보만 존재합니다.
+        let artistScheduleDict: [String: [ArtistInfo]] = [
+            self.selectedDay: artistInfos.sorted { $0.stage < $1.stage }
+        ]
+        
+        // FestivalDay 객체를 생성합니다.
+        let days = [FestivalDay(dayOfWeek: "", date: self.selectedDate)]
+        
+        return Festival(
+            imageName: festivalImageName,
+            name: festivalName,
+            startDate: startDate,
+            endDate: endDate,
+            location: location,
+            artistSchedule: artistScheduleDict,
+            days: days
+        )
     }
 }

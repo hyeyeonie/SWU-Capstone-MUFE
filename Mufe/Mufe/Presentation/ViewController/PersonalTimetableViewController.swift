@@ -169,6 +169,7 @@ final class PersonalTimetableViewController: UIViewController {
         finalTimetableVC.selectedDateItem = dateItem
         finalTimetableVC.timetables = self.timetables
         finalTimetableVC.timetablePreference = self.timetablePreference
+        finalTimetableVC.savedFestival = newSavedFestival
 
         navigationController?.pushViewController(finalTimetableVC, animated: true)
     }
