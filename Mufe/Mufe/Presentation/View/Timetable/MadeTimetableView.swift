@@ -15,12 +15,19 @@ final class MadeTimetableView: UIView {
     // MARK: - Properties
     
     private var stageGroups: [ArtistInfo] = []
+    var onDeleteButtonTapped: (() -> Void)?
     
     // MARK: - UI Components
     
     private let summaryLabel = UILabel().then {
         $0.textColor = .gray40
         $0.customFont(.flg_SemiBold)
+    }
+    
+    private let optionsButton = UIButton().then {
+        $0.setImage(UIImage(systemName: "ellipsis")?.withConfiguration(UIImage.SymbolConfiguration(pointSize: 18, weight: .semibold)), for: .normal)
+        $0.tintColor = .gray50
+        $0.transform = CGAffineTransform(rotationAngle: .pi / 2)
     }
     
     private lazy var collectionView: UICollectionView = {
@@ -42,6 +49,7 @@ final class MadeTimetableView: UIView {
         setStyle()
         setUI()
         setLayout()
+        setAction()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -53,7 +61,7 @@ final class MadeTimetableView: UIView {
     }
     
     private func setUI() {
-        addSubviews(summaryLabel, collectionView)
+        addSubviews(summaryLabel, optionsButton, collectionView)
     }
     
     private func setLayout() {
@@ -62,11 +70,36 @@ final class MadeTimetableView: UIView {
             $0.leading.equalToSuperview().inset(16)
         }
         
+        optionsButton.snp.makeConstraints {
+            $0.centerY.equalTo(summaryLabel)
+            $0.trailing.equalToSuperview().inset(16)
+            $0.size.equalTo(24)
+        }
+        
         collectionView.snp.makeConstraints {
             $0.top.equalTo(summaryLabel.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview()
         }
+    }
+    
+    private func setAction() {
+        optionsButton.showsMenuAsPrimaryAction = true
+        optionsButton.menu = createOptionsMenu()
+    }
+    
+    private func createOptionsMenu() -> UIMenu {
+        let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
+            print("수정하기 탭")
+            // TODO: 수정 기능 콜백 추가
+        }
+        
+        let deleteAction = UIAction(title: "삭제하기", image: UIImage(systemName: "trash"), attributes: .destructive) { [weak self] _ in
+            // "삭제하기"가 눌리면, 외부(Controller)에서 설정해준 클로저를 실행
+            self?.onDeleteButtonTapped?()
+        }
+        
+        return UIMenu(title: "", children: [editAction, deleteAction])
     }
     
     func configure(with stageGroups: [ArtistInfo]) {

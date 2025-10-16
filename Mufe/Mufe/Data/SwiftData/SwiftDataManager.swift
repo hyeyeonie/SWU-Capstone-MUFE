@@ -8,25 +8,64 @@
 import Foundation
 import SwiftData
 
-final class SwiftDataManager {
-    // ⭐️ 앱 전체에서 이 한 가지 인스턴스만 사용합니다. (싱글톤)
+class SwiftDataManager {
     static let shared = SwiftDataManager()
-
-    // 데이터베이스 컨테이너와 실제 작업을 수행할 컨텍스트
+    
+    // SwiftData 컨테이너 및 컨텍스트
     let container: ModelContainer
-    let context: ModelContext
-
+    var context: ModelContext
+    
     private init() {
         do {
-            // 1. 우리가 1단계에서 만든 모델 설계도를 바탕으로 데이터베이스 '컨테이너'를 만듭니다.
-            let schema = Schema([SavedFestival.self, SavedTimetable.self])
-            let config = ModelConfiguration()
-            container = try ModelContainer(for: schema, configurations: config)
-
-            // 2. 이 컨테이너에서 실제 데이터 작업을 할 '작업 공간(컨텍스트)'을 가져옵니다.
-            context = ModelContext(container)
+            // 이니셜라이저에서 ModelContainer와 ModelContext를 설정합니다.
+            self.container = try ModelContainer(for: SavedFestival.self)
+            self.context = ModelContext(container)
         } catch {
-            fatalError("🚨 SwiftData 컨테이너 생성에 실패했습니다: \(error)")
+            fatalError("SwiftData Container를 설정하지 못했습니다: \(error)")
+        }
+    }
+    
+    // MARK: - Save Operations
+    
+    func save<T: PersistentModel>(_ model: T) {
+        context.insert(model)
+        do {
+            try context.save()
+            print("✅ 데이터 저장 성공: \(T.self)")
+        } catch {
+            print("🚨 데이터 저장 실패: \(error)")
+        }
+    }
+    
+    // MARK: - Fetch Operations
+    
+    func fetch<T: PersistentModel>(_ descriptor: FetchDescriptor<T>) throws -> [T] {
+        return try context.fetch(descriptor)
+    }
+    
+    // MARK: - Delete Operations
+    
+    // 👇 이 함수를 추가합니다.
+    func deleteSavedFestival(festivalName: String, day: String, completion: @escaping (Bool) -> Void) {
+        do {
+            let predicate = #Predicate<SavedFestival> { saved in
+                saved.festivalName == festivalName && saved.selectedDay == day
+            }
+            var descriptor = FetchDescriptor<SavedFestival>(predicate: predicate)
+            descriptor.fetchLimit = 1 // 정확히 하나만 삭제하므로 하나만 가져옵니다.
+            
+            if let savedFestivalToDelete = try context.fetch(descriptor).first {
+                context.delete(savedFestivalToDelete)
+                try context.save()
+                print("✅ SwiftData: \(festivalName) - \(day) 삭제 성공.")
+                completion(true)
+            } else {
+                print("⚠️ SwiftData: \(festivalName) - \(day)를 찾을 수 없어 삭제하지 못했습니다.")
+                completion(false)
+            }
+        } catch {
+            print("🚨 SwiftData: 삭제 실패 - \(error)")
+            completion(false)
         }
     }
 }

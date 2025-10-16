@@ -34,7 +34,7 @@ class MadeTimetableViewController: UIViewController {
     }
     
     private let festivalNameLabel = UILabel().then {
-        $0.textColor = .gray00
+        $0.textColor = .gray50
         $0.customFont(.flg_SemiBold)
     }
     
@@ -171,8 +171,63 @@ class MadeTimetableViewController: UIViewController {
     private func addTarget() {
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         
+        timetableView.onDeleteButtonTapped = { [weak self] in
+            self?.confirmAndDeleteCurrentTimetable()
+        }
+        
         emptyView.onRegisterButtonTapped = { [weak self] in
             self?.navigateToOnboarding()
+        }
+    }
+    
+    private func confirmAndDeleteCurrentTimetable() {
+        let alert = UIAlertController(title: "타임테이블 삭제", message: "이 날짜의 타임테이블을 정말 삭제하시겠습니까?", preferredStyle: .alert)
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+            self?.deleteCurrentDayTimetable()
+        }
+        
+        alert.addAction(cancelAction)
+        alert.addAction(deleteAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    private func deleteCurrentDayTimetable() {
+        guard let festivalName = festival?.name,
+              let dayToDelete = selectedDateItem?.day else {
+            print("🚨 삭제할 페스티벌 이름 또는 날짜 정보가 부족합니다.")
+            return
+        }
+        
+        // SwiftData를 통해 해당 날짜의 SavedFestival 객체 삭제
+        SwiftDataManager.shared.deleteSavedFestival(festivalName: festivalName, day: dayToDelete) { [weak self] success in
+            DispatchQueue.main.async {
+                if success {
+                    print("✅ \(festivalName) \(dayToDelete) 타임테이블 삭제 완료.")
+                    // allSavedDays 배열에서 해당 날짜 정보 제거
+                    self?.allSavedDays.removeAll(where: { $0.festivalName == festivalName && $0.selectedDay == dayToDelete })
+                    
+                    // 삭제 후, 남아있는 다른 날짜가 있는지 확인
+                    if let newSelectedDay = self?.allSavedDays.first {
+                        // 다른 날짜가 있다면 그 날짜로 이동
+                        self?.selectedDateItem = DateItem(day: newSelectedDay.selectedDay, date: newSelectedDay.selectedDate, isMade: true)
+                        self?.updateContentForSelectedDate()
+                    } else {
+                        // 해당 페스티벌에 더 이상 저장된 날짜가 없다면, TimetableViewController로 돌아감
+                        self?.navigationController?.popToRootViewController(animated: true)
+                        if let tabBar = self?.view.window?.rootViewController as? HomeTabBarController {
+                            tabBar.selectedIndex = 1 // Timetable 탭으로 이동
+                        }
+                    }
+                } else {
+                    print("🚨 \(festivalName) \(dayToDelete) 타임테이블 삭제 실패.")
+                    // 삭제 실패 시 사용자에게 알림
+                    let errorAlert = UIAlertController(title: "삭제 실패", message: "타임테이블 삭제에 실패했습니다. 다시 시도해주세요.", preferredStyle: .alert)
+                    errorAlert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+                    self?.present(errorAlert, animated: true, completion: nil)
+                }
+            }
         }
     }
     
@@ -215,7 +270,7 @@ class MadeTimetableViewController: UIViewController {
     private func updateContentForSelectedDate() {
         // 1. 버튼 UI 상태 업데이트 (어떤 모드든 공통)
         dayButtons.forEach { $0.isSelected = ($0.dayTitle.text == selectedDateItem.day) }
-
+        
         // 💡✨ 2. 핵심 로직: 현재 선택한 날짜(selectedDateItem.day)에 해당하는 저장된 데이터가 allSavedDays 배열에 있는지 확인합니다.
         if let savedDataForThisDay = allSavedDays.first(where: { $0.selectedDay == selectedDateItem.day }) {
             // ✅ 있다면, "결과 표시 모드"로 동작합니다. (예: 1일차 탭을 눌렀을 경우)
@@ -358,7 +413,7 @@ class MadeTimetableViewController: UIViewController {
             print("Error: 저장할 정보가 부족합니다.")
             return nil
         }
-
+        
         // 1. [Timetable]을 DB에 저장할 [SavedTimetable] 형태로 변환
         let savedTimetables: [SavedTimetable] = timetables.map { timetable in
             let originalArtistInfo = festival.artistSchedule[dateItem.day]?
@@ -367,14 +422,14 @@ class MadeTimetableViewController: UIViewController {
             
             return SavedTimetable(from: timetable, artistImage: timetable.imageName, stage: stage)
         }
-
+        
         // 2. 최종적으로 저장할 SavedFestival 객체 생성
         let newSavedFestival = SavedFestival(
             festival: festival,
             selectedDateItem: dateItem,
             timetables: savedTimetables
         )
-
+        
         // 3. SwiftData를 통해 DB에 저장
         SwiftDataManager.shared.context.insert(newSavedFestival)
         print("💾 \(newSavedFestival.festivalName) 타임테이블 저장 완료! (AI 추천 없음)")
