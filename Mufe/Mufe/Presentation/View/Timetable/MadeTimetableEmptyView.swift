@@ -12,6 +12,8 @@ import Then
 
 final class MadeTimetableEmptyView: UIView {
     
+    var onRegisterButtonTapped: (() -> Void)?
+    
     private let emptyView = emptyFestivalView().then {
         $0.setContentText("아직 시간표를 등록하지 않았어요")
         $0.setImageSize(140)
@@ -31,6 +33,7 @@ final class MadeTimetableEmptyView: UIView {
         setStyle()
         setUI()
         setLayout()
+        setAction()
     }
     
     required init?(coder: NSCoder) {
@@ -57,6 +60,14 @@ final class MadeTimetableEmptyView: UIView {
             $0.width.equalTo(123)
             $0.height.equalTo(34)
         }
+    }
+    
+    private func setAction() {
+        registerFestButton.addTarget(self, action: #selector(didTapRegisterButton), for: .touchUpInside)
+    }
+    
+    @objc private func didTapRegisterButton() {
+        onRegisterButtonTapped?()
     }
 }
 
