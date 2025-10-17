@@ -11,21 +11,30 @@ final class DdayFestivalCell: UICollectionViewCell {
     
     static let identifier = "DdayFestivalCell"
     
-    private var startTime = "11:50"
-    private var endTime = "12:20"
+    private var timer: Timer?
+    
+    private var startTime: String = "00:00"
+    private var endTime: String = "00:00"
     
     private var isCurrentStage: Bool {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        
         let now = Date()
+        let calendar = Calendar.current
         
-        guard
-            let start = formatter.date(from: startTime),
-            let end = formatter.date(from: endTime)
-        else { return false }
+        // 오늘 날짜의 00:00:00 시점을 기준으로 사용
+        let todayStart = calendar.startOfDay(for: now)
         
-        return now >= start && now <= end
+        // "HH:mm" 문자열을 DateComponents로 파싱
+        let startComponents = DateComponents(hour: Int(startTime.prefix(2)), minute: Int(startTime.suffix(2)))
+        let endComponents = DateComponents(hour: Int(endTime.prefix(2)), minute: Int(endTime.suffix(2)))
+        
+        // 오늘 날짜와 공연 시간을 합쳐서 정확한 Date 객체를 만듭니다.
+        guard let start = calendar.date(byAdding: startComponents, to: todayStart),
+              let end = calendar.date(byAdding: endComponents, to: todayStart) else {
+            return false
+        }
+        
+        // 이제 날짜와 시간이 모두 정확하므로, 비교가 올바르게 동작합니다.
+        return now >= start && now < end
     }
     
     private let stageNumber = UILabel().then {
@@ -100,11 +109,20 @@ final class DdayFestivalCell: UICollectionViewCell {
         setStyle()
         setUI()
         setLayout()
-        updateCurrent()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    deinit {
+        timer?.invalidate()
     }
     
     // MARK: - Setup Methods
@@ -181,7 +199,7 @@ final class DdayFestivalCell: UICollectionViewCell {
         }
     }
     
-    private func updateCurrent() {
+    @objc private func updateCurrent() {
         let isCurrent = isCurrentStage
         currentStageContainerView.isHidden = !isCurrent
         currentStageBar.isHidden = !isCurrent
@@ -199,17 +217,31 @@ final class DdayFestivalCell: UICollectionViewCell {
         }
     }
     
-    func configure(with artist: ArtistSchedule, stage: ArtistInfo) {
-        self.startTime = artist.startTime
-        self.endTime = artist.endTime
+    func configure(with timetable: SavedTimetable) {
+        // 1. 시간 정보 업데이트
+        self.startTime = timetable.startTime
+        self.endTime = timetable.endTime
         runningTime.text = "\(startTime) - \(endTime)"
+        duration.text = "\(timetable.runningTime)분"
         
-        artistName.text = artist.name
-        artistImage.image = UIImage(named: artist.image)
+        // 2. 아티스트 정보 업데이트
+        artistName.text = timetable.artistName
+        artistImage.image = UIImage(named: timetable.artistImage)
         
-        stageNumber.text = stage.stage
-        stageName.text = stage.location
+        // 3. 스테이지 정보 업데이트
+        stageNumber.text = timetable.stage
+        stageName.text = timetable.location
         
+        // 4. 모든 정보가 설정된 후, '진행 중' UI 상태를 업데이트
         updateCurrent()
+        
+        startTimer()
+    }
+    
+    private func startTimer() {
+        // 기존 타이머가 있다면 중지
+        timer?.invalidate()
+        // 1분(60초)마다 updateCurrent 함수를 실행하는 타이머를 설정
+        timer = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(updateCurrent), userInfo: nil, repeats: true)
     }
 }

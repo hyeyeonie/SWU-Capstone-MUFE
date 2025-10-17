@@ -14,7 +14,7 @@ final class DdayFestivalView: UIView {
     
     // MARK: - Properties
     
-    private var festivalTimes: [(artist: ArtistSchedule, stage: ArtistInfo)] = []
+    private var timetables: [SavedTimetable] = []
     
     // MARK: - UI Components
     
@@ -68,9 +68,9 @@ final class DdayFestivalView: UIView {
         festivalCollectionView.contentInset.bottom = 33
     }
     
-    func updateFestivalTimes(_ times: [(artist: ArtistSchedule, stage: ArtistInfo)]) {
+    func updateFestivalTimes(_ times: [SavedTimetable]) {
         DispatchQueue.main.async {
-            self.festivalTimes = times
+            self.timetables = times
             self.festivalCollectionView.reloadData()
         }
     }
@@ -78,7 +78,7 @@ final class DdayFestivalView: UIView {
 
 extension DdayFestivalView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return festivalTimes.count
+        return timetables.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -88,8 +88,8 @@ extension DdayFestivalView: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
 
-        let (artist, stage) = festivalTimes[indexPath.item]
-        cell.configure(with: artist, stage: stage)
+        let timetable = timetables[indexPath.item]
+        cell.configure(with: timetable)
 
         return cell
     }

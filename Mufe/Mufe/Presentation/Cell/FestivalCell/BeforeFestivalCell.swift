@@ -31,7 +31,6 @@ final class BeforeFestivalCell: UICollectionViewCell {
     
     private let dDayLabel = UILabel().then {
         $0.customFont(.fsm_SemiBold)
-        $0.text = "D-29"
         $0.textColor = .gray00
     }
     
@@ -135,21 +134,56 @@ final class BeforeFestivalCell: UICollectionViewCell {
         }
     }
     
-    func configure(with festival: Festival) {
-        posterImage.image = UIImage(named: festival.imageName)
-        festivalName.text = festival.name
-        festivalTime.text = "\(festival.startDate) - \(festival.endDate)"
-        festivalLocation.text = festival.location
-        dDayLabel.text = FestivalUtils.calculateDDay(from: festival.startDate)
-        daysStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        
-        for (index, day) in festival.days.enumerated() {
-            let dayView = DayInfoView()
-            dayView.configure(dayNumber: index + 1, dayOfWeek: day.dayOfWeek, date: day.date)
-            dayView.delegate = self
-            daysStackView.addArrangedSubview(dayView)
+    func configure(with savedDays: [SavedFestival]) {
+            guard let representativeFestival = savedDays.first else { return }
+            
+            // 공통 정보 설정
+            posterImage.image = UIImage(named: representativeFestival.festivalImageName)
+            festivalName.text = representativeFestival.festivalName
+            festivalTime.text = "\(representativeFestival.startDate) - \(representativeFestival.endDate)"
+            festivalLocation.text = representativeFestival.location
+            dDayLabel.text = FestivalUtils.calculateDDay(from: representativeFestival.startDate)
+            
+            // 날짜 목록 동적 생성
+            daysStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+            
+            for festivalDay in savedDays {
+                
+                // 1. DayInfoView가 필요한 데이터로 가공합니다.
+                let dayString = festivalDay.selectedDay.filter { "0"..."9" ~= $0 }
+                guard let dayNumber = Int(dayString) else { continue }
+                
+                let (dayOfWeek, formattedDate) = formatDateAndDay(from: festivalDay.selectedDate)
+
+                // 2. 가공된 데이터로 configure 함수를 호출합니다.
+                let dayInfoView = DayInfoView()
+                dayInfoView.configure(dayNumber: dayNumber, dayOfWeek: dayOfWeek, date: formattedDate)
+                dayInfoView.delegate = self // 델리게이트 연결
+                
+                daysStackView.addArrangedSubview(dayInfoView)
+            }
         }
-    }
+    
+    private func formatDateAndDay(from dateString: String) -> (dayOfWeek: String, formattedDate: String) {
+            let inputFormatter = DateFormatter()
+            inputFormatter.dateFormat = "yyyy.MM.dd"
+            inputFormatter.locale = Locale(identifier: "ko_KR")
+
+            guard let dateObject = inputFormatter.date(from: dateString) else {
+                return ("", dateString) // 파싱 실패 시 기본값 반환
+            }
+
+            let dayOfWeekFormatter = DateFormatter()
+            dayOfWeekFormatter.dateFormat = "E" // "토"
+            dayOfWeekFormatter.locale = Locale(identifier: "ko_KR")
+            let dayOfWeek = dayOfWeekFormatter.string(from: dateObject)
+
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateFormat = "MM.dd"
+            let formattedDate = outputFormatter.string(from: dateObject)
+            
+            return (dayOfWeek, formattedDate)
+        }
 }
 
 extension BeforeFestivalCell: DayInfoViewDelegate {
