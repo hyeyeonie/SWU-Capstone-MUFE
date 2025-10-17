@@ -12,20 +12,20 @@ import Then
 final class PersonalTimetableViewController: UIViewController {
     
     var selectedFestival: Festival?
+    var selectedDateItem: DateItem?
+    var timetablePreference: Preference?
+    var existingSavedDays: [SavedFestival] = []
     
-    // 외부에서 할당 가능, 할당 시 컬렉션뷰 및 UI 자동 갱신
     var timetables: [Timetable] = [] {
         didSet {
             collectionView.reloadData()
-            updateCollectionViewHeight()
-            updateRunningTime()
         }
     }
     
     private var collectionViewHeightConstraint: Constraint?
     
     private let recommendLabel = UILabel().then {
-        $0.text = "이 공연은 어때요?"
+        $0.text = "이 공연들은 어때요?"
         $0.customFont(.f2xl_Bold)
         $0.textColor = .gray00
     }
@@ -54,14 +54,34 @@ final class PersonalTimetableViewController: UIViewController {
         return cv
     }()
     
+    // Buttons
+    private let buttonBackgroundView = UIImageView().then {
+        $0.image = UIImage(named: "buttonBackground")
+        $0.isUserInteractionEnabled = true
+    }
+    
+    private let completeButton = UIButton().then {
+        $0.backgroundColor = .primary50
+        $0.setTitle("무대 담기", for: .normal)
+        $0.setTitleColor(.gray00, for: .normal)
+        $0.titleLabel?.customFont(.flg_SemiBold)
+        $0.layer.cornerRadius = 16
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        updateCollectionViewHeight()
+        updateRunningTime()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setStyle()
         setUI()
         setLayout()
-        
-        updateRunningTime()
+        setAction()
     }
     
     private func setStyle() {
@@ -70,7 +90,7 @@ final class PersonalTimetableViewController: UIViewController {
     }
     
     private func setUI() {
-        view.addSubviews(recommendLabel, runningTimeLabel, mufeImageView, collectionView)
+        view.addSubviews(recommendLabel, runningTimeLabel, mufeImageView, collectionView, buttonBackgroundView, completeButton)
     }
     
     private func setLayout() {
@@ -93,8 +113,75 @@ final class PersonalTimetableViewController: UIViewController {
         collectionView.snp.makeConstraints {
             $0.top.equalTo(mufeImageView.snp.bottom)
             $0.horizontalEdges.equalToSuperview()
-            $0.bottom.equalToSuperview().offset(-24)
+            $0.bottom.equalTo(buttonBackgroundView.snp.top)
         }
+        
+        // Buttons
+        buttonBackgroundView.snp.makeConstraints {
+            $0.horizontalEdges.bottom.equalToSuperview()
+            $0.height.equalTo(101)
+        }
+
+        completeButton.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview().inset(16)
+            $0.bottom.equalTo(buttonBackgroundView.snp.bottom).offset(-24)
+            $0.height.equalTo(53)
+        }
+    }
+    
+    private func setAction() {
+        completeButton.addTarget(self, action: #selector(didTapComplete), for: .touchUpInside)
+    }
+    
+    @objc private func didTapComplete() {
+        guard let festival = self.selectedFestival,
+              let dateItem = self.selectedDateItem else {
+            print("Error: 저장할 정보가 부족합니다.")
+            return
+        }
+
+        // 1. [Timetable]을 DB에 저장할 [SavedTimetable] 형태로 변환합니다.
+        let savedTimetables: [SavedTimetable] = self.timetables.map { timetable in
+            // 원본 Festival 데이터에서 정확한 아티스트 정보를 찾아옵니다.
+            let originalArtistInfo = festival.artistSchedule[dateItem.day]?
+                .first { stage in stage.artists.contains(where: { $0.name == timetable.artistName }) }
+            let originalArtist = originalArtistInfo?.artists.first { $0.name == timetable.artistName }
+
+            let artistImage = originalArtist?.image ?? "defaultArtistImage"
+            let stage = originalArtistInfo?.stage ?? "알 수 없는 스테이지"
+
+            return SavedTimetable(from: timetable, artistImage: artistImage, stage: stage)
+        }
+
+        // 2. 최종적으로 저장할 SavedFestival 객체를 만듭니다.
+        let newSavedFestival = SavedFestival(
+            festival: festival,
+            selectedDateItem: dateItem,
+            timetables: savedTimetables
+        )
+
+        // 3. ⭐️ 중앙 관리자를 통해 DB에 데이터를 '삽입(저장)'합니다.
+        SwiftDataManager.shared.context.insert(newSavedFestival)
+        print("💾 \(newSavedFestival.festivalName) 타임테이블 저장 완료!")
+
+        // 4. 기존처럼 최종 확인 화면으로 이동합니다.
+        let finalTimetableVC = MadeTimetableViewController()
+        finalTimetableVC.festival = festival
+        finalTimetableVC.selectedDateItem = dateItem
+        finalTimetableVC.timetables = self.timetables
+        finalTimetableVC.timetablePreference = self.timetablePreference
+        finalTimetableVC.savedFestival = newSavedFestival
+        finalTimetableVC.allSavedDays = self.existingSavedDays + [newSavedFestival]
+        
+        finalTimetableVC.isFromCellSelection = true // 저장 후이므로 "결과 표시 모드"
+        finalTimetableVC.isFromHome = false
+
+        navigationController?.pushViewController(finalTimetableVC, animated: true)
+    }
+    
+    @objc private func didTapEdit() {
+        // TODO: 수정하기 버튼 로직 구현
+        navigationController?.popViewController(animated: true)
     }
     
     private func updateCollectionViewHeight() {

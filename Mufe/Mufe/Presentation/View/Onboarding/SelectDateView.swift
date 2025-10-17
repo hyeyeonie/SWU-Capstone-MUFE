@@ -51,8 +51,8 @@ final class SelectDateView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with festival: Festival) {
-        self.dates = generateDateItems(from: festival)
+    func configure(with festival: Festival, madeDays: [Int] = []) {
+        self.dates = generateDateItems(from: festival, madeDays: madeDays)
         ticketCollectionView.reloadData()
         
         DispatchQueue.main.async {
@@ -75,7 +75,7 @@ final class SelectDateView: UIView {
         ticketCollectionView.delegate = self
     }
     
-    private func generateDateItems(from festival: Festival) -> [DateItem] {
+    private func generateDateItems(from festival: Festival, madeDays: [Int]) -> [DateItem] {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy.MM.dd"
         
@@ -94,7 +94,9 @@ final class SelectDateView: UIView {
         
         while current <= end {
             let dateString = outputFormatter.string(from: current)
-            result.append(DateItem(day: "\(index)일차", date: dateString))
+            let isMade = madeDays.contains(index)
+            
+            result.append(DateItem(day: "\(index)일차", date: dateString, isMade: isMade))
             
             index += 1
             guard let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: current) else { break }
@@ -120,17 +122,14 @@ extension SelectDateView: UICollectionViewDataSource, UICollectionViewDelegate {
         }
         
         let item = dates[indexPath.item]
-        let isFirstDay = indexPath.item == 0
-        cell.configure(day: item.day, date: item.date, isFirstDay: isFirstDay)
+        cell.configure(day: item.day, date: item.date, isMade: item.isMade)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.item == 0 {
-               return
-           }
-        
         let selectedItem = dates[indexPath.item]
+        guard !selectedItem.isMade else { return }
+        
         delegate?.didSelectDate(selectedItem)
     }
 }

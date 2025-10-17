@@ -9,13 +9,17 @@ import UIKit
 
 import SnapKit
 import Then
+import SwiftData
 
 class OnboardingViewController: UIViewController {
-
+    
     // MARK: - Properties
     
     private var selectedDateItem: DateItem?
     private var selectedFestival: Festival?
+    private var savedFestivals: [SavedFestival] = []
+    
+    // MARK: - UI Components
     
     private let backButton = UIButton().then {
         $0.contentMode = .scaleAspectFit
@@ -39,14 +43,17 @@ class OnboardingViewController: UIViewController {
         
         $0.backgroundColor = .grayBg
     }
-
+    
     private let contentView = UIView()
     
     private let selectFestivalView = SelectFestivalView()
     private let selectDateView = SelectDateView()
     private let selectTimeView = SelectTimeView()
     private let selectArtistView = SelectArtistView()
-    private let loadingView = LoadingView()
+    
+    private let buttonBackgroundView = UIImageView().then {
+        $0.image = UIImage(named: "buttonBackground")
+    }
     
     private let nextButton = UIButton().then {
         $0.backgroundColor = .primary50
@@ -68,6 +75,21 @@ class OnboardingViewController: UIViewController {
             progressBar.progress = currentStep.progress
             titleLabel.attributedText = currentStep.attributedTitle(with: selectedFestivalName, customFont: CustomUIFont.f2xl_Bold)
             nextButton.isHidden = !(currentStep == .timeSelection || currentStep == .artistSelection)
+            buttonBackgroundView.isHidden = !(currentStep == .timeSelection || currentStep == .artistSelection)
+            
+            if currentStep == .artistSelection {
+                nextButton.setTitle("완료", for: .normal)
+                
+                let hasSelection = selectArtistView.hasSelectedArtists
+                nextButton.isEnabled = hasSelection
+                nextButton.backgroundColor = hasSelection ? .primary50 : .gray70
+                
+            } else if currentStep == .timeSelection {
+                nextButton.setTitle("다음으로", for: .normal)
+                
+                nextButton.isEnabled = true
+                nextButton.backgroundColor = .primary50
+            }
             
             updateContentViewForCurrentStep()
         }
@@ -78,20 +100,29 @@ class OnboardingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        loadSavedData()
+        
         setStyle()
         setUI()
         setLayout()
         setDelegate()
     }
-
+    
     // MARK: - UI Setting
+    
+    private func loadSavedData() {
+        do {
+            let descriptor = FetchDescriptor<SavedFestival>()
+            self.savedFestivals = try SwiftDataManager.shared.context.fetch(descriptor)
+        } catch {
+            print("🚨 Onboarding에서 페스티벌 데이터 불러오기 실패: \(error)")
+        }
+    }
     
     private func setStyle() {
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor = .grayBg
         currentStep = .festivalSelection
-        loadingView.isHidden = true
-        loadingView.alpha = 0
     }
     
     private func setUI() {
@@ -100,8 +131,8 @@ class OnboardingViewController: UIViewController {
             progressBar,
             titleLabel,
             scrollView,
-            nextButton,
-            loadingView
+            buttonBackgroundView,
+            nextButton
         )
         scrollView.addSubview(contentView)
     }
@@ -135,14 +166,15 @@ class OnboardingViewController: UIViewController {
             $0.width.equalTo(scrollView.frameLayoutGuide)
         }
         
-        nextButton.snp.makeConstraints {
-            $0.horizontalEdges.equalToSuperview().inset(16)
-            $0.bottom.equalToSuperview().offset(-24)
-            $0.height.equalTo(53)
+        buttonBackgroundView.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview()
+            $0.bottom.equalToSuperview()
         }
         
-        loadingView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+        nextButton.snp.makeConstraints {
+            $0.horizontalEdges.equalToSuperview().inset(16)
+            $0.bottom.equalTo(buttonBackgroundView.snp.bottom).offset(-24)
+            $0.height.equalTo(53)
         }
     }
     
@@ -170,110 +202,109 @@ class OnboardingViewController: UIViewController {
         }
         
         scrollView.setContentOffset(.zero, animated: false)
-        
-        print("Added \(viewToShow) to contentView")
     }
     
     private func setDelegate() {
         selectFestivalView.delegate = self
         selectDateView.delegate = self
-
+        selectArtistView.delegate = self
+        
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         nextButton.addTarget(self, action: #selector(didTapNextButton), for: .touchUpInside)
     }
     
     @objc private func didTapBackButton() {
-        guard let previousStep = currentStep.previous() else {
-            print("첫 단계라 뒤로 갈 수 없음")
+        if let previousStep = currentStep.previous() {
+            currentStep = previousStep
             return
         }
-        currentStep = previousStep
+        
+        // 루트 화면으로 갈지, 그냥 pop할지 구분
+        if let nav = navigationController, nav.viewControllers.first != self {
+            // navigation stack 안에서 push된 경우
+            nav.popViewController(animated: true)
+        } else if presentingViewController != nil {
+            // 모달로 present된 경우
+            dismiss(animated: true)
+        } else {
+            // 정말 루트일 때만 앱 루트로 이동
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let sceneDelegate = scene.delegate as? SceneDelegate,
+               let window = sceneDelegate.window {
+                
+                let homeTabBar = HomeTabBarController()
+                
+                UIView.transition(with: window,
+                                  duration: 0.3,
+                                  options: [.transitionCrossDissolve],
+                                  animations: {
+                    window.rootViewController = homeTabBar
+                })
+            }
+        }
     }
     
     @objc private func didTapNextButton() {
-        guard let nextStep = currentStep.next() else {
+        if currentStep == .artistSelection {
             
-            showLoadingView()
-            
-            // currentStep이 마지막 단계인 경우 -> GPT API 호출 후 결과 화면으로 이동
-            Task {
-                do {
-                    guard let preference = makePreference(),
-                          let selectedFestival = selectedFestival else {
-                        print("사용자 설정 또는 페스티벌 정보 누락")
-                        hideLoadingView()
-                        return
-                    }
-                    
-                    print("🎯 사용자 선택 정보: \(preference)")
-                    
-                    // 1. GPT API 호출해서 Timetable 받아오기
-                    let timetables = try await GetInfoService.shared.fetchFestivalTimetable(preference: preference, festival: selectedFestival)
-                    
-                    // 2. 결과 화면 VC 생성 및 데이터 전달
-                    let personalVC = PersonalTimetableViewController()
-                    personalVC.selectedFestival = selectedFestival
-                    personalVC.timetables = timetables
-                    
-                    let nav = UINavigationController(rootViewController: personalVC)
-                    nav.overrideUserInterfaceStyle = .dark
-                    
-                    // 3. 메인 윈도우의 rootViewController 변경 (애니메이션 포함)
-                    if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                       let sceneDelegate = scene.delegate as? SceneDelegate,
-                       let window = sceneDelegate.window {
-                        UIView.transition(with: window, duration: 0.3, options: [.transitionCrossDissolve], animations: {
-                            window.rootViewController = nav
-                        })
-                    }
-                    
-                } catch {
-                    print("타임테이블 불러오기 실패: \(error)")
-                    // 필요하면 에러 알림 UI 추가
-                }
-                
-                hideLoadingView()
+            guard let preference = makePreference(),
+                  let selectedFestival = self.selectedFestival,
+                  let selectedDateItem = self.selectedDateItem else {
+                return
             }
             
-            return
-        }
-        
-        // 다음 스텝이 artistSelection일 때 UI 업데이트
-        if nextStep == .artistSelection,
-           let selectedDate = selectedDateItem,
-           let selectedFestival = selectedFestival {
+            let selectedArtists = self.selectArtistView.getSelectedArtistNames()
+            let existingSavedDays = self.savedFestivals.filter { $0.festivalName == selectedFestival.name }
             
-            let artistsForDay = selectedFestival.artistSchedule[selectedDate.day] ?? []
+            let madeVC = MadeTimetableViewController()
             
-            selectArtistView.configure(day: selectedDate.day, date: selectedDate.date)
-            selectArtistView.updateArtists(artistsForDay)
-        }
-        
-        currentStep = nextStep
-    }
+            madeVC.festival = selectedFestival
+            madeVC.selectedDateItem = selectedDateItem
+            madeVC.selectedArtistNames = selectedArtists
+            madeVC.timetablePreference = preference
+            madeVC.isFromHome = false
+            
+            madeVC.allSavedDays = existingSavedDays
 
+            self.navigationController?.pushViewController(madeVC, animated: true)
+            
+        }else if let nextStep = currentStep.next() {
+            if nextStep == .artistSelection,
+               let selectedDate = selectedDateItem,
+               let selectedFestival = selectedFestival {
+                
+                let artistsForDay = selectedFestival.artistSchedule[selectedDate.day] ?? []
+                
+                selectArtistView.configure(day: selectedDate.day, date: selectedDate.date)
+                selectArtistView.updateArtists(artistsForDay)
+            }
+            
+            currentStep = nextStep
+        }
+    }
+    
     
     private func makePreference() -> Preference? {
-        // 선택한 페스티벌과 일자 확인
+        // 선택한 페스티벌과 일자
         guard let festival = selectedFestival,
               let dateItem = selectedDateItem else {
             return nil
         }
         
-        // artistSchedule의 key 배열에서 선택된 날짜의 인덱스를 찾음
-        let sortedDates = festival.artistSchedule.keys.sorted() // 정렬 보장 필요 시
+        // 선택된 날짜의 인덱스
+        let sortedDates = festival.artistSchedule.keys.sorted()
         guard sortedDates.firstIndex(of: dateItem.day) != nil else {
             return nil
         }
         
-        // 선택한 시간        
+        // 선택한 시간
         guard let (entryTime, exitTime) = selectTimeView.selectedTime(for: dateItem.day) else {
             return nil
         }
         
         // 선택한 아티스트
         let favoriteArtists = selectArtistView.getSelectedArtistNames()
-
+        
         return Preference(
             selectedFestival: festival.name,
             selectedDay: dateItem.day,
@@ -288,7 +319,21 @@ extension OnboardingViewController: FestivalSelectionDelegate {
     func didSelectFestival(_ festival: Festival) {
         selectedFestival = festival
         selectedFestivalName = festival.name
-        selectDateView.configure(with: festival)
+        
+        // 1. 현재 선택한 페스티벌에 대해 저장된 모든 시간표를 찾습니다.
+        let savedForThisFestival = savedFestivals.filter { $0.festivalName == festival.name }
+        
+        // 2. ⭐️⭐️⭐️ 핵심 수정 ⭐️⭐️⭐️
+        // 저장된 날짜("1일차", "2일차") 문자열에서 숫자만 추출하여 [Int] 배열로 만듭니다.
+        let madeDayIndices: [Int] = savedForThisFestival.compactMap {
+            // "1일차" -> "1" -> 1
+            let dayString = $0.selectedDay.replacingOccurrences(of: "일차", with: "")
+            return Int(dayString)
+        }
+        
+        // 3. SelectDateView의 configure 함수에 정확한 타입으로 데이터를 전달합니다.
+        selectDateView.configure(with: festival, madeDays: madeDayIndices)
+        
         currentStep = .dateSelection
     }
 }
@@ -301,23 +346,10 @@ extension OnboardingViewController: SelectDateViewDelegate {
     }
 }
 
-private extension OnboardingViewController {
-    
-    func showLoadingView() {
-        loadingView.alpha = 0
-        loadingView.isHidden = false
-        view.bringSubviewToFront(loadingView)
-        
-        UIView.animate(withDuration: 0.25) {
-            self.loadingView.alpha = 1
-        }
-    }
-    
-    func hideLoadingView() {
-        UIView.animate(withDuration: 0.25, animations: {
-            self.loadingView.alpha = 0
-        }, completion: { _ in
-            self.loadingView.isHidden = true
-        })
+extension OnboardingViewController: SelectArtistViewDelegate {
+    func didChangeArtistSelection(hasSelection: Bool) {
+        // SelectArtistView로부터 신호를 받으면 버튼 상태를 업데이트합니다.
+        nextButton.isEnabled = hasSelection
+        nextButton.backgroundColor = hasSelection ? .primary50 : .gray70 // 상태에 따라 색상 변경
     }
 }

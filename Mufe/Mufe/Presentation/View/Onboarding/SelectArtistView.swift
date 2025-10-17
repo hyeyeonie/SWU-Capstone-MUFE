@@ -10,7 +10,17 @@ import UIKit
 import SnapKit
 import Then
 
+protocol SelectArtistViewDelegate: AnyObject {
+    func didChangeArtistSelection(hasSelection: Bool)
+}
+
 final class SelectArtistView: UIView {
+    
+    weak var delegate: SelectArtistViewDelegate?
+    
+    var hasSelectedArtists: Bool {
+        return !selectedArtists.isEmpty
+    }
     
     private var artists: [ArtistInfo] = []
     private var collectionViewHeightConstraint: Constraint?
@@ -140,12 +150,6 @@ extension SelectArtistView: UICollectionViewDataSource {
     }
 }
 
-extension SelectArtistView: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("선택된 아티스트: \(artists[indexPath.item])")
-    }
-}
-
 extension SelectArtistView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let artistInfo = artists[indexPath.item]
@@ -175,5 +179,7 @@ extension SelectArtistView: ArtistCellDelegate {
         } else {
             selectedArtists.remove(name)
         }
+        
+        delegate?.didChangeArtistSelection(hasSelection: !selectedArtists.isEmpty)
     }
 }

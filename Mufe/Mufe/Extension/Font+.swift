@@ -17,66 +17,150 @@ enum PretendardStyle: String {
 struct CustomUIFont {
     let font: UIFont
     let lineSpacing: CGFloat
-    
-    // 3xl (32pt)
-    static let f3xl_Regular = CustomUIFont(font: UIFont(name: PretendardStyle.regular.rawValue, size: 32) ?? UIFont.systemFont(ofSize: 32), lineSpacing: 32 * 0.375)
-    static let f3xl_Medium = CustomUIFont(font: UIFont(name: PretendardStyle.medium.rawValue, size: 32) ?? UIFont.systemFont(ofSize: 32), lineSpacing: 32 * 0.375)
-    static let f3xl_SemiBold = CustomUIFont(font: UIFont(name: PretendardStyle.semiBold.rawValue, size: 32) ?? UIFont.systemFont(ofSize: 32), lineSpacing: 32 * 0.375)
-    static let f3xl_Bold = CustomUIFont(font: UIFont(name: PretendardStyle.bold.rawValue, size: 32) ?? UIFont.boldSystemFont(ofSize: 32), lineSpacing: 32 * 0.375)
 
-    // 2xl (24pt)
-    static let f2xl_Regular = CustomUIFont(font: UIFont(name: PretendardStyle.regular.rawValue, size: 24) ?? UIFont.systemFont(ofSize: 24), lineSpacing: 24 * 0.375)
-    static let f2xl_Medium = CustomUIFont(font: UIFont(name: PretendardStyle.medium.rawValue, size: 24) ?? UIFont.systemFont(ofSize: 24), lineSpacing: 24 * 0.375)
-    static let f2xl_SemiBold = CustomUIFont(font: UIFont(name: PretendardStyle.semiBold.rawValue, size: 24) ?? UIFont.systemFont(ofSize: 24), lineSpacing: 24 * 0.375)
-    static let f2xl_Bold = CustomUIFont(font: UIFont(name: PretendardStyle.bold.rawValue, size: 24) ?? UIFont.boldSystemFont(ofSize: 24), lineSpacing: 24 * 0.375)
-    
-    // xl
-    static let fxl_Regular = CustomUIFont(
-        font: UIFont(name: "Pretendard-Regular", size: 20) ?? UIFont.systemFont(ofSize: 20, weight: .regular),
-        lineSpacing: 20 * 0.375
-    )
-    static let fxl_Medium = CustomUIFont(
-        font: UIFont(name: "Pretendard-Medium", size: 20) ?? UIFont.systemFont(ofSize: 20, weight: .medium),
-        lineSpacing: 20 * 0.375
-    )
-    static let fxl_SemiBold = CustomUIFont(
-        font: UIFont(name: "Pretendard-SemiBold", size: 20) ?? UIFont.systemFont(ofSize: 20, weight: .semibold),
-        lineSpacing: 20 * 0.375
-    )
-    static let fxl_Bold = CustomUIFont(
-        font: UIFont(name: "Pretendard-Bold", size: 20) ?? UIFont.systemFont(ofSize: 20, weight: .bold),
-        lineSpacing: 20 * 0.375
-    )
+    // MARK: - 3xl (32pt) - 150%
+    static let f3xl_Regular: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.regular.rawValue, size: 32) ?? UIFont.systemFont(ofSize: 32)
+        return CustomUIFont(font: font, lineSpacing: 10)
+    }()
+    static let f3xl_Medium: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.medium.rawValue, size: 32) ?? UIFont.systemFont(ofSize: 32)
+        return CustomUIFont(font: font, lineSpacing: 10)
+    }()
+    static let f3xl_SemiBold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.semiBold.rawValue, size: 32) ?? UIFont.systemFont(ofSize: 32)
+        return CustomUIFont(font: font, lineSpacing: 10)
+    }()
+    static let f3xl_Bold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.bold.rawValue, size: 32) ?? UIFont.boldSystemFont(ofSize: 32)
+        return CustomUIFont(font: font, lineSpacing: 10)
+    }()
 
-    // lg (18pt)
-    static let flg_Regular = CustomUIFont(font: UIFont(name: PretendardStyle.regular.rawValue, size: 18) ?? UIFont.systemFont(ofSize: 18), lineSpacing: 18 * 0.375)
-    static let flg_Medium = CustomUIFont(font: UIFont(name: PretendardStyle.medium.rawValue, size: 18) ?? UIFont.systemFont(ofSize: 18), lineSpacing: 18 * 0.375)
-    static let flg_SemiBold = CustomUIFont(font: UIFont(name: PretendardStyle.semiBold.rawValue, size: 18) ?? UIFont.systemFont(ofSize: 18), lineSpacing: 18 * 0.375)
-    static let flg_Bold = CustomUIFont(font: UIFont(name: PretendardStyle.bold.rawValue, size: 18) ?? UIFont.boldSystemFont(ofSize: 18), lineSpacing: 18 * 0.375)
+    // MARK: - 2xl (24pt) - 150%
+    static let f2xl_Regular: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.regular.rawValue, size: 24) ?? UIFont.systemFont(ofSize: 24)
+        return CustomUIFont(font: font, lineSpacing: 8)
+    }()
+    static let f2xl_Medium: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.medium.rawValue, size: 24) ?? UIFont.systemFont(ofSize: 24)
+        return CustomUIFont(font: font, lineSpacing: 8)
+    }()
+    static let f2xl_SemiBold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.semiBold.rawValue, size: 24) ?? UIFont.systemFont(ofSize: 24)
+        return CustomUIFont(font: font, lineSpacing: 8)
+    }()
+    static let f2xl_Bold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.bold.rawValue, size: 24) ?? UIFont.boldSystemFont(ofSize: 24)
+        return CustomUIFont(font: font, lineSpacing: 8)
+    }()
 
-    // md (16pt)
-    static let fmd_Regular = CustomUIFont(font: UIFont(name: PretendardStyle.regular.rawValue, size: 16) ?? UIFont.systemFont(ofSize: 16), lineSpacing: 16 * 0.375)
-    static let fmd_Medium = CustomUIFont(font: UIFont(name: PretendardStyle.medium.rawValue, size: 16) ?? UIFont.systemFont(ofSize: 16), lineSpacing: 16 * 0.375)
-    static let fmd_SemiBold = CustomUIFont(font: UIFont(name: PretendardStyle.semiBold.rawValue, size: 16) ?? UIFont.systemFont(ofSize: 16), lineSpacing: 16 * 0.375)
-    static let fmd_Bold = CustomUIFont(font: UIFont(name: PretendardStyle.bold.rawValue, size: 16) ?? UIFont.boldSystemFont(ofSize: 16), lineSpacing: 16 * 0.375)
+    // MARK: - xl (20pt) - 150%
+    static let fxl_Regular: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.regular.rawValue, size: 20) ?? UIFont.systemFont(ofSize: 20)
+        return CustomUIFont(font: font, lineSpacing: 8)
+    }()
+    static let fxl_Medium: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.medium.rawValue, size: 20) ?? UIFont.systemFont(ofSize: 20)
+        return CustomUIFont(font: font, lineSpacing: 8)
+    }()
+    static let fxl_SemiBold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.semiBold.rawValue, size: 20) ?? UIFont.systemFont(ofSize: 20)
+        return CustomUIFont(font: font, lineSpacing: 8)
+    }()
+    static let fxl_Bold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.bold.rawValue, size: 20) ?? UIFont.boldSystemFont(ofSize: 20)
+        return CustomUIFont(font: font, lineSpacing: 8)
+    }()
 
-    // sm (14pt)
-    static let fsm_Regular = CustomUIFont(font: UIFont(name: PretendardStyle.regular.rawValue, size: 14) ?? UIFont.systemFont(ofSize: 14), lineSpacing: 14 * 0.375)
-    static let fsm_Medium = CustomUIFont(font: UIFont(name: PretendardStyle.medium.rawValue, size: 14) ?? UIFont.systemFont(ofSize: 14), lineSpacing: 14 * 0.375)
-    static let fsm_SemiBold = CustomUIFont(font: UIFont(name: PretendardStyle.semiBold.rawValue, size: 14) ?? UIFont.systemFont(ofSize: 14), lineSpacing: 14 * 0.375)
-    static let fsm_Bold = CustomUIFont(font: UIFont(name: PretendardStyle.bold.rawValue, size: 14) ?? UIFont.boldSystemFont(ofSize: 14), lineSpacing: 14 * 0.375)
+    // MARK: - lg (18pt) - 150%
+    static let flg_Regular: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.regular.rawValue, size: 18) ?? UIFont.systemFont(ofSize: 18)
+        return CustomUIFont(font: font, lineSpacing: 7)
+    }()
+    static let flg_Medium: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.medium.rawValue, size: 18) ?? UIFont.systemFont(ofSize: 18)
+        return CustomUIFont(font: font, lineSpacing: 7)
+    }()
+    static let flg_SemiBold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.semiBold.rawValue, size: 18) ?? UIFont.systemFont(ofSize: 18)
+        return CustomUIFont(font: font, lineSpacing: 7)
+    }()
+    static let flg_Bold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.bold.rawValue, size: 18) ?? UIFont.boldSystemFont(ofSize: 18)
+        return CustomUIFont(font: font, lineSpacing: 7)
+    }()
 
-    // xs (12pt)
-    static let fxs_Regular = CustomUIFont(font: UIFont(name: PretendardStyle.regular.rawValue, size: 12) ?? UIFont.systemFont(ofSize: 12), lineSpacing: 12 * 0.375)
-    static let fxs_Medium = CustomUIFont(font: UIFont(name: PretendardStyle.medium.rawValue, size: 12) ?? UIFont.systemFont(ofSize: 12), lineSpacing: 12 * 0.375)
-    static let fxs_SemiBold = CustomUIFont(font: UIFont(name: PretendardStyle.semiBold.rawValue, size: 12) ?? UIFont.systemFont(ofSize: 12), lineSpacing: 12 * 0.375)
-    static let fxs_Bold = CustomUIFont(font: UIFont(name: PretendardStyle.bold.rawValue, size: 12) ?? UIFont.boldSystemFont(ofSize: 12), lineSpacing: 12 * 0.375)
+    // MARK: - md (16pt) - 160%
+    static let fmd_Regular: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.regular.rawValue, size: 16) ?? UIFont.systemFont(ofSize: 16)
+        return CustomUIFont(font: font, lineSpacing: 6.4)
+    }()
+    static let fmd_Medium: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.medium.rawValue, size: 16) ?? UIFont.systemFont(ofSize: 16)
+        return CustomUIFont(font: font, lineSpacing: 6.4)
+    }()
+    static let fmd_SemiBold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.semiBold.rawValue, size: 16) ?? UIFont.systemFont(ofSize: 16)
+        return CustomUIFont(font: font, lineSpacing: 6.4)
+    }()
+    static let fmd_Bold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.bold.rawValue, size: 16) ?? UIFont.boldSystemFont(ofSize: 16)
+        return CustomUIFont(font: font, lineSpacing: 6.4)
+    }()
 
-    // 2xs (10pt)
-    static let f2xs_Regular = CustomUIFont(font: UIFont(name: PretendardStyle.regular.rawValue, size: 10) ?? UIFont.systemFont(ofSize: 10), lineSpacing: 10 * 0.375)
-    static let f2xs_Medium = CustomUIFont(font: UIFont(name: PretendardStyle.medium.rawValue, size: 10) ?? UIFont.systemFont(ofSize: 10), lineSpacing: 10 * 0.375)
-    static let f2xs_SemiBold = CustomUIFont(font: UIFont(name: PretendardStyle.semiBold.rawValue, size: 10) ?? UIFont.systemFont(ofSize: 10), lineSpacing: 10 * 0.375)
-    static let f2xs_Bold = CustomUIFont(font: UIFont(name: PretendardStyle.bold.rawValue, size: 10) ?? UIFont.boldSystemFont(ofSize: 10), lineSpacing: 10 * 0.375)
+    // MARK: - sm (14pt) - 150%
+    static let fsm_Regular: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.regular.rawValue, size: 14) ?? UIFont.systemFont(ofSize: 14)
+        return CustomUIFont(font: font, lineSpacing: 4)
+    }()
+    static let fsm_Medium: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.medium.rawValue, size: 14) ?? UIFont.systemFont(ofSize: 14)
+        return CustomUIFont(font: font, lineSpacing: 4)
+    }()
+    static let fsm_SemiBold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.semiBold.rawValue, size: 14) ?? UIFont.systemFont(ofSize: 14)
+        return CustomUIFont(font: font, lineSpacing: 4)
+    }()
+    static let fsm_Bold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.bold.rawValue, size: 14) ?? UIFont.boldSystemFont(ofSize: 14)
+        return CustomUIFont(font: font, lineSpacing: 4)
+    }()
+
+    // MARK: - xs (12pt) - 120%
+    static let fxs_Regular: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.regular.rawValue, size: 12) ?? UIFont.systemFont(ofSize: 12)
+        return CustomUIFont(font: font, lineSpacing: 1.4)
+    }()
+    static let fxs_Medium: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.medium.rawValue, size: 12) ?? UIFont.systemFont(ofSize: 12)
+        return CustomUIFont(font: font, lineSpacing: 1.4)
+    }()
+    static let fxs_SemiBold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.semiBold.rawValue, size: 12) ?? UIFont.systemFont(ofSize: 12)
+        return CustomUIFont(font: font, lineSpacing: 1.4)
+    }()
+    static let fxs_Bold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.bold.rawValue, size: 12) ?? UIFont.boldSystemFont(ofSize: 12)
+        return CustomUIFont(font: font, lineSpacing: 1.4)
+    }()
+
+    // MARK: - 2xs (10pt) - 150%
+    static let f2xs_Regular: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.regular.rawValue, size: 10) ?? UIFont.systemFont(ofSize: 10)
+        return CustomUIFont(font: font, lineSpacing: 3)
+    }()
+    static let f2xs_Medium: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.medium.rawValue, size: 10) ?? UIFont.systemFont(ofSize: 10)
+        return CustomUIFont(font: font, lineSpacing: 3)
+    }()
+    static let f2xs_SemiBold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.semiBold.rawValue, size: 10) ?? UIFont.systemFont(ofSize: 10)
+        return CustomUIFont(font: font, lineSpacing: 3)
+    }()
+    static let f2xs_Bold: CustomUIFont = {
+        let font = UIFont(name: PretendardStyle.bold.rawValue, size: 10) ?? UIFont.boldSystemFont(ofSize: 10)
+        return CustomUIFont(font: font, lineSpacing: 3)
+    }()
 }
 
 // UILabel, UITextView 등에서 lineSpacing 적용용 헬퍼 (NSAttributedString)

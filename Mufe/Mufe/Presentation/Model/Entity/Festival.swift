@@ -15,6 +15,12 @@ struct Festival {
     let endDate: String
     let location: String
     let artistSchedule: [String: [ArtistInfo]]
+    let days: [FestivalDay]
+}
+
+struct FestivalDay {
+    let dayOfWeek: String
+    let date: String
 }
 
 struct ArtistInfo {
@@ -34,6 +40,33 @@ struct ArtistSchedule {
         guard let start = formatter.date(from: startTime),
               let end = formatter.date(from: endTime) else { return 0 }
         return Int(end.timeIntervalSince(start) / 60)
+    }
+}
+
+enum PerformanceStatus {
+    case upcoming   // 아직 시작 전
+    case ongoing    // 공연 중
+    case finished   // 이미 종료됨
+}
+
+extension ArtistSchedule {
+    func currentStatus() -> PerformanceStatus {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        
+        guard let start = formatter.date(from: startTime),
+              let end = formatter.date(from: endTime) else {
+            return .finished
+        }
+        
+        let now = Date()
+        if now < start {
+            return .upcoming
+        } else if now >= start && now <= end {
+            return .ongoing
+        } else {
+            return .finished
+        }
     }
 }
 
