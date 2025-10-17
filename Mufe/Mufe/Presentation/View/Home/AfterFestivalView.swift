@@ -12,37 +12,14 @@ import Then
 
 final class AfterFestivalView: UIView {
     
-    // MARK: - Properties
-    
-    var festivalName: String = "사운드 플래닛 페스티벌 2025"
-    
     // MARK: - UI Components
     
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     
-    private lazy var titleLabel = UILabel().then {
-        let fullText = "\(self.festivalName) 의\n후기를 작성해 보세요!"
-        let attributedString = NSMutableAttributedString(string: fullText)
-        
-        let baseFont = CustomUIFont.fxl_Medium.font
-        let boldFont = CustomUIFont.fxl_Bold.font
-        
-        let lineSpacing = CustomUIFont.fxl_Medium.lineSpacing
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = lineSpacing
-        
-        attributedString.addAttribute(.font, value: baseFont, range: NSRange(location: 0, length: fullText.count))
-        attributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: fullText.count))
-        
-        if let range = fullText.range(of: self.festivalName) {
-            let nsRange = NSRange(range, in: fullText)
-            attributedString.addAttribute(.font, value: boldFont, range: nsRange)
-        }
-        
+    private let titleLabel = UILabel().then {
         $0.numberOfLines = 2
         $0.textColor = .gray20
-        $0.attributedText = attributedString
     }
     
     private let componentView = UIView().then {
@@ -112,8 +89,9 @@ final class AfterFestivalView: UIView {
     // Buttons
     private let buttonBackgroundView = UIImageView().then {
         $0.image = UIImage(named: "buttonBackground")
+        $0.isUserInteractionEnabled = true
     }
-
+    
     private let leftButton = UIButton().then {
         $0.setTitle("다음에 하기", for: .normal)
         $0.setTitleColor(.gray60, for: .normal)
@@ -121,7 +99,7 @@ final class AfterFestivalView: UIView {
         $0.backgroundColor = .gray90
         $0.layer.cornerRadius = 16
     }
-
+    
     private let rightButton = UIButton().then {
         $0.setTitle("추억 남기기", for: .normal)
         $0.setTitleColor(.gray00, for: .normal)
@@ -129,13 +107,13 @@ final class AfterFestivalView: UIView {
         $0.backgroundColor = .primary50
         $0.layer.cornerRadius = 16
     }
-
+    
     private lazy var buttonStackView = UIStackView(arrangedSubviews: [leftButton, rightButton]).then {
         $0.axis = .horizontal
         $0.spacing = 12
         $0.distribution = .fillEqually
     }
-
+    
     
     // MARK: - Life Cycle
     
@@ -146,27 +124,10 @@ final class AfterFestivalView: UIView {
         setUI()
         setLayout()
         setDelegate()
-        setDummyData()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func setDummyData() {
-        let artists: [(String, UIImage)] = [
-            ("Tuesday Beach Club", UIImage(resource: .artistImg)),
-            ("Another Artist", UIImage(resource: .artistImg)),
-            ("Summer Vibes", UIImage(resource: .artistImg)),
-            ("Festival Star", UIImage(resource: .artistImg)),
-            ("Big Band", UIImage(resource: .artistImg)),
-            ("Summer Vibes", UIImage(resource: .artistImg))
-        ]
-        
-        artists.forEach { name, image in
-            let artistView = createArtistContainer(image: image, name: name)
-            artistStackView.addArrangedSubview(artistView)
-        }
     }
     
     private func setStyle() {
@@ -182,7 +143,7 @@ final class AfterFestivalView: UIView {
         
         dDayContainerView.addSubview(dDayLabel)
         componentView.addSubviews(posterImage, dDayContainerView,
-                                 festivalInfoStackView, ticketLine,
+                                  festivalInfoStackView, ticketLine,
                                   artistStackView)
         buttonBackgroundView.addSubview(buttonStackView)
     }
@@ -248,7 +209,7 @@ final class AfterFestivalView: UIView {
             $0.horizontalEdges.bottom.equalToSuperview()
             $0.height.equalTo(101)
         }
-
+        
         buttonStackView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(16)
             $0.leading.trailing.equalToSuperview().inset(16)
@@ -261,12 +222,50 @@ final class AfterFestivalView: UIView {
         rightButton.addTarget(self, action: #selector(rightButtonTapped), for: .touchUpInside)
     }
     
-    @objc private func leftButtonTapped() {
-        print("다음에 하기 버튼 클릭됨")
+    func setFestival(_ festival: SavedFestival) {
+        // 1. Title Label 업데이트
+        let fullText = "\(festival.festivalName) 의\n후기를 작성해 보세요!"
+        let attributedString = NSMutableAttributedString(string: fullText)
+        
+        let baseFont = CustomUIFont.fxl_Medium.font
+        let boldFont = CustomUIFont.fxl_Bold.font
+        
+        let lineSpacing = CustomUIFont.fxl_Medium.lineSpacing
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = lineSpacing
+        
+        attributedString.addAttribute(.font, value: baseFont, range: NSRange(location: 0, length: fullText.count))
+        attributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: fullText.count))
+        
+        if let range = fullText.range(of: festival.festivalName) {
+            let nsRange = NSRange(range, in: fullText)
+            attributedString.addAttribute(.font, value: boldFont, range: nsRange)
+        }
+        titleLabel.attributedText = attributedString
+        
+        // 2. Component View 내부 정보 업데이트
+        posterImage.image = UIImage(named: festival.festivalImageName)
+        dDayLabel.text = "종료"
+        festivalNameLabel.text = festival.festivalName
+        festivalTime.text = "\(festival.startDate) - \(festival.endDate)"
+        festivalLocation.text = festival.location
+        
+        // 3. 아티스트 목록 업데이트 (timetables에서 가져오기)
+        artistStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        let artists = festival.timetables.prefix(5) // 최대 5명만 보여주기
+        
+        artists.forEach { timetable in
+            let artistView = createArtistContainer(image: UIImage(named: timetable.artistImage) ?? UIImage(), name: timetable.artistName)
+            artistStackView.addArrangedSubview(artistView)
+        }
     }
-
+    
+    @objc private func leftButtonTapped() {
+        print("다음에 하기")
+    }
+    
     @objc private func rightButtonTapped() {
-        print("추억 남기기 버튼 클릭됨")
+        print("추억 남기기")
     }
     
     private func createArtistContainer(image: UIImage, name: String) -> UIStackView {
