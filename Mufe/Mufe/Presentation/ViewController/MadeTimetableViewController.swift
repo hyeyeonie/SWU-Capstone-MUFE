@@ -19,9 +19,10 @@ class MadeTimetableViewController: UIViewController {
     var timetables: [Timetable] = []
     var selectedArtistNames: [String] = []
     var timetablePreference: Preference?
-    var isFromCellSelection: Bool = false
     var savedFestival: SavedFestival?
     var allSavedDays: [SavedFestival] = []
+    var isFromCellSelection: Bool = false
+    var isFromHome: Bool = false
     
     var onAddNewTimetableTapped: (() -> Void)?
     
@@ -34,7 +35,7 @@ class MadeTimetableViewController: UIViewController {
     }
     
     private let festivalNameLabel = UILabel().then {
-        $0.textColor = .gray50
+        $0.textColor = .gray00
         $0.customFont(.flg_SemiBold)
     }
     
@@ -359,6 +360,9 @@ class MadeTimetableViewController: UIViewController {
                         personalVC.selectedDateItem = self?.selectedDateItem
                         personalVC.timetablePreference = self?.timetablePreference
                         
+                        let existingSavedDays = self?.allSavedDays.filter { $0.festivalName == selectedFestival.name }
+                        personalVC.existingSavedDays = existingSavedDays ?? []
+                        
                         self?.navigationController?.pushViewController(personalVC, animated: true)
                     }
                     
@@ -448,6 +452,12 @@ class MadeTimetableViewController: UIViewController {
     
     // MARK: - Action Handlers
     @objc private func didTapBackButton() {
+        if isFromHome {
+            // Home에서 왔다면, 단순히 pop하여 Home으로 돌아갑니다.
+            self.navigationController?.popViewController(animated: true)
+            return // 여기서 함수 종료
+        }
+        
         // 1. 모달이면 먼저 dismiss
         if let presentingVC = self.presentingViewController {
             presentingVC.dismiss(animated: true) {
@@ -473,10 +483,9 @@ class MadeTimetableViewController: UIViewController {
     
     private func selectTimetableTab() {
         if let tabBar = self.view.window?.rootViewController as? HomeTabBarController {
-            tabBar.selectedIndex = 1
+            tabBar.selectedIndex = 0
         }
     }
-    
     
     @objc private func dayButtonTapped(_ sender: DaySelectionButton) {
         guard let dayTitle = sender.dayTitle.text,

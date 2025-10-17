@@ -14,6 +14,7 @@ final class PersonalTimetableViewController: UIViewController {
     var selectedFestival: Festival?
     var selectedDateItem: DateItem?
     var timetablePreference: Preference?
+    var existingSavedDays: [SavedFestival] = []
     
     var timetables: [Timetable] = [] {
         didSet {
@@ -170,6 +171,10 @@ final class PersonalTimetableViewController: UIViewController {
         finalTimetableVC.timetables = self.timetables
         finalTimetableVC.timetablePreference = self.timetablePreference
         finalTimetableVC.savedFestival = newSavedFestival
+        finalTimetableVC.allSavedDays = self.existingSavedDays + [newSavedFestival]
+        
+        finalTimetableVC.isFromCellSelection = true // 저장 후이므로 "결과 표시 모드"
+        finalTimetableVC.isFromHome = false
 
         navigationController?.pushViewController(finalTimetableVC, animated: true)
     }

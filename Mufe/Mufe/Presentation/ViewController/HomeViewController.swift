@@ -105,6 +105,7 @@ final class HomeViewController: UIViewController {
         afterFestivalView.isHidden = currentState != .afterFestival
         
         titleLabel.isHidden = (currentState == .emptyFestival || currentState == .afterFestival)
+        tabBarController?.tabBar.isHidden = (currentState == .afterFestival)
         
         guard let festival = selectedFestival else { return }
         

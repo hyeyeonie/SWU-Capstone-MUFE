@@ -10,7 +10,14 @@ import UIKit
 import SnapKit
 import Then
 
+protocol AfterFestivalViewDelegate: AnyObject {
+    func didTapLaterButton()
+    func didTapCreateMemoryButton()
+}
+
 final class AfterFestivalView: UIView {
+    
+    weak var delegate: AfterFestivalViewDelegate?
     
     // MARK: - UI Components
     
