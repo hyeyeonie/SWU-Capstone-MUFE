@@ -30,6 +30,7 @@ final class HomeViewController: UIViewController {
     
     private var savedFestivals: [SavedFestival] = []
     private var selectedFestival: SavedFestival?
+    private let dismissedAfterFestivalKey = "dismissedAfterFestivalName"
     
     // MARK: - UI Components
     
@@ -96,6 +97,7 @@ final class HomeViewController: UIViewController {
     private func setDelegate() {
         emptyFestivalView.delegate = self
         beforeFestivalView.delegate = self
+        afterFestivalView.delegate = self
     }
     
     private func updateView() {
@@ -247,6 +249,13 @@ final class HomeViewController: UIViewController {
         
         // 4. 모든 페스티벌이 끝난 경우 (가장 최근에 끝난 페스티벌을 기준)
         if let lastFestival = savedFestivals.last {
+            let dismissedName = UserDefaults.standard.string(forKey: dismissedAfterFestivalKey)
+            if lastFestival.festivalName == dismissedName {
+                print("✅ 홈: \(String(describing: dismissedName)) 페스티벌의 'After' 뷰는 이미 닫았습니다.")
+                self.selectedFestival = nil
+                self.currentState = .emptyFestival
+                return
+            }
             self.selectedFestival = lastFestival
             self.currentState = .afterFestival
         }
@@ -337,6 +346,27 @@ extension HomeViewController: DateSelectionDelegate {
         
         madeVC.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(madeVC, animated: true)
+    }
+}
+
+extension HomeViewController: AfterFestivalViewDelegate {
+    func didTapLaterButton() {
+        print("AfterFestivalView: 다음에 하기 탭됨")
+        if let festivalName = self.selectedFestival?.festivalName {
+            UserDefaults.standard.set(festivalName, forKey: dismissedAfterFestivalKey)
+        }
+        self.currentState = .emptyFestival
+    }
+    
+    func didTapCreateMemoryButton() {
+        print("AfterFestivalView: 추억 남기기 탭됨")
+        if let festivalName = self.selectedFestival?.festivalName {
+            UserDefaults.standard.set(festivalName, forKey: dismissedAfterFestivalKey)
+        }
+        self.tabBarController?.selectedIndex = 2
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.currentState = .emptyFestival
+        }
     }
 }
 

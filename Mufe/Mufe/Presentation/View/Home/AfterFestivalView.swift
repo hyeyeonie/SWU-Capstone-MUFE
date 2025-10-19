@@ -269,10 +269,12 @@ final class AfterFestivalView: UIView {
     
     @objc private func leftButtonTapped() {
         print("다음에 하기")
+        delegate?.didTapLaterButton()
     }
     
     @objc private func rightButtonTapped() {
         print("추억 남기기")
+        delegate?.didTapCreateMemoryButton()
     }
     
     private func createArtistContainer(image: UIImage, name: String) -> UIStackView {
