@@ -27,11 +27,10 @@ final class TimetableViewController: UIViewController {
     private let addButton = UIButton(type: .system).then {
         var config = UIButton.Configuration.filled()
         
-        let attrs: [NSAttributedString.Key: Any] = [
-            .font: CustomUIFont.fsm_SemiBold.font,
-            .foregroundColor: UIColor.gray00
-        ]
-        config.attributedTitle = AttributedString("추가하기", attributes: AttributeContainer(attrs))
+        var titleAttr = AttributedString("추가하기")
+        titleAttr.font = CustomUIFont.fsm_SemiBold.font
+        titleAttr.foregroundColor = .gray00
+        config.attributedTitle = titleAttr
         
         let plusImage = UIImage(systemName: "plus")?
             .withConfiguration(UIImage.SymbolConfiguration(pointSize: 14, weight: .regular))
