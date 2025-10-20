@@ -83,11 +83,7 @@ final class HistoryViewController: UIViewController {
             
             print("HistoryVC에서 \(festivalName) 셀이 선택되었습니다.")
             
-            // 여기에 '추억 상세보기' 뷰 컨트롤러로 이동하는 코드를 작성합니다.
-            // (예시: HistoryDetailViewController)
-            
-            // 1. 이동할 뷰 컨트롤러 생성 (이 뷰 컨트롤러는 새로 만들어야 합니다)
-            // let detailVC = HistoryDetailViewController()
+            let detailVC = HistoryDetailViewController()
             
             // 2. 원본 페스티벌 데이터 찾기
             guard let originalFestival = self.originalFestivals.first(where: { $0.name == festivalName }) else {
@@ -96,11 +92,12 @@ final class HistoryViewController: UIViewController {
             }
             
             // 3. 뷰 컨트롤러에 데이터 전달
-            // detailVC.festival = originalFestival
-            // detailVC.allSavedDays = allSavedFestivals // 저장된 날짜별 데이터 전달
+             detailVC.festival = originalFestival
+             detailVC.allSavedDays = allSavedFestivals
             
             // 4. 화면 푸시
-            // self.navigationController?.pushViewController(detailVC, animated: true)
+            detailVC.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(detailVC, animated: true) // 👈 주석 해제
         }
     }
     
