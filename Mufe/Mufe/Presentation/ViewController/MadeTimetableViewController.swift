@@ -130,7 +130,6 @@ class MadeTimetableViewController: UIViewController {
     }
     
     private func setUI() {
-        view.backgroundColor = .grayBg
         view.addSubviews(backButton, festivalNameLabel,
                          daySelectionStackView,
                          timetableView, emptyView,
