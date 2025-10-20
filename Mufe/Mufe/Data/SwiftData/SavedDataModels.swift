@@ -24,7 +24,7 @@ final class SavedFestival {
 
     // ⭐️ 이 페스티벌에 속한 타임테이블 목록 (1:N 관계)
     // 페스티벌이 삭제되면, 속한 타임테이블도 함께 삭제됩니다.
-    @Relationship(deleteRule: .cascade)
+    @Relationship(deleteRule: .cascade, inverse: \SavedTimetable.savedFestival) // ⭐️ inverse 추가
     var timetables: [SavedTimetable] = []
 
     init(festival: Festival, selectedDateItem: DateItem, timetables: [SavedTimetable]) {
@@ -50,7 +50,12 @@ final class SavedTimetable {
     var startTime: String
     var endTime: String
     var runningTime: Int
-
+    
+    @Relationship(deleteRule: .cascade)
+    var memory: ArtistMemory?
+    
+    var savedFestival: SavedFestival?
+    
     // ⭐️ AI가 준 Timetable과 원본 Festival 데이터를 조합해서 생성합니다.
     init(from timetable: Timetable, artistImage: String, stage: String) {
         self.artistName = timetable.artistName
@@ -60,5 +65,27 @@ final class SavedTimetable {
         self.startTime = timetable.startTime
         self.endTime = timetable.endTime
         self.runningTime = timetable.runningTime
+    }
+}
+
+// 아티스트별 추억 정보
+@Model
+final class ArtistMemory {
+    // ⭐️ 고유 ID: 어떤 페스티벌, 어떤 날짜, 어떤 아티스트의 추억인지 식별
+    @Attribute(.unique) var id: String
+
+    var reviewText: String = "" // 감상평 텍스트
+    var photoIdentifiers: [String] = [] // 사진 파일 이름 또는 UUID 배열 (최대 5개)
+
+    // ⭐️ 어떤 공연(SavedTimetable)에 대한 추억인지 연결 (1:1 관계)
+    //    (inverse: 는 SavedTimetable 모델에 추가할 관계 이름)
+    @Relationship(inverse: \SavedTimetable.memory)
+    var savedTimetable: SavedTimetable?
+
+    init(savedTimetable: SavedTimetable, reviewText: String = "", photoIdentifiers: [String] = []) {
+        self.id = "\(savedTimetable.savedFestival?.id ?? "unknown")_\(savedTimetable.artistName)"
+        self.reviewText = reviewText
+        self.photoIdentifiers = Array(photoIdentifiers.prefix(5))
+        self.savedTimetable = savedTimetable
     }
 }
