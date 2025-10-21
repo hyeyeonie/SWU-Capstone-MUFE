@@ -40,7 +40,7 @@ final class ModalView: UIView {
 
     // 아이콘 이미지 (아무 이름으로 설정, 나중에 교체)
     private let iconImageView = UIImageView().then {
-        $0.image = UIImage(resource: .mufe)
+        $0.image = UIImage(resource: .recomendModal)
         $0.contentMode = .scaleAspectFit
     }
 

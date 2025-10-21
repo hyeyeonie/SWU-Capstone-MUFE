@@ -47,6 +47,8 @@ final class TimetableViewController: UIViewController {
     
     private let emptyView = emptyFestivalView().then {
         $0.setContentText("페스티벌 시간표를 만들어볼까요?")
+        $0.setMufeImage(.timetableEmpty)
+        $0.setImageSize(width: 140, height: 140)
     }
     
     private let timetableTabView = TimetableTabView()

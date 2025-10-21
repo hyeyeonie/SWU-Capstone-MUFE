@@ -28,6 +28,8 @@ final class HistoryViewController: UIViewController {
     
     private let emptyView = emptyFestivalView().then {
         $0.setContentText("아직 간 페스티벌이 없어요\n공연을 보고 추억을 남겨보세요!")
+        $0.setMufeImage(.historyEmpty)
+        $0.setImageSize(width: 160, height: 140)
     }
     
     private let timetableTabView = TimetableTabView()
