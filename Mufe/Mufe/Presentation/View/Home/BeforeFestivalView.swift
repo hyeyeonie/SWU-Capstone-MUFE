@@ -29,7 +29,7 @@ final class BeforeFestivalView: UIView {
     private lazy var festivalCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.itemSize = CGSize(width: 343, height: 295)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
@@ -82,8 +82,12 @@ extension BeforeFestivalView: UICollectionViewDelegateFlowLayout {
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         
+        let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout
+        let sectionInsets = flowLayout?.sectionInset ?? .zero
+        let cellWidth = collectionView.frame.width - sectionInsets.left - sectionInsets.right
+        
         guard !savedDays.isEmpty else {
-            return CGSize(width: 343, height: 295)
+            return CGSize(width: cellWidth, height: 295)
         }
         
         let topInset: CGFloat = 20
@@ -100,7 +104,7 @@ extension BeforeFestivalView: UICollectionViewDelegateFlowLayout {
         let totalHeight = topInset + posterHeight + posterBottomOffset +
                           ticketLineHeight + daysStackSpacing + totalDayInfoHeight + 20
         
-        return CGSize(width: 343, height: totalHeight)
+        return CGSize(width: cellWidth, height: totalHeight)
     }
 }
 
