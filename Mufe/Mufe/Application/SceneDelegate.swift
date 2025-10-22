@@ -16,9 +16,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-#if DEBUG
-        deleteAllData()
-#endif
+//#if DEBUG
+//        deleteAllData()
+//#endif
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
@@ -31,17 +31,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = window
     }
     
-#if DEBUG
-    func deleteAllData() {
-        let context = SwiftDataManager.shared.context
-        do {
-            try context.delete(model: SavedFestival.self)
-            print("🗑️ 모든 저장된 데이터 삭제 완료.")
-        } catch {
-            print("🚨 데이터 삭제 실패: \(error)")
-        }
-    }
-#endif
+//#if DEBUG
+//    func deleteAllData() {
+//        let context = SwiftDataManager.shared.context
+//        do {
+//            try context.delete(model: SavedFestival.self)
+//            print("🗑️ 모든 저장된 데이터 삭제 완료.")
+//        } catch {
+//            print("🚨 데이터 삭제 실패: \(error)")
+//        }
+//    }
+//#endif
     
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
