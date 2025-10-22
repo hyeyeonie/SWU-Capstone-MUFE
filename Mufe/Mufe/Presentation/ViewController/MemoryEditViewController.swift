@@ -112,7 +112,6 @@ class MemoryEditViewController: UIViewController {
             // UIImage를 JPEG 데이터로 변환 (압축 품질 조절 가능 0.0 ~ 1.0)
             if let imageData = image.jpegData(compressionQuality: 0.8) {
                 do {
-                    // 파일 쓰기
                     try imageData.write(to: fileURL)
                     identifiers.append(fileName)
                     print("🖼️ 이미지 저장 성공: \(fileName)")

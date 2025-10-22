@@ -86,7 +86,7 @@ final class HistoryMadeView: UIView {
     private let photoContainerView = UIView().then {
         $0.backgroundColor = .gray90
         $0.layer.cornerRadius = 16
-        $0.clipsToBounds = false
+        $0.clipsToBounds = true
     }
     
     private let photoTitleLabel = UILabel().then {
