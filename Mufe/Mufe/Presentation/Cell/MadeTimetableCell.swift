@@ -81,7 +81,7 @@ final class MadeTimetableCell: UICollectionViewCell {
             $0.contentMode = .scaleAspectFill
             $0.clipsToBounds = true
             $0.layer.cornerRadius = 27
-            $0.image = UIImage(named: artist.image)
+            $0.image = UIImage(named: artist.image) ?? UIImage(resource: .artistDefault)
         }
         
         let artistNameLabel = UILabel().then {

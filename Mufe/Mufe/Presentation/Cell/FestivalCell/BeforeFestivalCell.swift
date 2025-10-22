@@ -137,7 +137,7 @@ final class BeforeFestivalCell: UICollectionViewCell {
     func configure(with savedDays: [SavedFestival]) {
             guard let representativeFestival = savedDays.first else { return }
             
-            posterImage.image = UIImage(named: representativeFestival.festivalImageName)
+            posterImage.image = UIImage(named: representativeFestival.festivalImageName) ?? UIImage(named: "festival_default")
             festivalName.text = representativeFestival.festivalName
             festivalTime.text = "\(representativeFestival.startDate) - \(representativeFestival.endDate)"
             festivalLocation.text = representativeFestival.location

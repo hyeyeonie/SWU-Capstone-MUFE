@@ -99,7 +99,9 @@ final class ArtistCell: UICollectionViewCell {
                 }
                 
                 let button = UIButton().then {
-                    $0.setImage(UIImage(named: artist.image), for: .normal)
+                    let artistImage = UIImage(named: artist.image)
+                    
+                    $0.setImage(artistImage ?? UIImage(named: "artist_default"), for: .normal)
                     $0.imageView?.contentMode = .scaleAspectFill
                     $0.clipsToBounds = true
                     $0.layer.cornerRadius = 40

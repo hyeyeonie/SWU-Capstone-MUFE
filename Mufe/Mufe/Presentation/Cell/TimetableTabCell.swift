@@ -56,7 +56,7 @@ final class TimetableTabCell: UICollectionViewCell {
     func configure(with festivals: [SavedFestival]) {
         guard let firstFestival = festivals.first else { return }
         
-        posterImageView.image = UIImage(named: firstFestival.festivalImageName)
+        posterImageView.image = UIImage(named: firstFestival.festivalImageName) ?? UIImage(resource: .festivalDefault)
         fstNameLabel.text = firstFestival.festivalName
         fstDateLabel.text = "\(firstFestival.startDate) - \(firstFestival.endDate)"
         fstLocationLabel.text = firstFestival.location

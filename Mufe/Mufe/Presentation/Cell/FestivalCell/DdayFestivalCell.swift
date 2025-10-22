@@ -218,7 +218,7 @@ final class DdayFestivalCell: UICollectionViewCell {
         duration.text = "\(timetable.runningTime)분"
         
         artistName.text = timetable.artistName
-        artistImage.image = UIImage(named: timetable.artistImage)
+        artistImage.image = UIImage(named: timetable.artistImage) ?? UIImage(named: "artist_default")
         
         stageNumber.text = timetable.stage
         stageName.text = timetable.location

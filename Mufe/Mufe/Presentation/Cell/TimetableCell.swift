@@ -128,7 +128,7 @@ final class TimetableCell: UICollectionViewCell {
         locationLabel.text = data.location
         timeLabel.text = "\(data.startTime) - \(data.endTime), \(data.runningTime)분"
         genreLabel.text = data.script
-        artistImageView.image = UIImage(named: data.imageName) ?? UIImage(named: "artistImg")
+        artistImageView.image = UIImage(named: data.imageName) ?? UIImage(resource: .artistDefault)
     }
     
     func hasFinalConsonant(_ word: String) -> Bool {

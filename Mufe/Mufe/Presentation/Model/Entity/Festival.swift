@@ -18,7 +18,7 @@ struct Festival {
     let days: [FestivalDay]
     
     init(
-        imageName: String = "festival_default",
+        imageName: String,
         name: String,
         startDate: String,
         endDate: String,
@@ -55,7 +55,7 @@ struct ArtistSchedule {
     
     init(
         name: String,
-        image: String = "artist_default",
+        image: String,
         startTime: String,
         endTime: String
     ) {

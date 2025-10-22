@@ -46,9 +46,10 @@ final class FestivalCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     func configure(with festival: Festival) {
-        posterImageView.image = UIImage(named: festival.imageName)
+        let image = UIImage(named: festival.imageName)
+        posterImageView.image = image ?? UIImage(named: "festival_default")
         fstNameLabel.text = festival.name
         fstDateLabel.text = "\(festival.startDate) - \(festival.endDate)"
         fstLocationLabel.text = festival.location
