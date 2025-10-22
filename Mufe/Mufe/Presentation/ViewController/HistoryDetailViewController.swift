@@ -80,6 +80,7 @@ class HistoryDetailViewController: UIViewController {
     private func setSytle() {
         view.backgroundColor = .grayBg
         self.navigationController?.setNavigationBarHidden(true, animated: false)
+        self.navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
     
     private func setUI() {
@@ -436,6 +437,12 @@ extension HistoryDetailViewController: MemoryEditDelegate {
              updateForSelectedDay(dayKey: dayKey)
         }
         // 또는 다른 방식으로 UI 업데이트 (예: 해당 셀만 업데이트)
+    }
+}
+
+extension HistoryDetailViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return (self.navigationController?.viewControllers.count ?? 0) > 1
     }
 }
 
