@@ -22,11 +22,10 @@ class MemoryEditViewController: UIViewController {
     
     weak var delegate: MemoryEditDelegate?
     
-    // HistoryDetailViewController로부터 전달받을 데이터
     var artist: ArtistSchedule?
-    var dayKey: String? // "1일차" 등 (저장 시 필요)
+    var dayKey: String?
     var savedFestivalId: String?
-    var existingMemory: ArtistMemory? // 수정 모드일 경우 기존 데이터
+    var existingMemory: ArtistMemory?
     private var currentPhotos: [UIImage] = []
     private var modelContext: ModelContext? {
         return SwiftDataManager.shared.context
@@ -35,52 +34,41 @@ class MemoryEditViewController: UIViewController {
     
     // MARK: - UI Components
     
-    // 사용할 메인 뷰
     private let historyMadeView = HistoryMadeView()
     
     // MARK: - Life Cycle
     
     override func loadView() {
-        // 뷰 컨트롤러의 기본 view를 historyMadeView로 설정
         self.view = historyMadeView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupView()
         setDelegate()
         configureInitialData()
         setupKeyboardDismiss()
     }
     
-    // MARK: - Setup
-    
-    private func setupView() {
-        // HistoryMadeView에 필요한 초기 설정 (ViewController 레벨에서)
-        // 예: 배경색 등 (HistoryMadeView 자체에서 이미 설정되어 있다면 불필요)
-    }
+    // MARK: - Setup Methods
     
     private func setDelegate() {
-        historyMadeView.delegate = self // HistoryMadeView의 delegate를 self로 설정
+        historyMadeView.delegate = self
     }
     
-    /// 전달받은 데이터로 View를 초기 설정합니다.
     private func configureInitialData() {
-        guard let artist = artist, let dayKey = dayKey, let festivalId = savedFestivalId else {
+        guard let artist = artist, let _ = dayKey, let festivalId = savedFestivalId else {
             print("🚨 MemoryEditVC: Artist, DayKey 또는 Festival ID 정보가 전달되지 않았습니다.")
             dismissOrPopViewController()
             return
         }
-        historyMadeView.configure(artistName: artist.name, artistImageName: artist.image)
         
-        // ⭐️⭐️⭐️ 수정/생성 대상 SavedTimetable 찾기 ⭐️⭐️⭐️
+        historyMadeView.configure(artistName: artist.name, artistImageName: artist.image)
         findTargetSavedTimetable(artistName: artist.name, festivalId: festivalId)
         
-        // 수정 모드일 경우 기존 데이터 로드
         if let memory = existingMemory {
-            historyMadeView.setInitialText(memory.reviewText) // ⭐️ View에 텍스트 설정 함수 추가 필요
-            self.currentPhotos = loadImagesFromFileSystem(identifiers: memory.photoIdentifiers) // ⭐️ 이미지 로드 함수 구현 필요
+            historyMadeView.setInitialText(memory.reviewText)
+            self.currentPhotos = loadImagesFromFileSystem(identifiers: memory.photoIdentifiers)
             historyMadeView.updatePhotos(self.currentPhotos)
         }
     }
@@ -88,7 +76,6 @@ class MemoryEditViewController: UIViewController {
     private func findTargetSavedTimetable(artistName: String, festivalId: String) {
         guard let context = modelContext else { return }
         
-        // Predicate를 사용하여 SavedTimetable 필터링
         let timetablePredicate = #Predicate<SavedTimetable> {
             $0.artistName == artistName && $0.savedFestival?.id == festivalId
         }
@@ -98,8 +85,7 @@ class MemoryEditViewController: UIViewController {
             let results = try context.fetch(descriptor)
             if let timetable = results.first {
                 self.targetSavedTimetable = timetable
-                print("✅ Target SavedTimetable 찾음: \(timetable.artistName)")
-                // 기존 메모리 로드를 위해 existingMemory도 업데이트 (수정 시)
+                print("Target SavedTimetable 찾음: \(timetable.artistName)")
                 if self.existingMemory == nil {
                     self.existingMemory = timetable.memory
                 }
@@ -114,14 +100,13 @@ class MemoryEditViewController: UIViewController {
     private func saveImagesToFileSystem(_ images: [UIImage]) -> [String] {
         var identifiers: [String] = []
         let fileManager = FileManager.default
-        // 앱의 Documents 디렉토리 경로 가져오기
         guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             print("🚨 Documents 디렉토리 경로 가져오기 실패")
             return []
         }
         
         for image in images {
-            let fileName = UUID().uuidString + ".jpg" // 고유 파일 이름 생성 (JPEG 형식)
+            let fileName = UUID().uuidString + ".jpg"
             let fileURL = documentsDirectory.appendingPathComponent(fileName)
             
             // UIImage를 JPEG 데이터로 변환 (압축 품질 조절 가능 0.0 ~ 1.0)
@@ -129,7 +114,7 @@ class MemoryEditViewController: UIViewController {
                 do {
                     // 파일 쓰기
                     try imageData.write(to: fileURL)
-                    identifiers.append(fileName) // 성공 시 식별자(파일 이름) 추가
+                    identifiers.append(fileName)
                     print("🖼️ 이미지 저장 성공: \(fileName)")
                 } catch {
                     print("🚨 이미지 파일 쓰기 실패 (\(fileName)): \(error)")
@@ -160,7 +145,6 @@ class MemoryEditViewController: UIViewController {
     
     // MARK: - Helper
     
-    /// 현재 뷰 컨트롤러를 닫습니다 (Present/Push 방식에 따라).
     private func dismissOrPopViewController(animated: Bool = true) {
         if let navController = navigationController, navController.viewControllers.first != self {
             navController.popViewController(animated: animated)
@@ -170,20 +154,20 @@ class MemoryEditViewController: UIViewController {
     }
     
     private func checkPhotoPermissionAndPresentPicker() {
-        let requiredAccessLevel: PHAccessLevel = .readWrite // 읽기/쓰기 권한 요청 (.addOnly도 가능)
+        let requiredAccessLevel: PHAccessLevel = .readWrite
         PHPhotoLibrary.requestAuthorization(for: requiredAccessLevel) { [weak self] status in
-            DispatchQueue.main.async { // UI 관련 작업은 메인 스레드에서
+            DispatchQueue.main.async {
                 switch status {
-                case .authorized: // 모든 사진 접근 허용
+                case .authorized:
                     print("✅ Photo Library Access: Authorized")
                     self?.presentImagePicker()
-                case .limited: // 일부 사진만 접근 허용
+                case .limited:
                     print("⚠️ Photo Library Access: Limited")
-                    self?.presentImagePicker() // 제한된 상태에서도 피커는 띄울 수 있음
-                case .denied, .restricted: // 접근 거부 또는 제한됨
+                    self?.presentImagePicker()
+                case .denied, .restricted:
                     print("❌ Photo Library Access: Denied or Restricted")
-                    self?.showPermissionAlert() // 설정으로 유도하는 알림창 띄우기
-                case .notDetermined: // 아직 권한 요청 안 함 (이 경우는 requestAuthorization 호출 시 처리됨)
+                    self?.showPermissionAlert()
+                case .notDetermined:
                     print("Photo Library Access: Not Determined (Should not happen here)")
                 @unknown default:
                     fatalError("Unknown photo library authorization status")
@@ -193,18 +177,17 @@ class MemoryEditViewController: UIViewController {
     }
     
     private func presentImagePicker() {
-        var config = PHPickerConfiguration(photoLibrary: .shared()) // 기본 라이브러리 사용
-        config.filter = .images // 이미지만 선택 가능하도록 필터링
-        config.selectionLimit = historyMadeView.maxPhotoCount - currentPhotos.count // ⭐️ 남은 개수만큼만 선택 가능
-        config.preferredAssetRepresentationMode = .current // 최적화된 방식으로 이미지 로드
-        config.selection = .ordered // 선택 순서 유지 (필요하다면)
+        var config = PHPickerConfiguration(photoLibrary: .shared())
+        config.filter = .images
+        config.selectionLimit = historyMadeView.maxPhotoCount - currentPhotos.count
+        config.preferredAssetRepresentationMode = .current
+        config.selection = .ordered
         
         let picker = PHPickerViewController(configuration: config)
-        picker.delegate = self // 델리게이트 설정
+        picker.delegate = self
         present(picker, animated: true)
     }
     
-    /// 권한 거부 시 사용자에게 설정 앱으로 이동하도록 안내하는 알림창을 띄웁니다.
     private func showPermissionAlert() {
         let alert = UIAlertController(
             title: "사진 접근 권한 필요",
@@ -212,7 +195,6 @@ class MemoryEditViewController: UIViewController {
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default) { _ in
-            // 설정 앱의 내 앱 설정 화면으로 바로 이동
             guard let settingsUrl = URL(string: UIApplication.openSettingsURLString),
                   UIApplication.shared.canOpenURL(settingsUrl) else { return }
             UIApplication.shared.open(settingsUrl)
@@ -222,57 +204,48 @@ class MemoryEditViewController: UIViewController {
     }
     
     private func setupKeyboardDismiss() {
-        // 1. view에 탭 제스처를 추가합니다.
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        
-        // 2. ⭐️ 중요: 이 설정이 없으면 텍스트뷰 외 다른 UI(버튼 등)가 터치되지 않습니다.
         tapGesture.cancelsTouchesInView = false
         
         view.addGestureRecognizer(tapGesture)
     }
 
-    /// 키보드를 내리는 공통 메서드
     @objc private func dismissKeyboard() {
-        // view가 가지고 있는 모든 입력 포커스를 해제합니다. (키보드가 내려감)
         view.endEditing(true)
     }
 }
 
-// MARK: - HistoryMadeViewDelegate Implementation
 extension MemoryEditViewController: HistoryMadeViewDelegate {
     
     func didTapCloseButton() {
         print("닫기 버튼 탭됨")
-        // 화면 닫기 (Present로 띄웠다면 dismiss, Push로 띄웠다면 pop)
         dismissOrPopViewController()
     }
     
     func didTapDoneButton(reviewText: String, photos: [UIImage]) {
-        print("DEBUG: 1. doneButton 함수 시작") // ⭐️ 추가
+        print("DEBUG: 1. doneButton 함수 시작")
         
         guard let context = modelContext else {
-            print("🚨 저장 실패: ModelContext 없음") // ⭐️ 이 로그가 찍히는지 확인
+            print("🚨 저장 실패: ModelContext 없음")
             return
         }
-        print("DEBUG: 2. ModelContext 확인 완료") // ⭐️ 추가
+        print("DEBUG: 2. ModelContext 확인 완료")
         
         guard let targetTimetable = targetSavedTimetable else {
-            print("🚨 저장 실패: 대상 SavedTimetable 없음") // ⭐️ 이 로그가 찍히는지 확인
+            print("🚨 저장 실패: 대상 SavedTimetable 없음")
             // 사용자에게 알림 등
             return
         }
-        print("DEBUG: 3. Target SavedTimetable 확인 완료") // ⭐️ 추가
+        print("DEBUG: 3. Target SavedTimetable 확인 완료")
         
         guard let currentArtist = artist, let currentDayKey = dayKey else {
-            print("🚨 저장 실패: 아티스트 또는 날짜 정보 부족") // ⭐️ 이 로그가 찍히는지 확인
+            print("🚨 저장 실패: 아티스트 또는 날짜 정보 부족")
             return
         }
-        print("DEBUG: 4. 모든 필수 데이터 확인 완료. 저장 시도.") // ⭐️ 추가
+        print("DEBUG: 4. 모든 필수 데이터 확인 완료. 저장 시도.")
         
-        // 1. 이미지 파일 저장 및 식별자 배열 얻기
         let photoIdentifiers = saveImagesToFileSystem(photos)
         
-        // 2. ArtistMemory 객체 찾기 또는 생성
         let memoryToSave: ArtistMemory
         if let existing = targetTimetable.memory {
             // ----- 수정 -----
@@ -283,38 +256,30 @@ extension MemoryEditViewController: HistoryMadeViewDelegate {
         } else {
             // ----- 새로 생성 -----
             print("✨ 새 추억 생성")
-            // ArtistMemory 생성 및 SavedTimetable과 연결
             memoryToSave = ArtistMemory(savedTimetable: targetTimetable, reviewText: reviewText, photoIdentifiers: photoIdentifiers)
-            // ⭐️ 중요: 새로 생성된 ArtistMemory를 context에 insert
             context.insert(memoryToSave)
-            // ⭐️ 중요: SavedTimetable의 memory 관계 업데이트 (SwiftData가 자동으로 처리해주기도 함)
             targetTimetable.memory = memoryToSave
         }
         
-        // 3. SwiftData에 변경사항 저장 시도
         do {
             try context.save()
             print("✅ 추억 저장 성공!")
-            // 저장 성공 후 화면 닫기
             delegate?.memoryDidSave(for: currentArtist.name, dayKey: currentDayKey)
             dismissOrPopViewController()
         } catch {
             print("🚨 추억 저장 실패: \(error)")
-            // 사용자에게 저장 실패 알림 표시 (UIAlertController 등)
         }
     }
     
     func didTapAddPhotoButton() {
         print("사진 추가 버튼 탭됨")
-        checkPhotoPermissionAndPresentPicker() // 권한 확인 및 피커 띄우기 함수 호출
+        checkPhotoPermissionAndPresentPicker()
     }
     
     func didTapRemovePhotoButton(at index: Int) {
         print("\(index)번째 사진 삭제 버튼 탭됨")
-        // currentPhotos 배열에서 해당 인덱스 이미지 제거
         if index < currentPhotos.count {
             currentPhotos.remove(at: index)
-            // historyMadeView 업데이트
             historyMadeView.updatePhotos(currentPhotos)
         }
     }
@@ -323,27 +288,20 @@ extension MemoryEditViewController: HistoryMadeViewDelegate {
 extension MemoryEditViewController: PHPickerViewControllerDelegate {
 
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        // 피커 닫기
         picker.dismiss(animated: true)
-
-        // 아무것도 선택하지 않았으면 종료
         guard !results.isEmpty else { return }
 
-        // 로드할 이미지 개수를 추적하기 위한 DispatchGroup 생성
         let group = DispatchGroup()
-        // 로드된 이미지를 임시로 저장할 배열 (순서 보장 어려울 수 있음)
         var newlySelectedPhotos: [UIImage] = []
 
         for result in results {
-            group.enter() // 그룹 작업 시작 알림
+            group.enter()
             let provider = result.itemProvider
-            // 이미지 로드 가능한지 확인
             if provider.canLoadObject(ofClass: UIImage.self) {
                 // 이미지 비동기 로드
                 provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
-                    defer { group.leave() } // 작업 완료 알림 (성공/실패 무관)
+                    defer { group.leave() }
                     if let image = image as? UIImage {
-                        // 로드 성공 시 배열에 추가 (메인 스레드 불필요)
                         newlySelectedPhotos.append(image)
                     } else if let error = error {
                         print("🚨 이미지 로드 실패: \(error)")
@@ -351,17 +309,14 @@ extension MemoryEditViewController: PHPickerViewControllerDelegate {
                 }
             } else {
                  print("⚠️ 로드할 수 없는 타입의 asset입니다.")
-                 group.leave() // 로드할 수 없어도 그룹 작업 완료 처리
+                 group.leave()
             }
         }
 
-        // 모든 이미지 로드 작업이 완료된 후 실행될 코드
         group.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
             print("✅ \(newlySelectedPhotos.count)개 이미지 로드 완료")
-            // 기존 사진 배열과 새로 선택된 사진 배열 합치기
             self.currentPhotos.append(contentsOf: newlySelectedPhotos)
-            // historyMadeView 업데이트 (최대 개수 제한은 updatePhotos 내부에서 처리)
             self.historyMadeView.updatePhotos(self.currentPhotos)
         }
     }

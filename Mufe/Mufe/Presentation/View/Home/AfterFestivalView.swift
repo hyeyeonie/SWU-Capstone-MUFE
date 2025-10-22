@@ -93,7 +93,6 @@ final class AfterFestivalView: UIView {
         return stackView
     }()
     
-    // Buttons
     private let buttonBackgroundView = UIImageView().then {
         $0.image = UIImage(named: "buttonBackground")
         $0.isUserInteractionEnabled = true
@@ -211,7 +210,6 @@ final class AfterFestivalView: UIView {
             $0.bottom.equalToSuperview().inset(20)
         }
         
-        // Buttons
         buttonBackgroundView.snp.makeConstraints {
             $0.horizontalEdges.bottom.equalToSuperview()
             $0.height.equalTo(101)
@@ -230,7 +228,6 @@ final class AfterFestivalView: UIView {
     }
     
     func setFestival(_ festival: SavedFestival) {
-        // 1. Title Label 업데이트
         let fullText = "\(festival.festivalName) 의\n후기를 작성해 보세요!"
         let attributedString = NSMutableAttributedString(string: fullText)
         
@@ -249,17 +246,14 @@ final class AfterFestivalView: UIView {
             attributedString.addAttribute(.font, value: boldFont, range: nsRange)
         }
         titleLabel.attributedText = attributedString
-        
-        // 2. Component View 내부 정보 업데이트
         posterImage.image = UIImage(named: festival.festivalImageName)
         dDayLabel.text = "종료"
         festivalNameLabel.text = festival.festivalName
         festivalTime.text = "\(festival.startDate) - \(festival.endDate)"
         festivalLocation.text = festival.location
         
-        // 3. 아티스트 목록 업데이트 (timetables에서 가져오기)
         artistStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        let artists = festival.timetables.prefix(5) // 최대 5명만 보여주기
+        let artists = festival.timetables.prefix(5)
         
         artists.forEach { timetable in
             let artistView = createArtistContainer(image: UIImage(named: timetable.artistImage) ?? UIImage(), name: timetable.artistName)

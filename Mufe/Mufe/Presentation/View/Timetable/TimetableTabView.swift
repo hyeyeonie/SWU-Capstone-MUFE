@@ -71,7 +71,6 @@ final class TimetableTabView: UIView {
 extension TimetableTabView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // ⭐️ 3. 셀 개수는 페스티벌 그룹의 개수
         return festivalNames.count
     }
     
@@ -80,7 +79,6 @@ extension TimetableTabView: UICollectionViewDataSource, UICollectionViewDelegate
             return UICollectionViewCell()
         }
         
-        // ⭐️ 4. 해당 페스티벌에 속한 모든 SavedFestival 객체들을 셀에 전달
         let festivalName = festivalNames[indexPath.item]
         if let festivalsForName = festivalGroups[festivalName] {
             cell.configure(with: festivalsForName)
@@ -96,7 +94,6 @@ extension TimetableTabView: UICollectionViewDataSource, UICollectionViewDelegate
         let festivalName = festivalNames[indexPath.item]
         
         if let festivalsForName = festivalGroups[festivalName] {
-            // 💡 수정 2: .first로 첫 번째 객체만 보내는 대신, 정렬된 '배열 전체'를 전달
             let sortedFestivals = festivalsForName.sorted(by: { $0.selectedDay < $1.selectedDay })
             didSelectFestival?(festivalName, sortedFestivals)
         }

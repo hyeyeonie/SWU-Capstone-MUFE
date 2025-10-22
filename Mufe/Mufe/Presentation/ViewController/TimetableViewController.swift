@@ -106,6 +106,7 @@ final class TimetableViewController: UIViewController {
     }
     
     // MARK: - Actions
+    
     private func setAction() {
         addButton.addTarget(self, action: #selector(didTapAddButton), for: .touchUpInside)
         
@@ -125,7 +126,7 @@ final class TimetableViewController: UIViewController {
             let madeVC = MadeTimetableViewController()
             
             madeVC.festival = originalFestival
-            madeVC.savedFestival = firstDayFestival // 초기 화면 구성을 위해 여전히 필요합니다.
+            madeVC.savedFestival = firstDayFestival
             
             madeVC.allSavedDays = allSavedFestivals
             
@@ -172,10 +173,7 @@ final class TimetableViewController: UIViewController {
     
     private func loadSavedData() {
         do {
-            // 데이터베이스에서 모든 SavedFestival 데이터를 가져오라는 '요청서(Descriptor)'를 만듭니다.
             let descriptor = FetchDescriptor<SavedFestival>()
-
-            // 중앙 관리자를 통해 요청서를 실행하고, 결과를 받아와 배열에 저장합니다.
             self.savedFestivals = try SwiftDataManager.shared.context.fetch(descriptor)
 
             print("📚 \(savedFestivals.count)개의 저장된 페스티벌을 불러왔습니다.")

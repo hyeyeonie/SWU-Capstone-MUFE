@@ -108,7 +108,6 @@ final class SelectDateView: UIView {
 }
 
 extension SelectDateView: UICollectionViewDataSource, UICollectionViewDelegate {
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return dates.count
     }

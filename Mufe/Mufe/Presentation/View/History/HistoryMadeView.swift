@@ -78,7 +78,7 @@ final class HistoryMadeView: UIView {
     private let characterCountLabel = UILabel().then {
         $0.text = "0 / 400"
         $0.customFont(.fmd_Regular)
-        $0.textColor = .gray50 // '0'은 gray30
+        $0.textColor = .gray50
         $0.textAlignment = .right
     }
     
@@ -98,9 +98,9 @@ final class HistoryMadeView: UIView {
     private lazy var photoCollectionView: OverlappingTouchCollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 80, height: 80) // Match image size
+        layout.itemSize = CGSize(width: 80, height: 80)
         layout.minimumInteritemSpacing = 12
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16) // Spacing for add button
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16)
         
         let cv = OverlappingTouchCollectionView(frame: .zero, collectionViewLayout: layout)
         cv.backgroundColor = .clear
@@ -257,24 +257,22 @@ final class HistoryMadeView: UIView {
     
     func configure(artistName: String, artistImageName: String) {
         artistNameLabel.text = artistName
-        artistImage.image = UIImage(named: artistImageName) // 또는 URL에서 로드
+        artistImage.image = UIImage(named: artistImageName)
     }
     
     func setInitialText(_ text: String) {
         if !text.isEmpty {
             reviewTextView.text = text
-            reviewTextView.textColor = .gray20 // 일반 텍스트 색상
-            updateCharacterCountLabel() // 글자 수 업데이트
-            updateDoneButtonState() // 버튼 상태 업데이트
+            reviewTextView.textColor = .gray20
+            updateCharacterCountLabel()
+            updateDoneButtonState()
         }
     }
     
-    /// 외부(예: 이미지 피커)에서 사진이 추가/삭제될 때 호출
     func updatePhotos(_ newPhotos: [UIImage]) {
-        // 최대 개수 제한 (선택 사항)
         self.photos = Array(newPhotos.prefix(maxPhotoCount))
         self.photoCollectionView.reloadData()
-        updateDoneButtonState() // 사진 변경 시 완료 버튼 상태 업데이트
+        updateDoneButtonState()
     }
     
     @objc private func closeButtonTapped() {
@@ -282,7 +280,6 @@ final class HistoryMadeView: UIView {
     }
     
     @objc private func doneButtonTapped() {
-        // 플레이스홀더 상태면 빈 문자열 전달, 아니면 실제 텍스트 전달
         guard let text = reviewTextView.text, text != placeholderText else {
             delegate?.didTapDoneButton(reviewText: "", photos: photos)
             return
@@ -292,13 +289,11 @@ final class HistoryMadeView: UIView {
     
     private func updateDoneButtonState() {
         let text = reviewTextView.text ?? ""
-        // 플레이스홀더가 아니고 비어있지 않은 텍스트가 있는지 확인
         let hasText = !text.isEmpty && text != placeholderText
-        // 글이 있거나 사진이 있으면 활성화
         let isEnabled = hasText || !photos.isEmpty
         
         doneButton.isEnabled = isEnabled
-        doneButton.backgroundColor = isEnabled ? .primary50 : .gray90 // 색상 가정
+        doneButton.backgroundColor = isEnabled ? .primary50 : .gray90
         doneButton.setTitleColor(isEnabled ? .gray00 : .gray50, for: .normal)
         doneButton.tintColor = isEnabled ? .gray00 : .gray50
     }
@@ -310,15 +305,12 @@ final class HistoryMadeView: UIView {
         let countString = "\(currentCount) / \(maxCount)"
         let attributedString = NSMutableAttributedString(string: countString)
         
-        // '0' 또는 현재 글자 수 숫자 부분 색상
         let numberRange = (countString as NSString).range(of: "\(currentCount)")
         attributedString.addAttribute(.foregroundColor, value: UIColor.gray30, range: numberRange)
         
-        // '/ 400' 부분 색상
         let maxRange = (countString as NSString).range(of: " / \(maxCount)")
         attributedString.addAttribute(.foregroundColor, value: UIColor.gray50, range: maxRange)
         
-        // 글자 수 초과 시 빨간색
         if currentCount > maxCount {
             attributedString.addAttribute(.foregroundColor, value: UIColor.systemRed, range: NSRange(location: 0, length: countString.count))
         }
@@ -332,7 +324,7 @@ extension HistoryMadeView: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == placeholderText {
             textView.text = ""
-            textView.textColor = .gray20 // 일반 텍스트 색상
+            textView.textColor = .gray20
         }
     }
     
@@ -340,7 +332,7 @@ extension HistoryMadeView: UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
             textView.text = placeholderText
-            textView.textColor = .gray50 // 플레이스홀더 색상
+            textView.textColor = .gray50
         }
     }
 
@@ -370,8 +362,6 @@ extension HistoryMadeView: UITextViewDelegate {
     private func updateTextViewHeight() {
         let size = CGSize(width: reviewTextView.frame.width, height: .infinity)
         let estimatedSize = reviewTextView.sizeThatFits(size)
-        
-        // 최소 높이 26, 최대 높이 150으로 제한
         let clampedHeight = min(max(estimatedSize.height, 26), 150)
         
         reviewTextViewHeightConstraint?.update(offset: clampedHeight)
@@ -385,34 +375,27 @@ extension HistoryMadeView: UITextViewDelegate {
 // MARK: - UICollectionViewDataSource & Delegate (사진 컬렉션 뷰)
 extension HistoryMadeView: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // 추가 버튼 셀 1개 + 사진 셀 개수
         return 1 + photos.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        // 첫 번째 셀은 항상 '추가 버튼' 셀
         if indexPath.item == 0 {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoAddCell.identifier, for: indexPath) as? PhotoAddCell else {
                 fatalError("PhotoAddCell dequeue 실패")
             }
             let countText = "\(photos.count)/\(maxPhotoCount)"
             cell.configure(countText: countText)
-            // 최대 개수에 도달하면 추가 버튼 비활성화
             cell.isAddEnabled = photos.count < maxPhotoCount
-            // 추가 버튼 탭 시 동작 연결
             cell.didTapAdd = { [weak self] in
                 self?.delegate?.didTapAddPhotoButton()
             }
             return cell
         } else {
-            // 나머지 셀은 '사진 표시' 셀
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoDisplayCell.identifier, for: indexPath) as? PhotoDisplayCell else {
                 fatalError("PhotoDisplayCell dequeue 실패")
             }
-            // photos 배열 인덱스 조정 (indexPath.item - 1)
             let photoIndex = indexPath.item - 1
             cell.configure(image: photos[photoIndex])
-            // 삭제 버튼 탭 시 동작 연결
             cell.didTapRemove = { [weak self] in
                 self?.delegate?.didTapRemovePhotoButton(at: photoIndex)
             }

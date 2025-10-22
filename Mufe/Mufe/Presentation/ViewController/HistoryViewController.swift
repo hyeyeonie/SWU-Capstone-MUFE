@@ -87,19 +87,17 @@ final class HistoryViewController: UIViewController {
             
             let detailVC = HistoryDetailViewController()
             
-            // 2. 원본 페스티벌 데이터 찾기
             guard let originalFestival = self.originalFestivals.first(where: { $0.name == festivalName }) else {
                 print("🚨 원본 페스티벌 데이터를 찾지 못했습니다: \(festivalName)")
                 return
             }
             
-            // 3. 뷰 컨트롤러에 데이터 전달
              detailVC.festival = originalFestival
              detailVC.allSavedDays = allSavedFestivals
             
-            // 4. 화면 푸시
+            
             detailVC.hidesBottomBarWhenPushed = true
-            self.navigationController?.pushViewController(detailVC, animated: true) // 👈 주석 해제
+            self.navigationController?.pushViewController(detailVC, animated: true)
         }
     }
     
@@ -138,7 +136,7 @@ final class HistoryViewController: UIViewController {
             self.savedFestivals = try SwiftDataManager.shared.context.fetch(descriptor)
             
             print("📚 HistoryVC: \(savedFestivals.count)개의 저장된 페스티벌을 불러왔습니다.")
-            updateViewState() // ⭐️ 데이터를 불러온 후 뷰 상태 업데이트
+            updateViewState()
         } catch {
             print("🚨 페스티벌 데이터 불러오기 실패: \(error)")
         }

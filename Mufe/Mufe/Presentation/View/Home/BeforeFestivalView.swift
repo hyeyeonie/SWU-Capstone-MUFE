@@ -25,10 +25,11 @@ final class BeforeFestivalView: UIView {
     }
     
     // MARK: - UI Components
+    
     private lazy var festivalCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.itemSize = CGSize(width: 343, height: 295) // 높이를 동적으로 변경
+        layout.itemSize = CGSize(width: 343, height: 295)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
@@ -82,7 +83,6 @@ extension BeforeFestivalView: UICollectionViewDelegateFlowLayout {
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         guard !savedDays.isEmpty else {
-            // 데이터가 없을 때의 기본 크기
             return CGSize(width: 343, height: 295)
         }
         
@@ -94,7 +94,6 @@ extension BeforeFestivalView: UICollectionViewDelegateFlowLayout {
         let dayInfoHeight: CGFloat = 29
         let dayInfoSpacing: CGFloat = 16
         
-        // 이제 이 상수들을 사용해서 높이를 정상적으로 계산할 수 있습니다.
         let totalDayInfoHeight = CGFloat(savedDays.count) * dayInfoHeight +
                                  CGFloat(max(savedDays.count - 1, 0)) * dayInfoSpacing
         

@@ -235,15 +235,11 @@ class OnboardingViewController: UIViewController {
             return
         }
         
-        // 루트 화면으로 갈지, 그냥 pop할지 구분
         if let nav = navigationController, nav.viewControllers.first != self {
-            // navigation stack 안에서 push된 경우
             nav.popViewController(animated: true)
         } else if presentingViewController != nil {
-            // 모달로 present된 경우
             dismiss(animated: true)
         } else {
-            // 정말 루트일 때만 앱 루트로 이동
             if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                let sceneDelegate = scene.delegate as? SceneDelegate,
                let window = sceneDelegate.window {
@@ -336,20 +332,14 @@ extension OnboardingViewController: FestivalSelectionDelegate {
         selectedFestival = festival
         selectedFestivalName = festival.name
         
-        // 1. 현재 선택한 페스티벌에 대해 저장된 모든 시간표를 찾습니다.
         let savedForThisFestival = savedFestivals.filter { $0.festivalName == festival.name }
         
-        // 2. ⭐️⭐️⭐️ 핵심 수정 ⭐️⭐️⭐️
-        // 저장된 날짜("1일차", "2일차") 문자열에서 숫자만 추출하여 [Int] 배열로 만듭니다.
         let madeDayIndices: [Int] = savedForThisFestival.compactMap {
-            // "1일차" -> "1" -> 1
             let dayString = $0.selectedDay.replacingOccurrences(of: "일차", with: "")
             return Int(dayString)
         }
         
-        // 3. SelectDateView의 configure 함수에 정확한 타입으로 데이터를 전달합니다.
         selectDateView.configure(with: festival, madeDays: madeDayIndices)
-        
         currentStep = .dateSelection
     }
 }
@@ -364,8 +354,7 @@ extension OnboardingViewController: SelectDateViewDelegate {
 
 extension OnboardingViewController: SelectArtistViewDelegate {
     func didChangeArtistSelection(hasSelection: Bool) {
-        // SelectArtistView로부터 신호를 받으면 버튼 상태를 업데이트합니다.
         nextButton.isEnabled = hasSelection
-        nextButton.backgroundColor = hasSelection ? .primary50 : .gray70 // 상태에 따라 색상 변경
+        nextButton.backgroundColor = hasSelection ? .primary50 : .gray70
     }
 }
