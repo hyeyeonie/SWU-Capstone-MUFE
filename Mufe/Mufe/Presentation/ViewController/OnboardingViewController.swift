@@ -74,8 +74,24 @@ class OnboardingViewController: UIViewController {
         didSet {
             progressBar.progress = currentStep.progress
             titleLabel.attributedText = currentStep.attributedTitle(with: selectedFestivalName, customFont: CustomUIFont.f2xl_Bold)
-            nextButton.isHidden = !(currentStep == .timeSelection || currentStep == .artistSelection)
-            buttonBackgroundView.isHidden = !(currentStep == .timeSelection || currentStep == .artistSelection)
+            
+            let shouldHideButton = !(currentStep == .timeSelection || currentStep == .artistSelection)
+            nextButton.isHidden = shouldHideButton
+            buttonBackgroundView.isHidden = shouldHideButton
+            
+            if shouldHideButton {
+                scrollView.snp.remakeConstraints {
+                    $0.top.equalTo(titleLabel.snp.bottom).offset(32)
+                    $0.horizontalEdges.equalToSuperview().inset(16)
+                    $0.bottom.equalToSuperview().inset(16)
+                }
+            } else {
+                scrollView.snp.remakeConstraints {
+                    $0.top.equalTo(titleLabel.snp.bottom).offset(32)
+                    $0.horizontalEdges.equalToSuperview().inset(16)
+                    $0.bottom.equalTo(nextButton.snp.top).offset(-16)
+                }
+            }
             
             if currentStep == .artistSelection {
                 nextButton.setTitle("완료", for: .normal)
@@ -102,10 +118,10 @@ class OnboardingViewController: UIViewController {
         
         loadSavedData()
         
-        setStyle()
         setUI()
         setLayout()
         setDelegate()
+        setStyle()
     }
     
     // MARK: - UI Setting
@@ -158,7 +174,7 @@ class OnboardingViewController: UIViewController {
         scrollView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(32)
             $0.horizontalEdges.equalToSuperview().inset(16)
-            $0.bottom.equalTo(nextButton.snp.top).offset(-16)
+            $0.bottom.equalToSuperview().inset(16)
         }
         
         contentView.snp.makeConstraints {
