@@ -54,23 +54,19 @@ final class TimetableTabCell: UICollectionViewCell {
     }
 
     func configure(with festivals: [SavedFestival]) {
-        // 배열이 비어있으면 아무것도 하지 않습니다.
         guard let firstFestival = festivals.first else { return }
         
-        // 1. 기본 정보는 배열의 첫 번째 객체를 기준으로 설정합니다.
         posterImageView.image = UIImage(named: firstFestival.festivalImageName)
         fstNameLabel.text = firstFestival.festivalName
         fstDateLabel.text = "\(firstFestival.startDate) - \(firstFestival.endDate)"
         fstLocationLabel.text = firstFestival.location
 
-        // 2. ⭐️ Day Tag를 모두 표시하도록 로직을 변경합니다.
         dayTagStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
-        // 모든 저장된 페스티벌 객체에서 'selectedDay'를 가져와 정렬합니다.
         let dayStrings = festivals.map { $0.selectedDay }.sorted()
         
+        // 일차에서 숫자만 추출
         for dayString in dayStrings {
-            // "1일차" 같은 문자열에서 숫자 "1"만 안전하게 추출합니다.
             if let dayNumber = Int(dayString.filter { "0"..."9" ~= $0 }) {
                 let tag = Daytag()
                 tag.configure(day: dayNumber)

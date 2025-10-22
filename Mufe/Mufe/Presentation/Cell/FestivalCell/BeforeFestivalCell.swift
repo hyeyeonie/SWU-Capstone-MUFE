@@ -18,7 +18,7 @@ final class BeforeFestivalCell: UICollectionViewCell {
     
     private let posterImage = UIImageView().then {
         $0.contentMode = .scaleAspectFill
-        $0.image = UIImage(resource: .beautifulMintLife) // posterImage
+        $0.image = UIImage(resource: .beautifulMintLife)
         $0.clipsToBounds = true
         $0.layer.cornerRadius = 12
     }
@@ -137,28 +137,24 @@ final class BeforeFestivalCell: UICollectionViewCell {
     func configure(with savedDays: [SavedFestival]) {
             guard let representativeFestival = savedDays.first else { return }
             
-            // 공통 정보 설정
             posterImage.image = UIImage(named: representativeFestival.festivalImageName)
             festivalName.text = representativeFestival.festivalName
             festivalTime.text = "\(representativeFestival.startDate) - \(representativeFestival.endDate)"
             festivalLocation.text = representativeFestival.location
             dDayLabel.text = FestivalUtils.calculateDDay(from: representativeFestival.startDate)
             
-            // 날짜 목록 동적 생성
             daysStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
             
             for festivalDay in savedDays {
                 
-                // 1. DayInfoView가 필요한 데이터로 가공합니다.
                 let dayString = festivalDay.selectedDay.filter { "0"..."9" ~= $0 }
                 guard let dayNumber = Int(dayString) else { continue }
                 
                 let (dayOfWeek, formattedDate) = formatDateAndDay(from: festivalDay.selectedDate)
 
-                // 2. 가공된 데이터로 configure 함수를 호출합니다.
                 let dayInfoView = DayInfoView()
                 dayInfoView.configure(dayNumber: dayNumber, dayOfWeek: dayOfWeek, date: formattedDate)
-                dayInfoView.delegate = self // 델리게이트 연결
+                dayInfoView.delegate = self
                 
                 daysStackView.addArrangedSubview(dayInfoView)
             }
@@ -170,7 +166,7 @@ final class BeforeFestivalCell: UICollectionViewCell {
             inputFormatter.locale = Locale(identifier: "ko_KR")
 
             guard let dateObject = inputFormatter.date(from: dateString) else {
-                return ("", dateString) // 파싱 실패 시 기본값 반환
+                return ("", dateString)
             }
 
             let dayOfWeekFormatter = DateFormatter()

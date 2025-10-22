@@ -12,9 +12,11 @@ import Then
 final class MadeTimetableCell: UICollectionViewCell {
     
     // MARK: - Properties
+    
     static let identifier = "MadeTimetableCell"
     
     // MARK: - UI Components
+    
     private let stageNumber = UILabel().then {
         $0.customFont(.fmd_Bold)
         $0.textColor = .gray00
@@ -31,6 +33,7 @@ final class MadeTimetableCell: UICollectionViewCell {
     }
     
     // MARK: - Init
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.backgroundColor = .gray90
@@ -58,6 +61,7 @@ final class MadeTimetableCell: UICollectionViewCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     // MARK: - Configure
+    
     func configure(stageNumber: String, stageName: String, artists: [ArtistSchedule]) {
         self.stageNumber.text = stageNumber
         self.stageName.text = stageName
@@ -70,7 +74,6 @@ final class MadeTimetableCell: UICollectionViewCell {
         }
     }
     
-    // MARK: - Artist View 생성
     private func createArtistView(for artist: ArtistSchedule) -> UIView {
         let container = UIView()
         

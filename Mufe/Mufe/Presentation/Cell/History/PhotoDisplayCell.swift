@@ -12,9 +12,8 @@ import Then
 
 final class PhotoDisplayCell: UICollectionViewCell {
     static let identifier = "PhotoDisplayCell"
-    var didTapRemove: (() -> Void)? // 삭제 버튼 탭 액션 클로저
+    var didTapRemove: (() -> Void)?
 
-    // 사진 이미지 뷰
     private let imageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.layer.cornerRadius = 8
@@ -23,7 +22,6 @@ final class PhotoDisplayCell: UICollectionViewCell {
         $0.isUserInteractionEnabled = false
     }
 
-    // 'x' 삭제 버튼
     lazy var removeButton = UIButton(type: .system).then {
         $0.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
         $0.tintColor = .gray50
@@ -50,22 +48,18 @@ final class PhotoDisplayCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // 이미지 설정 함수
     func configure(image: UIImage) {
         imageView.image = image
     }
 
-    // 삭제 버튼 탭 시 클로저 호출
     @objc private func removeButtonTapped() {
         didTapRemove?()
     }
 }
 
 extension PhotoDisplayCell {
-    // 만약 removeButton이 private lazy var 라면, 아래와 같이 getter 추가
-     var deleteButton: UIButton { // 접근 가능한 이름으로 변경 (예: deleteButton)
+     var deleteButton: UIButton {
          return removeButton
      }
-    // 만약 removeButton이 internal 이나 public 이라면 이 extension 불필요
 }
 

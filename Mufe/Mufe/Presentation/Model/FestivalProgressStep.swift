@@ -46,18 +46,15 @@ enum FestivalProgressStep: Int {
         
         switch self {
         case .dateSelection, .timeSelection, .artistSelection:
-            // festivalName 범위
             if let festivalRange = fullText.range(of: festivalName) {
                 let nsFestivalRange = NSRange(festivalRange, in: fullText)
                 
-                // festivalName 스타일: f2xl_Bold + gray00
                 attributed.addAttributes([
                     .font: CustomUIFont.f2xl_Bold.font,
                     .foregroundColor: UIColor.gray00,
                     .paragraphStyle: paragraphStyle
                 ], range: nsFestivalRange)
                 
-                // 나머지 텍스트 스타일: f2xl_Medium + gray20
                 let fullNSRange = NSRange(fullText.startIndex..<fullText.endIndex, in: fullText)
                 
                 attributed.addAttributes([
@@ -66,7 +63,6 @@ enum FestivalProgressStep: Int {
                     .paragraphStyle: paragraphStyle
                 ], range: fullNSRange)
                 
-                // festivalName 부분을 덮어씌우기 (우선순위 때문에)
                 attributed.addAttributes([
                     .font: CustomUIFont.f2xl_Bold.font,
                     .foregroundColor: UIColor.gray00,
@@ -74,7 +70,6 @@ enum FestivalProgressStep: Int {
                 ], range: nsFestivalRange)
                 
             } else {
-                // festivalName 못찾으면 전체에 medium+gray20 적용
                 let fullNSRange = NSRange(fullText.startIndex..<fullText.endIndex, in: fullText)
                 attributed.addAttributes([
                     .font: CustomUIFont.f2xl_Medium.font,
@@ -84,7 +79,6 @@ enum FestivalProgressStep: Int {
             }
             
         default:
-            // 나머지 step: 전체에 f2xl_Bold + gray00 적용
             let fullNSRange = NSRange(fullText.startIndex..<fullText.endIndex, in: fullText)
             attributed.addAttributes([
                 .font: customFont.font,

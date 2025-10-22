@@ -2,7 +2,7 @@
 //  DummyFestivalData.swift
 //  Mufe
 //
-//  Created by 신혜연 on 6/12/25.
+//  Created by 신혜연 on 6/12/26.
 //
 
 import UIKit
@@ -12,8 +12,8 @@ struct DummyFestivalData {
         Festival(
             imageName: "beautiful_mint_life",
             name: "2025 뷰티풀민트라이프",
-            startDate: "2025.09.12", // ✅ Past Date
-            endDate: "2025.09.14",   // ✅ Past Date
+            startDate: "2025.05.17",
+            endDate: "2025.05.19",
             location: "올림픽공원",
             artistSchedule: [
                 "1일차": [
@@ -42,75 +42,76 @@ struct DummyFestivalData {
                 ]
             ],
             days: [
-                FestivalDay(dayOfWeek: "금", date: "2025.09.12"), // ✅ Adjusted Dates
-                FestivalDay(dayOfWeek: "토", date: "2025.09.13"),
-                FestivalDay(dayOfWeek: "일", date: "2025.09.14")
+                FestivalDay(dayOfWeek: "토", date: "2025.05.17"),
+                FestivalDay(dayOfWeek: "일", date: "2025.05.18"),
+                FestivalDay(dayOfWeek: "월", date: "2025.05.19")
             ]
         ),
         
         Festival(
             imageName: "asian_pop_fes",
             name: "ASIAN POP FESTIVAL 2025",
-            startDate: "2025.08.23", // ✅ Past Date
-            endDate: "2025.08.24",   // ✅ Past Date
+            startDate: "2025.08.01",
+            endDate: "2025.08.03",
             location: "파라다이스시티",
             artistSchedule: [:],
             days: [
-                FestivalDay(dayOfWeek: "토", date: "2025.08.23"),
-                FestivalDay(dayOfWeek: "일", date: "2025.08.24")
+                FestivalDay(dayOfWeek: "금", date: "2025.08.01"),
+                FestivalDay(dayOfWeek: "토", date: "2025.08.02"),
+                FestivalDay(dayOfWeek: "일", date: "2025.08.03")
             ]
         ),
         
         Festival(
             imageName: "seoul_park_music",
             name: "SEOUL PARK MUSIC FESTIVAL 2025",
-            startDate: "2025.08.30", // ✅ Past Date
-            endDate: "2025.08.31",   // ✅ Past Date
+            startDate: "2025.07.05",
+            endDate: "2025.07.06",
             location: "올림픽공원",
             artistSchedule: [:],
             days: [
-                FestivalDay(dayOfWeek: "토", date: "2025.08.30"),
-                FestivalDay(dayOfWeek: "일", date: "2025.08.31")
+                FestivalDay(dayOfWeek: "토", date: "2025.07.05"),
+                FestivalDay(dayOfWeek: "일", date: "2025.07.06")
             ]
         ),
         
         Festival(
             imageName: "sound_berry",
             name: "SOUNDBERRY FESTA’ 25",
-            startDate: "2025.09.06", // ✅ Past Date
-            endDate: "2025.09.07",   // ✅ Past Date
-            location: "일산 킨텍스 제 2전시장 9홀",
+            startDate: "2025.06.14",
+            endDate: "2025.06.15",
+            location: "일산 킨텍스 제2전시장 9홀",
             artistSchedule: [:],
             days: [
-                FestivalDay(dayOfWeek: "토", date: "2025.09.06"),
-                FestivalDay(dayOfWeek: "일", date: "2025.09.07")
+                FestivalDay(dayOfWeek: "토", date: "2025.06.14"),
+                FestivalDay(dayOfWeek: "일", date: "2025.06.15")
             ]
         ),
         
         Festival(
             imageName: "icn_pentaport",
             name: "KB국민카드 스타샵 with 2025 인천펜타포트 락 페스티벌",
-            startDate: "2025.09.19", // ✅ Past Date
-            endDate: "2025.09.21",   // ✅ Past Date
+            startDate: "2025.09.06",
+            endDate: "2025.09.08",
             location: "송도달빛축제공원",
             artistSchedule: [:],
             days: [
-                FestivalDay(dayOfWeek: "금", date: "2025.09.19"),
-                FestivalDay(dayOfWeek: "토", date: "2025.09.20"),
-                FestivalDay(dayOfWeek: "일", date: "2025.09.21")
+                FestivalDay(dayOfWeek: "토", date: "2025.09.06"),
+                FestivalDay(dayOfWeek: "일", date: "2025.09.07"),
+                FestivalDay(dayOfWeek: "월", date: "2025.09.08")
             ]
         ),
         
         Festival(
             imageName: "sound_berry",
             name: "WINTER SOUNDBERRY 25",
-            startDate: "2025.08.16", // ✅ Past Date
-            endDate: "2025.08.17",   // ✅ Past Date
+            startDate: "2025.03.29",
+            endDate: "2025.03.30",
             location: "코엑스",
             artistSchedule: [:],
             days: [
-                FestivalDay(dayOfWeek: "토", date: "2025.08.16"),
-                FestivalDay(dayOfWeek: "일", date: "2025.08.17")
+                FestivalDay(dayOfWeek: "토", date: "2025.03.29"),
+                FestivalDay(dayOfWeek: "일", date: "2025.03.30")
             ]
         )
     ]
