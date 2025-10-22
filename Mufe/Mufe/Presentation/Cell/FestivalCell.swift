@@ -24,7 +24,8 @@ final class FestivalCell: UICollectionViewCell {
     private let fstNameLabel = UILabel().then {
         $0.customFont(.flg_Bold)
         $0.textColor = .gray00
-        $0.numberOfLines = 2
+        $0.numberOfLines = 1
+        $0.lineBreakMode = .byTruncatingTail
     }
     
     private let fstDateLabel = UILabel().then {
@@ -75,7 +76,7 @@ final class FestivalCell: UICollectionViewCell {
         fstNameLabel.snp.makeConstraints {
             $0.top.equalTo(posterImageView)
             $0.leading.equalTo(posterImageView.snp.trailing).offset(12)
-            $0.trailing.equalToSuperview()
+            $0.trailing.equalToSuperview().inset(10)
         }
         
         fstDateLabel.snp.makeConstraints {
