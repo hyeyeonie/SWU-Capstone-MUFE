@@ -11,13 +11,11 @@ import SwiftData
 class SwiftDataManager {
     static let shared = SwiftDataManager()
     
-    // SwiftData 컨테이너 및 컨텍스트
     let container: ModelContainer
     var context: ModelContext
     
     private init() {
         do {
-            // 이니셜라이저에서 ModelContainer와 ModelContext를 설정합니다.
             self.container = try ModelContainer(for: SavedFestival.self)
             self.context = ModelContext(container)
         } catch {
@@ -45,14 +43,13 @@ class SwiftDataManager {
     
     // MARK: - Delete Operations
     
-    // 👇 이 함수를 추가합니다.
     func deleteSavedFestival(festivalName: String, day: String, completion: @escaping (Bool) -> Void) {
         do {
             let predicate = #Predicate<SavedFestival> { saved in
                 saved.festivalName == festivalName && saved.selectedDay == day
             }
             var descriptor = FetchDescriptor<SavedFestival>(predicate: predicate)
-            descriptor.fetchLimit = 1 // 정확히 하나만 삭제하므로 하나만 가져옵니다.
+            descriptor.fetchLimit = 1
             
             if let savedFestivalToDelete = try context.fetch(descriptor).first {
                 context.delete(savedFestivalToDelete)

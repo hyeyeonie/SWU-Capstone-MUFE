@@ -25,7 +25,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let homeTabBarController = HomeTabBarController()
         
         let window = UIWindow(windowScene: windowScene)
-        // ⭐️ 2. UINavigationController 없이, TabBarController를 바로 rootViewController로 설정합니다.
         window.rootViewController = homeTabBarController
         window.overrideUserInterfaceStyle = .dark
         window.makeKeyAndVisible()
@@ -34,11 +33,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
 #if DEBUG
     func deleteAllData() {
-        // 중앙 관리자를 통해 DB 작업 공간(context)을 가져옵니다.
         let context = SwiftDataManager.shared.context
         do {
-            // DB에 저장된 모든 SavedFestival 데이터를 삭제하라고 명령합니다.
-            // SavedFestival을 지우면, 연결된 SavedTimetable도 자동으로 함께 삭제됩니다.
             try context.delete(model: SavedFestival.self)
             print("🗑️ 모든 저장된 데이터 삭제 완료.")
         } catch {
