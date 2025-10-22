@@ -121,6 +121,7 @@ class MadeTimetableViewController: UIViewController {
     
     private func setStyle() {
         view.backgroundColor = .grayBg
+        self.navigationController?.interactivePopGestureRecognizer?.delegate = self
         
         loadingView.isHidden = true
         loadingView.alpha = 0
@@ -475,5 +476,11 @@ private extension MadeTimetableViewController {
         }, completion: { _ in
             self.loadingView.isHidden = true
         })
+    }
+}
+
+extension MadeTimetableViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return (self.navigationController?.viewControllers.count ?? 0) > 1
     }
 }
