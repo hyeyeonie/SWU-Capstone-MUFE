@@ -51,6 +51,7 @@ class MemoryEditViewController: UIViewController {
         setupView()
         setDelegate()
         configureInitialData()
+        setupKeyboardDismiss()
     }
     
     // MARK: - Setup
@@ -218,6 +219,22 @@ class MemoryEditViewController: UIViewController {
         })
         alert.addAction(UIAlertAction(title: "취소", style: .cancel))
         present(alert, animated: true)
+    }
+    
+    private func setupKeyboardDismiss() {
+        // 1. view에 탭 제스처를 추가합니다.
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        
+        // 2. ⭐️ 중요: 이 설정이 없으면 텍스트뷰 외 다른 UI(버튼 등)가 터치되지 않습니다.
+        tapGesture.cancelsTouchesInView = false
+        
+        view.addGestureRecognizer(tapGesture)
+    }
+
+    /// 키보드를 내리는 공통 메서드
+    @objc private func dismissKeyboard() {
+        // view가 가지고 있는 모든 입력 포커스를 해제합니다. (키보드가 내려감)
+        view.endEditing(true)
     }
 }
 
