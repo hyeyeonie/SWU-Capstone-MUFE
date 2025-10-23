@@ -58,6 +58,7 @@ final class TimetableViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
         loadSavedData()
     }
     
@@ -76,7 +77,6 @@ final class TimetableViewController: UIViewController {
     
     private func setStyle() {
         view.backgroundColor = .grayBg
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     private func setUI() {
