@@ -37,6 +37,7 @@ final class MadeTimetableView: UIView {
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.register(MadeTimetableCell.self, forCellWithReuseIdentifier: MadeTimetableCell.identifier)
         cv.backgroundColor = .clear
+        cv.showsVerticalScrollIndicator = false
         cv.dataSource = self
         cv.delegate = self
         return cv
