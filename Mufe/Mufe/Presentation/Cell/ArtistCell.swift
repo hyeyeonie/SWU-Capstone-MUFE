@@ -95,7 +95,6 @@ final class ArtistCell: UICollectionViewCell {
                 let container = UIView()
                 container.snp.makeConstraints {
                     $0.width.equalTo(90)
-                    $0.height.equalTo(109)
                 }
                 
                 let button = UIButton().then {
@@ -128,6 +127,7 @@ final class ArtistCell: UICollectionViewCell {
                 let nameLabel = UILabel().then {
                     $0.text = artist.name
                     $0.customFont(.fsm_SemiBold)
+                    $0.numberOfLines = 2
                     $0.textColor = isSelectedArtist(artist.name) ? .primary50 : .gray00
                     $0.textAlignment = .center
                 }
@@ -137,6 +137,7 @@ final class ArtistCell: UICollectionViewCell {
                 button.addTarget(self, action: #selector(artistButtonTapped(_:)), for: .touchUpInside)
                 
                 button.snp.makeConstraints {
+                    $0.top.equalToSuperview()
                     $0.centerX.equalToSuperview()
                     $0.size.equalTo(80)
                 }
@@ -144,7 +145,7 @@ final class ArtistCell: UICollectionViewCell {
                 checkBackgroundView.snp.makeConstraints {
                     $0.width.height.equalTo(24)
                     $0.top.equalTo(button.snp.top)
-                    $0.right.equalTo(button.snp.right)
+                    $0.trailing.equalTo(button.snp.trailing)
                 }
                 
                 checkmark.snp.makeConstraints {
@@ -155,7 +156,8 @@ final class ArtistCell: UICollectionViewCell {
                 
                 nameLabel.snp.makeConstraints {
                     $0.top.equalTo(button.snp.bottom).offset(8)
-                    $0.left.right.equalToSuperview()
+                    $0.leading.trailing.equalToSuperview()
+                    $0.bottom.equalToSuperview()
                 }
                 
                 hStack.addArrangedSubview(container)
