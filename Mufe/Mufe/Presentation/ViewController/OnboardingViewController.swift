@@ -32,8 +32,9 @@ class OnboardingViewController: UIViewController {
     private let titleLabel = UILabel().then {
         $0.textColor = .gray00
         $0.customFont(CustomUIFont.f2xl_Bold)
-        $0.numberOfLines = 2
+        $0.numberOfLines = 3
         $0.textAlignment = .left
+        $0.lineBreakMode = .byCharWrapping
     }
     
     private let scrollView = UIScrollView().then {
@@ -168,7 +169,7 @@ class OnboardingViewController: UIViewController {
         
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(progressBar.snp.bottom).offset(32)
-            $0.leading.equalToSuperview().offset(16)
+            $0.horizontalEdges.equalToSuperview().offset(16)
         }
         
         scrollView.snp.makeConstraints {

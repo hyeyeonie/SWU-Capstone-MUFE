@@ -28,15 +28,17 @@ enum FestivalProgressStep: Int {
     
     func attributedTitle(with festivalName: String, customFont: CustomUIFont) -> NSAttributedString {
         let fullText: String
+        let nonBreakingSpace = "\u{00A0}"
+        
         switch self {
         case .festivalSelection:
             fullText = "어떤 페스티벌에\n참여하실 예정인가요?"
         case .dateSelection:
-            fullText = "\(festivalName) 에\n언제 방문하실 예정인가요?"
+            fullText = "\(festivalName)\(nonBreakingSpace)에\n언제 방문하실 예정인가요?"
         case .timeSelection:
-            fullText = "\(festivalName) 에\n얼마나 머무르시나요?"
+            fullText = "\(festivalName)\(nonBreakingSpace)에\n얼마나 머무르시나요?"
         case .artistSelection:
-            fullText = "\(festivalName) 에\n꼭 보고 싶은 무대가 있나요?"
+            fullText = "\(festivalName)\(nonBreakingSpace)에\n꼭 보고 싶은 무대가 있나요?"
         }
         
         let paragraphStyle = NSMutableParagraphStyle()
