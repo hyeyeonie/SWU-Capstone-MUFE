@@ -49,7 +49,7 @@ final class PhotoDisplayCell: UICollectionViewCell {
     }
 
     func configure(image: UIImage) {
-        imageView.image = image ?? UIImage(named: "artist_default")
+        imageView.image = image
     }
 
     @objc private func removeButtonTapped() {
