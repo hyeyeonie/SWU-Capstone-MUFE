@@ -127,7 +127,7 @@ final class DdayFestivalCell: UICollectionViewCell {
     }
     
     private func setUI() {
-        addSubviews(
+        contentView.addSubviews(
             stageNumber, stageName,
             contentContainerView,
             currentStageContainerView, currentStageBar
@@ -152,19 +152,21 @@ final class DdayFestivalCell: UICollectionViewCell {
         }
         
         artistImage.snp.makeConstraints{
-            $0.leading.top.bottom.equalToSuperview()
+            $0.leading.top.equalToSuperview()
             $0.size.equalTo(54)
         }
         
         artistName.snp.makeConstraints{
             $0.top.equalTo(artistImage)
             $0.leading.equalTo(artistImage.snp.trailing).offset(12)
+            $0.trailing.lessThanOrEqualToSuperview()
         }
         
         timeIcon.snp.makeConstraints{
             $0.top.equalTo(artistName.snp.bottom).offset(9)
             $0.leading.equalTo(artistName)
             $0.size.equalTo(16)
+            $0.bottom.equalToSuperview()
         }
         
         runningTime.snp.makeConstraints{
@@ -175,6 +177,7 @@ final class DdayFestivalCell: UICollectionViewCell {
         duration.snp.makeConstraints {
             $0.centerY.equalTo(timeIcon)
             $0.leading.equalTo(runningTime.snp.trailing).offset(8)
+            $0.trailing.lessThanOrEqualToSuperview()
         }
         
         currentStageContainerView.snp.makeConstraints {
@@ -191,6 +194,12 @@ final class DdayFestivalCell: UICollectionViewCell {
             $0.top.equalTo(currentStageContainerView.snp.bottom).offset(8)
             $0.leading.equalTo(currentStageContainerView).inset(8)
         }
+        
+        contentContainerView.snp.makeConstraints {
+            $0.bottom.equalToSuperview().inset(20)
+            $0.top.equalTo(stageNumber.snp.bottom).offset(16)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
     }
     
     @objc private func updateCurrent() {
@@ -200,6 +209,7 @@ final class DdayFestivalCell: UICollectionViewCell {
         
         contentContainerView.snp.remakeConstraints {
             $0.bottom.equalToSuperview().inset(20)
+            $0.trailing.equalToSuperview().inset(20)
             
             if isCurrent {
                 $0.top.equalTo(currentStageContainerView.snp.bottom).offset(8)
