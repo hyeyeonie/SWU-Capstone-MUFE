@@ -70,7 +70,7 @@ final class TimetableCell: UICollectionViewCell {
     }
     
     private func setUI() {
-        addSubviews(
+        contentView.addSubviews(
             artistImageView, nameLabel,
             locationIcon, locationLabel,
             timeIcon, timeLabel,

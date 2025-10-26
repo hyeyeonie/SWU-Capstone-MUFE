@@ -42,7 +42,6 @@ final class PersonalTimetableViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 343, height: 201)
         layout.minimumLineSpacing = 12
 
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -70,7 +69,9 @@ final class PersonalTimetableViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        
         updateCollectionViewHeight()
         updateRunningTime()
     }
@@ -86,7 +87,6 @@ final class PersonalTimetableViewController: UIViewController {
     
     private func setStyle() {
         view.backgroundColor = .grayBg
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     private func setUI() {
@@ -112,7 +112,7 @@ final class PersonalTimetableViewController: UIViewController {
         
         collectionView.snp.makeConstraints {
             $0.top.equalTo(mufeImageView.snp.bottom)
-            $0.horizontalEdges.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(16)
             $0.bottom.equalTo(buttonBackgroundView.snp.top)
         }
         
@@ -227,6 +227,16 @@ extension PersonalTimetableViewController: UICollectionViewDataSource {
         cell.configure(with: timetable)
         return cell
     }
+}
+
+extension PersonalTimetableViewController: UICollectionViewDelegateFlowLayout {
+     func collectionView(_ collectionView: UICollectionView,
+                         layout collectionViewLayout: UICollectionViewLayout,
+                         sizeForItemAt indexPath: IndexPath) -> CGSize {
+         
+         let width = collectionView.bounds.width
+         return CGSize(width: width, height: 201)
+     }
 }
 
 extension PersonalTimetableViewController: UICollectionViewDelegate {
