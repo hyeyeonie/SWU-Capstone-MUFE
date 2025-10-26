@@ -42,7 +42,7 @@ final class HomeViewController: UIViewController {
     private let titleLabel = UILabel().then {
         $0.numberOfLines = 2
         $0.textColor = .gray20
-        $0.customFont(.fxl_Medium)
+        $0.customFont(.title_Medium)
         $0.textAlignment = .left
     }
     
@@ -123,7 +123,10 @@ final class HomeViewController: UIViewController {
             let attributedText = NSMutableAttributedString(string: text)
             if let range = text.range(of: dDayText) {
                 let nsRange = NSRange(range, in: text)
-                attributedText.addAttribute(.font, value: CustomUIFont.fxl_Bold.font, range: nsRange)
+                attributedText.addAttributes([
+                    .font: CustomUIFont.title_SemiBold.font,
+                    .foregroundColor: UIColor.gray00
+                ], range: nsRange)
             }
             titleLabel.attributedText = attributedText
             
@@ -163,7 +166,10 @@ final class HomeViewController: UIViewController {
             let attributedText = NSMutableAttributedString(string: text)
             if let range = text.range(of: artistName) {
                 let nsRange = NSRange(range, in: text)
-                attributedText.addAttribute(.font, value: CustomUIFont.fxl_Bold.font, range: nsRange)
+                attributedText.addAttributes([
+                    .font: CustomUIFont.title_SemiBold.font,
+                    .foregroundColor: UIColor.gray00,
+                ], range: nsRange)
             }
             titleLabel.attributedText = attributedText
             dDayFestivalView.updateFestivalTimes(todayTimetables)

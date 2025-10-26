@@ -230,31 +230,41 @@ final class AfterFestivalView: UIView {
     func setFestival(_ festival: SavedFestival) {
         let fullText = "\(festival.festivalName) 의\n후기를 작성해 보세요!"
         let attributedString = NSMutableAttributedString(string: fullText)
+
+        let baseFont = CustomUIFont.title_Medium.font
+        let boldFont = CustomUIFont.title_SemiBold.font
         
-        let baseFont = CustomUIFont.fxl_Medium.font
-        let boldFont = CustomUIFont.fxl_Bold.font
+        let baseColor = UIColor.gray20
+        let boldColor = UIColor.gray00
         
-        let lineSpacing = CustomUIFont.fxl_Medium.lineSpacing
+        let lineSpacing = CustomUIFont.title_Medium.lineSpacing
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = lineSpacing
         
-        attributedString.addAttribute(.font, value: baseFont, range: NSRange(location: 0, length: fullText.count))
-        attributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: fullText.count))
+        let fullRange = NSRange(location: 0, length: fullText.count)
+        attributedString.addAttributes([
+            .font: baseFont,
+            .foregroundColor: baseColor,
+            .paragraphStyle: paragraphStyle
+        ], range: fullRange)
         
         if let range = fullText.range(of: festival.festivalName) {
             let nsRange = NSRange(range, in: fullText)
-            attributedString.addAttribute(.font, value: boldFont, range: nsRange)
+            attributedString.addAttributes([
+                .font: boldFont,
+                .foregroundColor: boldColor
+            ], range: nsRange)
         }
+        
         titleLabel.attributedText = attributedString
-        posterImage.image = UIImage(named: festival.festivalImageName)
+
+        posterImage.image = UIImage(named: festival.festivalImageName) ?? UIImage(resource: .festivalDefault)
         dDayLabel.text = "종료"
         festivalNameLabel.text = festival.festivalName
         festivalTime.text = "\(festival.startDate) - \(festival.endDate)"
         festivalLocation.text = festival.location
-        
         artistStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         let artists = festival.timetables.prefix(5)
-        
         artists.forEach { timetable in
             let artistView = createArtistContainer(image: UIImage(named: timetable.artistImage) ?? UIImage(), name: timetable.artistName)
             artistStackView.addArrangedSubview(artistView)
