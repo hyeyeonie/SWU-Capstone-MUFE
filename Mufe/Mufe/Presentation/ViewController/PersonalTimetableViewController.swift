@@ -230,13 +230,13 @@ extension PersonalTimetableViewController: UICollectionViewDataSource {
 }
 
 extension PersonalTimetableViewController: UICollectionViewDelegateFlowLayout {
-     func collectionView(_ collectionView: UICollectionView,
-                         layout collectionViewLayout: UICollectionViewLayout,
-                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-         
-         let width = collectionView.bounds.width
-         return CGSize(width: width, height: 201)
-     }
+    func collectionView(_ collectionView: UICollectionView,
+    layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let width = collectionView.bounds.width
+        return CGSize(width: width, height: 201)
+    }
 }
 
 extension PersonalTimetableViewController: UICollectionViewDelegate {

@@ -182,11 +182,17 @@ final class HomeViewController: UIViewController {
     private func loadSavedData() {
         do {
             let descriptor = FetchDescriptor<SavedFestival>()
-            self.savedFestivals = try SwiftDataManager.shared.context.fetch(descriptor).sorted { $0.startDate < $1.startDate }
+            let fetchedFestivals = try SwiftDataManager.shared.context.fetch(descriptor)
+            self.savedFestivals = fetchedFestivals.sorted {
+                if $0.startDate != $1.startDate {
+                    return $0.startDate < $1.startDate
+                }
+                let day1 = Int($0.selectedDay.components(separatedBy: CharacterSet.decimalDigits.inverted).first ?? "0") ?? 0
+                let day2 = Int($1.selectedDay.components(separatedBy: CharacterSet.decimalDigits.inverted).first ?? "0") ?? 0
+                return day1 < day2
+            }
             print("📚 홈: \(savedFestivals.count)개의 저장된 페스티벌을 불러왔습니다.")
-            
             determineCurrentState()
-            
         } catch {
             print("🚨 홈: 페스티벌 데이터 불러오기 실패: \(error)")
             currentState = .emptyFestival
@@ -201,45 +207,64 @@ final class HomeViewController: UIViewController {
         }
         
         let now = Date()
+        let todayStart = Calendar.current.startOfDay(for: now)
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy.MM.dd"
         formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
         
-        let dDayFestivals = savedFestivals.filter { festival in
-            guard let start = formatter.date(from: festival.startDate),
-                  let end = formatter.date(from: festival.endDate) else { return false }
-            let todayStart = Calendar.current.startOfDay(for: now)
-            return todayStart >= Calendar.current.startOfDay(for: start) && todayStart <= Calendar.current.startOfDay(for: end)
+        let todaySavedFestival = savedFestivals.first { festival in
+            guard let festivalStartDate = formatter.date(from: festival.startDate),
+                  let dayOffsetString = festival.selectedDay.components(separatedBy: CharacterSet.decimalDigits.inverted).first,
+                  let dayOffset = Int(dayOffsetString) else {
+                return false
+            }
+            guard let thisSavedDayDate = Calendar.current.date(byAdding: .day, value: dayOffset - 1, to: festivalStartDate) else {
+                return false
+            }
+            
+            let c1 = Calendar.current.dateComponents([.year, .month, .day], from: thisSavedDayDate)
+            let c2 = Calendar.current.dateComponents([.year, .month, .day], from: todayStart)
+            return c1.year == c2.year && c1.month == c2.month && c1.day == c2.day
         }
-        
-        if let dDayFestival = dDayFestivals.first {
+        if let dDayFestival = todaySavedFestival {
             self.selectedFestival = dDayFestival
             self.currentState = .dDayFestival
             return
         }
-        
+        let ongoingFestivalPeriods = savedFestivals.filter { festival in
+            guard let start = formatter.date(from: festival.startDate),
+                  let end = formatter.date(from: festival.endDate) else { return false }
+            let startDateOnly = Calendar.current.startOfDay(for: start)
+            let endDateOnly = Calendar.current.startOfDay(for: end)
+            return todayStart >= startDateOnly && todayStart <= endDateOnly
+        }
+        if let ongoingFestival = ongoingFestivalPeriods.first {
+            self.selectedFestival = ongoingFestival
+            self.currentState = .beforeFestival
+            return
+        }
         let upcomingFestivals = savedFestivals.filter { festival in
             guard let start = formatter.date(from: festival.startDate) else { return false }
-            return now < start
+            return todayStart < Calendar.current.startOfDay(for: start)
         }
-        
         if let nextFestival = upcomingFestivals.first {
             self.selectedFestival = nextFestival
             self.currentState = .beforeFestival
             return
         }
-        
         if let lastFestival = savedFestivals.last {
             let dismissedName = UserDefaults.standard.string(forKey: dismissedAfterFestivalKey)
             if lastFestival.festivalName == dismissedName {
-                print("✅ 홈: \(String(describing: dismissedName)) 페스티벌의 'After' 뷰는 이미 닫았습니다.")
                 self.selectedFestival = nil
                 self.currentState = .emptyFestival
                 return
             }
             self.selectedFestival = lastFestival
             self.currentState = .afterFestival
+            return
         }
+        self.selectedFestival = nil
+        self.currentState = .emptyFestival
     }
     
     private func convertSavedFestivalToFestival(_ savedFestival: SavedFestival) -> Festival {
