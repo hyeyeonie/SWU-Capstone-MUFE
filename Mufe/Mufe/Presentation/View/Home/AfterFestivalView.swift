@@ -264,9 +264,9 @@ final class AfterFestivalView: UIView {
         festivalTime.text = "\(festival.startDate) - \(festival.endDate)"
         festivalLocation.text = festival.location
         artistStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        let artists = festival.timetables.prefix(5)
+        let artists = festival.timetables
         artists.forEach { timetable in
-            let artistView = createArtistContainer(image: UIImage(named: timetable.artistImage) ?? UIImage(), name: timetable.artistName)
+            let artistView = createArtistContainer(image: UIImage(named: timetable.artistImage) ?? UIImage(resource: .artistDefault), name: timetable.artistName)
             artistStackView.addArrangedSubview(artistView)
         }
     }
