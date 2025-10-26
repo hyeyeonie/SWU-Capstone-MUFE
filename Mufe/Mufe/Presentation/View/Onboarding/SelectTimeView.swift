@@ -17,7 +17,6 @@ final class SelectTimeView: UIView {
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.itemSize = CGSize(width: 343, height: 191)
         
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.backgroundColor = .grayBg
@@ -55,6 +54,7 @@ final class SelectTimeView: UIView {
     
     private func setDelegate() {
         collectionView.dataSource = self
+        collectionView.delegate = self
     }
     
     func updateItems(_ items: [DateItem]) {
@@ -91,6 +91,15 @@ extension SelectTimeView: UICollectionViewDataSource {
         }
         cell.configure(with: items[indexPath.item])
         return cell
+    }
+}
+
+extension SelectTimeView: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = collectionView.bounds.width
+        return CGSize(width: width, height: 191)
     }
 }
 

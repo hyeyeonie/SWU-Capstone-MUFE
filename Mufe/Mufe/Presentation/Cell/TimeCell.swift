@@ -22,7 +22,7 @@ final class TimeCell: UICollectionViewCell {
     }
     
     private let ticketLine = UIImageView().then {
-        $0.contentMode = .scaleAspectFit
+        $0.contentMode = .scaleToFill
         $0.image = UIImage(named: "ticketLine2")
     }
     
@@ -95,7 +95,7 @@ final class TimeCell: UICollectionViewCell {
     }
     
     private func setUI() {
-        addSubviews(dayLabel, dateLabel, ticketLine,
+        contentView.addSubviews(dayLabel, dateLabel, ticketLine,
                     enterTitle, leaveTitle,
                     enterTimePicker, leaveTimePicker, wave)
     }
