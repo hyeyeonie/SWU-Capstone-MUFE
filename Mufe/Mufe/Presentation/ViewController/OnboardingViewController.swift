@@ -276,9 +276,9 @@ class OnboardingViewController: UIViewController {
             madeVC.selectedArtistNames = selectedArtists
             madeVC.timetablePreference = preference
             madeVC.isFromHome = false
-            
             madeVC.allSavedDays = existingSavedDays
-
+            
+            madeVC.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(madeVC, animated: true)
             
         }else if let nextStep = currentStep.next() {
