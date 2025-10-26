@@ -52,15 +52,13 @@ final class TicketCell: UICollectionViewCell {
     }
     
     private func setUI() {
-        addSubviews(ticketButton)
+        contentView.addSubviews(ticketButton)
         ticketButton.addSubviews(dayLabel, dateLabel, ticketLine, isMadeLabel)
     }
     
     private func setLayout() {
         ticketButton.snp.makeConstraints {
             $0.edges.equalToSuperview()
-            $0.width.equalTo(343)
-            $0.height.equalTo(80)
         }
         
         dayLabel.snp.makeConstraints {
