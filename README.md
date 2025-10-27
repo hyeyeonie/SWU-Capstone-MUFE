@@ -106,8 +106,7 @@ MUFE의 서비스 가치는 「실패 없는 뮤직페스티벌 경험을 제공
     └── 💎 Common
         ├── Component                 # 여러 기능에서 공통으로 쓰는 UI (e.g. Daytag)
         ├── Cell                      # 여러 기능에서 공통으로 쓰는 셀 (e.g. FestivalCell)
-        ├── Model                     # 공통 모델 (e.g. FestivalProgressStep)
-        └── Base                      # BaseViewController 등
+        └── Model                     # 공통 모델 (e.g. FestivalProgressStep)
 
 ~~~~
 
