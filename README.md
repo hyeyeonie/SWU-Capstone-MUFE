@@ -38,46 +38,76 @@ MUFE의 서비스 가치는 「실패 없는 뮤직페스티벌 경험을 제공
 ~~~~
 
 📁 Mufe
-├── Application
-│   ├── AppDelegate.swift
-│   └── SceneDelegate.swift
-├── Assets.xcassets
-│   ├── AccentColor.colorset
-│   ├── AppIcon.appiconset
-│   ├── artistImg.imageset
-│   ├── check.imageset
-│   ├── Contents.json
-│   ├── Day1
-│   ├── Day2
-│   ├── Day3
-│   ├── FestivalPoster
-│   ├── fstImg.imageset
-│   ├── Gray
-│   ├── loading.imageset
-│   ├── mufe.imageset
-│   ├── Primary
-│   ├── ticketLine.imageset
-│   └── ticketLine2.imageset
-├── Config.xcconfig
-├── Extension
-│   ├── Color+.swift
-│   ├── Font+.swift
-│   └── UIVIew+.swift
+├── 📱 Application
+│   ├── AppDelegate.swift
+│   └── SceneDelegate.swift
+│
+├── 💾 Data
+│   └── SwiftData
+│       ├── SavedFestival.swift       # SwiftData 모델 (엔티티)
+│       └── SwiftDataManager.swift    # 데이터 관리 매니저
+│
+├── ✨ Extension
+│   ├── Color+                        # UIColor 확장
+│   ├── Date+                         # Date 확장
+│   ├── Font+                         # UIFont 확장
+│   └── UIView+                       # UIView 확장
+│
+├── ☁️ Network
+│   ├── DTO                           # 데이터 전송 객체 (Request/Response)
+│   ├── GetInfoService.swift          # API 서비스
+│   └── NetworkError.swift            # 네트워크 에러 정의
+│
+├── 🖼️ Resource
+│   ├── Assets.xcassets               # 이미지, 색상 리소스
+│   └── Font                          # 커스텀 폰트 파일
+│
 ├── Info.plist
-├── Network
-│   ├── DTO
-│   ├── FestivalPromptBuilder.swift
-│   ├── GetInfoService.swift
-│   └── NetworkError.swift
-├── Presentation
-│   ├── Cell
-│   ├── Model
-│   ├── OnboardingViewController.swift
-│   ├── PersonalTimetableViewController.swift
-│   ├── View
-│   └── ViewController.swift
-└── Resource
-    └── Font
+│
+└── 🖥️ Presentation
+    │
+    ├── 🏠 Home
+    │   ├── HomeViewController.swift
+    │   └── View
+    │       ├── BeforeFestivalView.swift
+    │       ├── DdayFestivalView.swift
+    │       ├── AfterFestivalView.swift
+    │       └── ...
+    │
+    ├── 🚀 Onboarding
+    │   ├── OnboardingViewController.swift
+    │   ├── View
+    │   │   ├── SelectFestivalView.swift
+    │   │   ├── SelectDateView.swift
+    │   │   └── ...
+    │   └── Component
+    │       └── ProgressbarView.swift
+    │
+    ├── 🗓️ Timetable
+    │   ├── MadeTimetableViewController.swift
+    │   ├── View
+    │   │   ├── MadeTimetableView.swift
+    │   │   └── ...
+    │   └── Cell
+    │       ├── ArtistCell.swift
+    │       ├── TimeCell.swift
+    │       └── ...
+    │
+    ├── 🏛️ History
+    │   ├── HistoryViewController.swift
+    │   ├── View
+    │   │   ├── HistoryMadeView.swift
+    │   │   └── ...
+    │   └── Cell
+    │       ├── HistoryCell.swift
+    │       ├── PhotoAddCell.swift
+    │       └── ...
+    │
+    └── 💎 Common
+        ├── Component                 # 여러 기능에서 공통으로 쓰는 UI (e.g. Daytag)
+        ├── Cell                      # 여러 기능에서 공통으로 쓰는 셀 (e.g. FestivalCell)
+        ├── Model                     # 공통 모델 (e.g. FestivalProgressStep)
+        └── Base                      # BaseViewController 등
 
 ~~~~
 
