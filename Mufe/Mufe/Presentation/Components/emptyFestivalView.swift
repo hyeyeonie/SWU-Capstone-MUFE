@@ -60,10 +60,15 @@ final class emptyFestivalView: UIView {
         contentLabel.text = text
     }
     
-    func setImageSize(_ size: CGFloat) {
+    func setMufeImage(_ image: UIImage?) {
+        mufeImageView.image = image
+    }
+    
+    func setImageSize(width: CGFloat, height: CGFloat) {
         mufeImageView.snp.remakeConstraints {
             $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(size)
+            $0.width.equalTo(width)
+            $0.height.equalTo(height)
         }
     }
 }

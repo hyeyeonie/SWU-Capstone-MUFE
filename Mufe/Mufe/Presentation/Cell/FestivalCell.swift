@@ -24,7 +24,8 @@ final class FestivalCell: UICollectionViewCell {
     private let fstNameLabel = UILabel().then {
         $0.customFont(.flg_Bold)
         $0.textColor = .gray00
-        $0.numberOfLines = 2
+        $0.numberOfLines = 1
+        $0.lineBreakMode = .byTruncatingTail
     }
     
     private let fstDateLabel = UILabel().then {
@@ -46,9 +47,10 @@ final class FestivalCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     func configure(with festival: Festival) {
-        posterImageView.image = UIImage(named: festival.imageName)
+        let image = UIImage(named: festival.imageName)
+        posterImageView.image = image ?? UIImage(named: "festival_default")
         fstNameLabel.text = festival.name
         fstDateLabel.text = "\(festival.startDate) - \(festival.endDate)"
         fstLocationLabel.text = festival.location
@@ -74,7 +76,7 @@ final class FestivalCell: UICollectionViewCell {
         fstNameLabel.snp.makeConstraints {
             $0.top.equalTo(posterImageView)
             $0.leading.equalTo(posterImageView.snp.trailing).offset(12)
-            $0.trailing.equalToSuperview()
+            $0.trailing.equalToSuperview().inset(10)
         }
         
         fstDateLabel.snp.makeConstraints {

@@ -15,7 +15,7 @@ class GetInfoService {
     private let apiKey = Bundle.main.infoDictionary?["API_KEY"] as! String
     private let urlString = "https://api.openai.com/v1/chat/completions"
     
-    /// GPT API 호출 후 Timetable 배열을 리턴하는 함수
+    // GPT API 호출 후 Timetable 배열을 리턴하는 함수
     func fetchFestivalTimetable(preference: Preference, festival: Festival) async throws -> [Timetable] {
         guard let url = URL(string: urlString) else {
             throw NetworkError.requestEncodingError
@@ -62,7 +62,7 @@ class GetInfoService {
         return parseTimetableFromGPTResponse(content: content)
     }
     
-    /// GPT 응답 문자열에서 Timetable 배열 파싱 함수
+    // GPT 응답 문자열에서 Timetable 배열 파싱 함수
     private func parseTimetableFromGPTResponse(content: String) -> [Timetable] {
         guard let startIndex = content.firstIndex(of: "{"),
               let endIndex = content.lastIndex(of: "}") else {
@@ -72,7 +72,6 @@ class GetInfoService {
         
         let jsonString = String(content[startIndex...endIndex])
         
-        // 여기서 jsonData가 실제로 선언되고 초기화됨
         guard let jsonData = jsonString.data(using: .utf8) else {
             print("UTF8 변환 실패")
             return []

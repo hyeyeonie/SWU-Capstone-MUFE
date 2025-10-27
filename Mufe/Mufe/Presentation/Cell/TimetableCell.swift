@@ -70,7 +70,7 @@ final class TimetableCell: UICollectionViewCell {
     }
     
     private func setUI() {
-        addSubviews(
+        contentView.addSubviews(
             artistImageView, nameLabel,
             locationIcon, locationLabel,
             timeIcon, timeLabel,
@@ -128,14 +128,13 @@ final class TimetableCell: UICollectionViewCell {
         locationLabel.text = data.location
         timeLabel.text = "\(data.startTime) - \(data.endTime), \(data.runningTime)분"
         genreLabel.text = data.script
-        artistImageView.image = UIImage(named: data.imageName) ?? UIImage(named: "artistImg")
+        artistImageView.image = UIImage(named: data.imageName) ?? UIImage(resource: .artistDefault)
     }
     
     func hasFinalConsonant(_ word: String) -> Bool {
         guard let last = word.last else { return false }
         let scalarValue = UnicodeScalar(String(last))?.value ?? 0
         
-        // 한글 유니코드 범위: AC00 ~ D7A3
         if scalarValue < 0xAC00 || scalarValue > 0xD7A3 { return false }
         let index = scalarValue - 0xAC00
         let jongseong = index % 28

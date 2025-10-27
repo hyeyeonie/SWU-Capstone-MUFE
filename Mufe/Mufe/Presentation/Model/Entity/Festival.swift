@@ -16,6 +16,24 @@ struct Festival {
     let location: String
     let artistSchedule: [String: [ArtistInfo]]
     let days: [FestivalDay]
+    
+    init(
+        imageName: String,
+        name: String,
+        startDate: String,
+        endDate: String,
+        location: String,
+        artistSchedule: [String: [ArtistInfo]],
+        days: [FestivalDay]
+    ) {
+        self.imageName = imageName
+        self.name = name
+        self.startDate = startDate
+        self.endDate = endDate
+        self.location = location
+        self.artistSchedule = artistSchedule
+        self.days = days
+    }
 }
 
 struct FestivalDay {
@@ -34,6 +52,19 @@ struct ArtistSchedule {
     let image: String
     let startTime: String
     let endTime: String
+    
+    init(
+        name: String,
+        image: String,
+        startTime: String,
+        endTime: String
+    ) {
+        self.name = name
+        self.image = image
+        self.startTime = startTime
+        self.endTime = endTime
+    }
+    
     var duration: Int {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"

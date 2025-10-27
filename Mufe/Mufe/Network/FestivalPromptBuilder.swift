@@ -22,7 +22,8 @@ struct FestivalPromptBuilder {
         guard let festival = DummyFestivalData.festivals.first(where: { $0.name == festivalName }) else {
             return ""
         }
-        // 선택한 날짜(예: "1일차")에 해당하는 아티스트 스케줄 가져오기
+        
+        // 선택한 날짜에 해당하는 아티스트 스케줄 가져오기
         guard let daySchedule = festival.artistSchedule[preference.selectedDay] else {
             return ""
         }

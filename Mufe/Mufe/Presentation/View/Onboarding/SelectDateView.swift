@@ -23,7 +23,6 @@ final class SelectDateView: UIView {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 16
-        layout.itemSize = CGSize(width: 343, height: 80)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .grayBg
@@ -108,7 +107,6 @@ final class SelectDateView: UIView {
 }
 
 extension SelectDateView: UICollectionViewDataSource, UICollectionViewDelegate {
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return dates.count
     }
@@ -131,5 +129,14 @@ extension SelectDateView: UICollectionViewDataSource, UICollectionViewDelegate {
         guard !selectedItem.isMade else { return }
         
         delegate?.didSelectDate(selectedItem)
+    }
+}
+
+extension SelectDateView: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = collectionView.bounds.width
+        return CGSize(width: width, height: 80)
     }
 }

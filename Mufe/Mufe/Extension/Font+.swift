@@ -14,9 +14,20 @@ enum PretendardStyle: String {
     case bold = "Pretendard-Bold"
 }
 
+enum PaperlogyStyle: String {
+    case medium = "Paperlogy-5Medium"
+    case semiBold = "Paperlogy-6SemiBold"
+}
+
 struct CustomUIFont {
     let font: UIFont
     let lineSpacing: CGFloat
+    
+    static let title_Medium = CustomUIFont(font: UIFont (name: PaperlogyStyle.medium.rawValue, size: 24) ??
+    UIFont.systemFont(ofSize: 24), lineSpacing: 24 * 0.375)
+    static let title_SemiBold = CustomUIFont(font: UIFont (name: PaperlogyStyle.semiBold.rawValue, size: 24) ??
+    UIFont.systemFont(ofSize: 24), lineSpacing: 24 *
+    0.375)
 
     // MARK: - 3xl (32pt) - 150%
     static let f3xl_Regular: CustomUIFont = {

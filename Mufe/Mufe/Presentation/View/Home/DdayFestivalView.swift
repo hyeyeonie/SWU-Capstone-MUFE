@@ -15,13 +15,13 @@ final class DdayFestivalView: UIView {
     // MARK: - Properties
     
     private var timetables: [SavedTimetable] = []
+    private let dummyCell = DdayFestivalCell(frame: .zero)
     
     // MARK: - UI Components
     
     private lazy var festivalCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.estimatedItemSize = CGSize(width: 343, height: 139)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
@@ -58,13 +58,14 @@ final class DdayFestivalView: UIView {
     private func setLayout() {
         festivalCollectionView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(20)
-            $0.leading.trailing.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(16)
             $0.bottom.equalToSuperview()
         }
     }
     
     private func setDelegate() {
         festivalCollectionView.dataSource = self
+        festivalCollectionView.delegate = self
         festivalCollectionView.contentInset.bottom = 33
     }
     
@@ -92,6 +93,25 @@ extension DdayFestivalView: UICollectionViewDataSource {
         cell.configure(with: timetable)
 
         return cell
+    }
+}
+
+extension DdayFestivalView: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let targetWidth = collectionView.bounds.width
+        let timetable = timetables[indexPath.item]
+        dummyCell.configure(with: timetable)
+        
+        let calculatedSize = dummyCell.contentView.systemLayoutSizeFitting(
+            CGSize(width: targetWidth, height: UIView.layoutFittingCompressedSize.height),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        )
+        
+        return calculatedSize
     }
 }
 

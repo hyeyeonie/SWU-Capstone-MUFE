@@ -27,11 +27,10 @@ final class TimetableViewController: UIViewController {
     private let addButton = UIButton(type: .system).then {
         var config = UIButton.Configuration.filled()
         
-        let attrs: [NSAttributedString.Key: Any] = [
-            .font: CustomUIFont.fsm_SemiBold.font,
-            .foregroundColor: UIColor.gray00
-        ]
-        config.attributedTitle = AttributedString("추가하기", attributes: AttributeContainer(attrs))
+        var titleAttr = AttributedString("추가하기")
+        titleAttr.font = CustomUIFont.fsm_SemiBold.font
+        titleAttr.foregroundColor = .gray00
+        config.attributedTitle = titleAttr
         
         let plusImage = UIImage(systemName: "plus")?
             .withConfiguration(UIImage.SymbolConfiguration(pointSize: 14, weight: .regular))
@@ -48,6 +47,8 @@ final class TimetableViewController: UIViewController {
     
     private let emptyView = emptyFestivalView().then {
         $0.setContentText("페스티벌 시간표를 만들어볼까요?")
+        $0.setMufeImage(.timetableEmpty)
+        $0.setImageSize(width: 140, height: 140)
     }
     
     private let timetableTabView = TimetableTabView()
@@ -57,6 +58,7 @@ final class TimetableViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
         loadSavedData()
     }
     
@@ -75,7 +77,6 @@ final class TimetableViewController: UIViewController {
     
     private func setStyle() {
         view.backgroundColor = .grayBg
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     private func setUI() {
@@ -105,6 +106,7 @@ final class TimetableViewController: UIViewController {
     }
     
     // MARK: - Actions
+    
     private func setAction() {
         addButton.addTarget(self, action: #selector(didTapAddButton), for: .touchUpInside)
         
@@ -124,7 +126,7 @@ final class TimetableViewController: UIViewController {
             let madeVC = MadeTimetableViewController()
             
             madeVC.festival = originalFestival
-            madeVC.savedFestival = firstDayFestival // 초기 화면 구성을 위해 여전히 필요합니다.
+            madeVC.savedFestival = firstDayFestival
             
             madeVC.allSavedDays = allSavedFestivals
             
@@ -171,10 +173,7 @@ final class TimetableViewController: UIViewController {
     
     private func loadSavedData() {
         do {
-            // 데이터베이스에서 모든 SavedFestival 데이터를 가져오라는 '요청서(Descriptor)'를 만듭니다.
             let descriptor = FetchDescriptor<SavedFestival>()
-
-            // 중앙 관리자를 통해 요청서를 실행하고, 결과를 받아와 배열에 저장합니다.
             self.savedFestivals = try SwiftDataManager.shared.context.fetch(descriptor)
 
             print("📚 \(savedFestivals.count)개의 저장된 페스티벌을 불러왔습니다.")

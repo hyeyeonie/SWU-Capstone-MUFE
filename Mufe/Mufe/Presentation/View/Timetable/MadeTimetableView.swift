@@ -37,6 +37,7 @@ final class MadeTimetableView: UIView {
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.register(MadeTimetableCell.self, forCellWithReuseIdentifier: MadeTimetableCell.identifier)
         cv.backgroundColor = .clear
+        cv.showsVerticalScrollIndicator = false
         cv.dataSource = self
         cv.delegate = self
         return cv
@@ -54,7 +55,7 @@ final class MadeTimetableView: UIView {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    // MARK: - Setup & Layout
+    // MARK: - Setup Methods
     
     private func setStyle() {
         backgroundColor = .grayBg
@@ -95,7 +96,6 @@ final class MadeTimetableView: UIView {
         }
         
         let deleteAction = UIAction(title: "삭제하기", image: UIImage(systemName: "trash"), attributes: .destructive) { [weak self] _ in
-            // "삭제하기"가 눌리면, 외부(Controller)에서 설정해준 클로저를 실행
             self?.onDeleteButtonTapped?()
         }
         
@@ -113,7 +113,7 @@ final class MadeTimetableView: UIView {
     }
 }
 
-// MARK: - Extensions (CollectionView)
+// MARK: - Extensions
 
 extension MadeTimetableView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     

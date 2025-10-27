@@ -8,7 +8,6 @@
 import SwiftUI
 
 extension Color {
-    // 그라데이션 컬러
     static var btmBar: LinearGradient {
         LinearGradient(
             stops: [

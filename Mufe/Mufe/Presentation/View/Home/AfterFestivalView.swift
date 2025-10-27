@@ -93,7 +93,6 @@ final class AfterFestivalView: UIView {
         return stackView
     }()
     
-    // Buttons
     private let buttonBackgroundView = UIImageView().then {
         $0.image = UIImage(named: "buttonBackground")
         $0.isUserInteractionEnabled = true
@@ -211,7 +210,6 @@ final class AfterFestivalView: UIView {
             $0.bottom.equalToSuperview().inset(20)
         }
         
-        // Buttons
         buttonBackgroundView.snp.makeConstraints {
             $0.horizontalEdges.bottom.equalToSuperview()
             $0.height.equalTo(101)
@@ -230,49 +228,57 @@ final class AfterFestivalView: UIView {
     }
     
     func setFestival(_ festival: SavedFestival) {
-        // 1. Title Label 업데이트
         let fullText = "\(festival.festivalName) 의\n후기를 작성해 보세요!"
         let attributedString = NSMutableAttributedString(string: fullText)
+
+        let baseFont = CustomUIFont.title_Medium.font
+        let boldFont = CustomUIFont.title_SemiBold.font
         
-        let baseFont = CustomUIFont.fxl_Medium.font
-        let boldFont = CustomUIFont.fxl_Bold.font
+        let baseColor = UIColor.gray20
+        let boldColor = UIColor.gray00
         
-        let lineSpacing = CustomUIFont.fxl_Medium.lineSpacing
+        let lineSpacing = CustomUIFont.title_Medium.lineSpacing
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = lineSpacing
         
-        attributedString.addAttribute(.font, value: baseFont, range: NSRange(location: 0, length: fullText.count))
-        attributedString.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: fullText.count))
+        let fullRange = NSRange(location: 0, length: fullText.count)
+        attributedString.addAttributes([
+            .font: baseFont,
+            .foregroundColor: baseColor,
+            .paragraphStyle: paragraphStyle
+        ], range: fullRange)
         
         if let range = fullText.range(of: festival.festivalName) {
             let nsRange = NSRange(range, in: fullText)
-            attributedString.addAttribute(.font, value: boldFont, range: nsRange)
+            attributedString.addAttributes([
+                .font: boldFont,
+                .foregroundColor: boldColor
+            ], range: nsRange)
         }
-        titleLabel.attributedText = attributedString
         
-        // 2. Component View 내부 정보 업데이트
-        posterImage.image = UIImage(named: festival.festivalImageName)
+        titleLabel.attributedText = attributedString
+
+        posterImage.image = UIImage(named: festival.festivalImageName) ?? UIImage(resource: .festivalDefault)
         dDayLabel.text = "종료"
         festivalNameLabel.text = festival.festivalName
         festivalTime.text = "\(festival.startDate) - \(festival.endDate)"
         festivalLocation.text = festival.location
-        
-        // 3. 아티스트 목록 업데이트 (timetables에서 가져오기)
         artistStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        let artists = festival.timetables.prefix(5) // 최대 5명만 보여주기
-        
+        let artists = festival.timetables
         artists.forEach { timetable in
-            let artistView = createArtistContainer(image: UIImage(named: timetable.artistImage) ?? UIImage(), name: timetable.artistName)
+            let artistView = createArtistContainer(image: UIImage(named: timetable.artistImage) ?? UIImage(resource: .artistDefault), name: timetable.artistName)
             artistStackView.addArrangedSubview(artistView)
         }
     }
     
     @objc private func leftButtonTapped() {
         print("다음에 하기")
+        delegate?.didTapLaterButton()
     }
     
     @objc private func rightButtonTapped() {
         print("추억 남기기")
+        delegate?.didTapCreateMemoryButton()
     }
     
     private func createArtistContainer(image: UIImage, name: String) -> UIStackView {

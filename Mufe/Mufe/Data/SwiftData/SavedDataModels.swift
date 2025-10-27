@@ -8,10 +8,9 @@
 import Foundation
 import SwiftData
 
-// 최종적으로 저장될 페스티벌 시간표 정보
 @Model
 final class SavedFestival {
-    // ⭐️ 고유 ID: 같은 페스티벌의 같은 날짜는 덮어쓰도록 설정합니다.
+    // 중복 방지를 위한 고유 id
     @Attribute(.unique) var id: String
 
     var festivalName: String
@@ -22,13 +21,12 @@ final class SavedFestival {
     var selectedDay: String
     var selectedDate: String
 
-    // ⭐️ 이 페스티벌에 속한 타임테이블 목록 (1:N 관계)
-    // 페스티벌이 삭제되면, 속한 타임테이블도 함께 삭제됩니다.
-    @Relationship(deleteRule: .cascade)
+    // 페스티벌이 삭제되면, 속한 타임테이블도 함께 삭제
+    @Relationship(deleteRule: .cascade, inverse: \SavedTimetable.savedFestival)
     var timetables: [SavedTimetable] = []
 
     init(festival: Festival, selectedDateItem: DateItem, timetables: [SavedTimetable]) {
-        self.id = "\(festival.name)_\(selectedDateItem.day)" // 예: "뷰티풀민트라이프_1일차"
+        self.id = "\(festival.name)_\(selectedDateItem.day)"
         self.festivalName = festival.name
         self.festivalImageName = festival.imageName
         self.startDate = festival.startDate
@@ -50,8 +48,11 @@ final class SavedTimetable {
     var startTime: String
     var endTime: String
     var runningTime: Int
-
-    // ⭐️ AI가 준 Timetable과 원본 Festival 데이터를 조합해서 생성합니다.
+    
+    @Relationship(deleteRule: .cascade)
+    var memory: ArtistMemory?
+    var savedFestival: SavedFestival?
+    
     init(from timetable: Timetable, artistImage: String, stage: String) {
         self.artistName = timetable.artistName
         self.artistImage = artistImage
@@ -60,5 +61,23 @@ final class SavedTimetable {
         self.startTime = timetable.startTime
         self.endTime = timetable.endTime
         self.runningTime = timetable.runningTime
+    }
+}
+
+// 아티스트별 추억 정보
+@Model
+final class ArtistMemory {
+    @Attribute(.unique) var id: String
+    var reviewText: String = ""
+    var photoIdentifiers: [String] = []
+
+    @Relationship(inverse: \SavedTimetable.memory)
+    var savedTimetable: SavedTimetable?
+
+    init(savedTimetable: SavedTimetable, reviewText: String = "", photoIdentifiers: [String] = []) {
+        self.id = "\(savedTimetable.savedFestival?.id ?? "unknown")_\(savedTimetable.artistName)"
+        self.reviewText = reviewText
+        self.photoIdentifiers = Array(photoIdentifiers.prefix(5))
+        self.savedTimetable = savedTimetable
     }
 }

@@ -42,7 +42,6 @@ final class PersonalTimetableViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 343, height: 201)
         layout.minimumLineSpacing = 12
 
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -70,7 +69,9 @@ final class PersonalTimetableViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        
         updateCollectionViewHeight()
         updateRunningTime()
     }
@@ -86,7 +87,6 @@ final class PersonalTimetableViewController: UIViewController {
     
     private func setStyle() {
         view.backgroundColor = .grayBg
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     private func setUI() {
@@ -112,7 +112,7 @@ final class PersonalTimetableViewController: UIViewController {
         
         collectionView.snp.makeConstraints {
             $0.top.equalTo(mufeImageView.snp.bottom)
-            $0.horizontalEdges.equalToSuperview()
+            $0.horizontalEdges.equalToSuperview().inset(16)
             $0.bottom.equalTo(buttonBackgroundView.snp.top)
         }
         
@@ -140,9 +140,8 @@ final class PersonalTimetableViewController: UIViewController {
             return
         }
 
-        // 1. [Timetable]을 DB에 저장할 [SavedTimetable] 형태로 변환합니다.
+        // [Timetable]을 DB에 저장할 [SavedTimetable] 형태로 변환
         let savedTimetables: [SavedTimetable] = self.timetables.map { timetable in
-            // 원본 Festival 데이터에서 정확한 아티스트 정보를 찾아옵니다.
             let originalArtistInfo = festival.artistSchedule[dateItem.day]?
                 .first { stage in stage.artists.contains(where: { $0.name == timetable.artistName }) }
             let originalArtist = originalArtistInfo?.artists.first { $0.name == timetable.artistName }
@@ -153,18 +152,15 @@ final class PersonalTimetableViewController: UIViewController {
             return SavedTimetable(from: timetable, artistImage: artistImage, stage: stage)
         }
 
-        // 2. 최종적으로 저장할 SavedFestival 객체를 만듭니다.
         let newSavedFestival = SavedFestival(
             festival: festival,
             selectedDateItem: dateItem,
             timetables: savedTimetables
         )
 
-        // 3. ⭐️ 중앙 관리자를 통해 DB에 데이터를 '삽입(저장)'합니다.
         SwiftDataManager.shared.context.insert(newSavedFestival)
         print("💾 \(newSavedFestival.festivalName) 타임테이블 저장 완료!")
 
-        // 4. 기존처럼 최종 확인 화면으로 이동합니다.
         let finalTimetableVC = MadeTimetableViewController()
         finalTimetableVC.festival = festival
         finalTimetableVC.selectedDateItem = dateItem
@@ -173,7 +169,7 @@ final class PersonalTimetableViewController: UIViewController {
         finalTimetableVC.savedFestival = newSavedFestival
         finalTimetableVC.allSavedDays = self.existingSavedDays + [newSavedFestival]
         
-        finalTimetableVC.isFromCellSelection = true // 저장 후이므로 "결과 표시 모드"
+        finalTimetableVC.isFromCellSelection = true
         finalTimetableVC.isFromHome = false
 
         navigationController?.pushViewController(finalTimetableVC, animated: true)
@@ -230,6 +226,16 @@ extension PersonalTimetableViewController: UICollectionViewDataSource {
         let timetable = timetables[indexPath.item]
         cell.configure(with: timetable)
         return cell
+    }
+}
+
+extension PersonalTimetableViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+    layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let width = collectionView.bounds.width
+        return CGSize(width: width, height: 201)
     }
 }
 

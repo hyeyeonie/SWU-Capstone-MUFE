@@ -51,7 +51,6 @@ final class ProgressBarView: UIView {
         progressLayer.mask = mask
     }
     
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         updateProgress()

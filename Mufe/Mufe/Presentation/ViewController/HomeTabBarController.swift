@@ -56,11 +56,12 @@ final class HomeTabBarController: UITabBarController {
 
         // 추억 탭
         let memoryVC = HistoryViewController()
-        memoryVC.tabBarItem = UITabBarItem(
+        let memoryTabItem = UITabBarItem(
             title: "추억",
             image: UIImage(resource: .unselectedMemory).withRenderingMode(.alwaysOriginal),
             selectedImage: UIImage(resource: .selectedMemory).withRenderingMode(.alwaysOriginal)
         )
+        memoryVC.tabBarItem = memoryTabItem
         let memoryNav = UINavigationController(rootViewController: memoryVC)
         
         self.viewControllers = [homeNav, timetableNav, memoryNav]
