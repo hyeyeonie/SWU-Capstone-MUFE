@@ -373,11 +373,45 @@ extension HomeViewController: AfterFestivalViewDelegate {
     
     func didTapCreateMemoryButton() {
         print("AfterFestivalView: 추억 남기기 탭됨")
+        
+        guard let selectedFestival = self.selectedFestival else {
+            print("🚨 HomeVC: 선택된 페스티벌이 없어 '추억'으로 이동할 수 없습니다.")
+            return
+        }
+        let festivalName = selectedFestival.festivalName
+        
+        guard let originalFestival = DummyFestivalData.festivals.first(where: { $0.name == festivalName }) else {
+            print("🚨 HomeVC: 'DummyFestivalData'에서 \(festivalName)의 원본 데이터를 찾지 못했습니다.")
+            return
+        }
+        
+        let allDaysForThisFestival = self.savedFestivals.filter { $0.festivalName == festivalName }
+        if allDaysForThisFestival.isEmpty {
+            print("🚨 HomeVC: 'savedFestivals'에 \(festivalName)의 데이터가 없습니다.")
+            return
+        }
+
+        guard let tabBar = self.tabBarController else { return }
+        guard let historyNav = tabBar.viewControllers?[2] as? UINavigationController else {
+            print("🚨 HomeVC: '추억' 탭의 Navigation Controller(index 2)를 찾을 수 없습니다.")
+            return
+        }
+
         if let festivalName = self.selectedFestival?.festivalName {
             UserDefaults.standard.set(festivalName, forKey: dismissedAfterFestivalKey)
         }
-        self.tabBarController?.selectedIndex = 2
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        
+        tabBar.selectedIndex = 2
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            let detailVC = HistoryDetailViewController()
+            detailVC.festival = originalFestival
+            detailVC.allSavedDays = allDaysForThisFestival
+            detailVC.hidesBottomBarWhenPushed = true
+            
+            historyNav.popToRootViewController(animated: false)
+            historyNav.pushViewController(detailVC, animated: true)
+
             self.currentState = .emptyFestival
         }
     }
