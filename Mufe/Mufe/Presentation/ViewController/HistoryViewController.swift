@@ -119,6 +119,11 @@ final class HistoryViewController: UIViewController {
         }
 
         let groupedPastFestivals = Dictionary(grouping: pastFestivals) { $0.festivalName }
+        let orderedFestivalNames = pastFestivals.reduce(into: [String]()) { (result, festival) in
+            if !result.contains(festival.festivalName) {
+                result.append(festival.festivalName)
+            }
+        }
         
         if groupedPastFestivals.isEmpty {
             emptyView.isHidden = false
@@ -126,16 +131,18 @@ final class HistoryViewController: UIViewController {
         } else {
             emptyView.isHidden = true
             timetableTabView.isHidden = false
-            timetableTabView.configure(with: groupedPastFestivals)
+            timetableTabView.configure(with: groupedPastFestivals, orderedKeys: orderedFestivalNames)
         }
     }
     
     private func loadSavedData() {
         do {
-            let descriptor = FetchDescriptor<SavedFestival>()
+            let sortDescriptor = SortDescriptor(\SavedFestival.startDate, order: .forward)
+            let descriptor = FetchDescriptor<SavedFestival>(sortBy: [sortDescriptor])
+            
             self.savedFestivals = try SwiftDataManager.shared.context.fetch(descriptor)
             
-            print("📚 HistoryVC: \(savedFestivals.count)개의 저장된 페스티벌을 불러왔습니다.")
+            print("📚 HistoryVC: \(savedFestivals.count)개의 저장된 페스티벌을 불러왔습니다. (시작 날짜 순 정렬)")
             updateViewState()
         } catch {
             print("🚨 페스티벌 데이터 불러오기 실패: \(error)")

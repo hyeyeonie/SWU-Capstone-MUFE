@@ -20,7 +20,7 @@ final class TimetableTabCell: UICollectionViewCell {
     private let fstNameLabel = UILabel().then {
         $0.customFont(.flg_Bold)
         $0.textColor = .gray10
-        $0.numberOfLines = 2
+        $0.numberOfLines = 1
     }
     
     private let fstDateLabel = UILabel().then {
@@ -97,7 +97,7 @@ final class TimetableTabCell: UICollectionViewCell {
         fstNameLabel.snp.makeConstraints {
             $0.top.equalTo(posterImageView)
             $0.leading.equalTo(posterImageView.snp.trailing).offset(12)
-            $0.trailing.equalToSuperview()
+            $0.trailing.equalToSuperview().inset(16)
         }
         
         fstDateLabel.snp.makeConstraints {
