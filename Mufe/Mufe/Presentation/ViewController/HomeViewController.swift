@@ -51,6 +51,13 @@ final class HomeViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadSavedData()
+        startTimer()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        timer?.invalidate()
+        timer = nil
     }
     
     override func viewDidLoad() {
@@ -60,7 +67,6 @@ final class HomeViewController: UIViewController {
         setUI()
         setLayout()
         setDelegate()
-        startTimer()
     }
     
     // MARK: - Setup Methods
@@ -180,6 +186,7 @@ final class HomeViewController: UIViewController {
     }
     
     private func startTimer() {
+        guard timer == nil else { return }
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
             self?.determineCurrentState()
         }
