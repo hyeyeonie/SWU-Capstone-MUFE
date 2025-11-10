@@ -103,35 +103,41 @@ final class HistoryViewController: UIViewController {
     
     private func updateViewState() {
         let today = Calendar.current.startOfDay(for: Date())
-        let dateFormatter = DateFormatter()
-        
-        dateFormatter.dateFormat = "yyyy.MM.dd"
-        dateFormatter.timeZone = TimeZone(identifier: "Asia/Seoul")
-        let pastFestivals = self.savedFestivals.filter { festival in
-            
-            guard let endDate = dateFormatter.date(from: festival.endDate) else {
-                print("🚨 날짜 형식 변환 실패: \(festival.endDate) (형식: '\(dateFormatter.dateFormat ?? "nil")')")
-                return false
+
+        let savedFormatter = DateFormatter()
+        savedFormatter.dateFormat = "yyyy.MM.dd"
+        savedFormatter.locale = Locale(identifier: "ko_KR")
+        savedFormatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+
+        let grouped = Dictionary(grouping: savedFestivals) { $0.festivalName }
+
+        let filtered = grouped.mapValues { days in
+            days.filter { festivalDay in
+                let trimmedStartDate = festivalDay.startDate.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard let festivalStartDate = savedFormatter.date(from: String(trimmedStartDate.prefix(10))) else {
+                    print("🚨 날짜 파싱 실패: \(festivalDay.startDate)")
+                    return false
+                }
+                
+                let dayOffset = Int(festivalDay.selectedDay.components(separatedBy: CharacterSet.decimalDigits.inverted).first ?? "1") ?? 1
+                
+                guard let actualDate = Calendar.current.date(byAdding: .day, value: dayOffset - 1, to: festivalStartDate) else { return false }
+                
+                let day = Calendar.current.startOfDay(for: actualDate)
+                return day < today
             }
-            let festivalEndDate = Calendar.current.startOfDay(for: endDate)
-            
-            return festivalEndDate < today
         }
 
-        let groupedPastFestivals = Dictionary(grouping: pastFestivals) { $0.festivalName }
-        let orderedFestivalNames = pastFestivals.reduce(into: [String]()) { (result, festival) in
-            if !result.contains(festival.festivalName) {
-                result.append(festival.festivalName)
-            }
-        }
-        
-        if groupedPastFestivals.isEmpty {
+        let pastFestivalsOnly = filtered.filter { !$0.value.isEmpty }
+        let orderedFestivalNames = pastFestivalsOnly.keys.sorted()
+
+        if pastFestivalsOnly.isEmpty {
             emptyView.isHidden = false
             timetableTabView.isHidden = true
         } else {
             emptyView.isHidden = true
             timetableTabView.isHidden = false
-            timetableTabView.configure(with: groupedPastFestivals, orderedKeys: orderedFestivalNames)
+            timetableTabView.configure(with: pastFestivalsOnly, orderedKeys: orderedFestivalNames)
         }
     }
     

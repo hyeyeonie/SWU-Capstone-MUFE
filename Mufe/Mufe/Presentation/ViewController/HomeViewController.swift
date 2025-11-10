@@ -111,7 +111,6 @@ final class HomeViewController: UIViewController {
         beforeFestivalView.isHidden = currentState != .beforeFestival
         dDayFestivalView.isHidden = currentState != .dDayFestival
         afterFestivalView.isHidden = currentState != .afterFestival
-        
         titleLabel.isHidden = (currentState == .emptyFestival || currentState == .afterFestival)
         tabBarController?.tabBar.isHidden = (currentState == .afterFestival)
         
@@ -124,7 +123,22 @@ final class HomeViewController: UIViewController {
             let allDaysForThisFestival = savedFestivals.filter { $0.festivalName == festival.festivalName }
             beforeFestivalView.setFestivals(allDaysForThisFestival)
             
-            let dDayText = FestivalUtils.getDaysRemainingString(from: festival.startDate)
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy.MM.dd"
+            formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+            
+            guard let festivalStartDate = formatter.date(from: festival.startDate),
+                  let dayOffsetString = festival.selectedDay.components(separatedBy: CharacterSet.decimalDigits.inverted).first,
+                  let dayOffset = Int(dayOffsetString),
+                  let thisSavedDayDate = Calendar.current.date(byAdding: .day, value: dayOffset - 1, to: festivalStartDate) else {
+                
+                titleLabel.text = "페스티벌이\n다가오고 있어요!"
+                break
+            }
+            
+            let savedDateString = formatter.string(from: thisSavedDayDate)
+            let dDayText = FestivalUtils.getDaysRemainingString(from: savedDateString)
+            
             let text = "두근두근!\n페스티벌이 \(dDayText) 남았어요."
             let attributedText = NSMutableAttributedString(string: text)
             if let range = text.range(of: dDayText) {
@@ -225,46 +239,40 @@ final class HomeViewController: UIViewController {
         formatter.dateFormat = "yyyy.MM.dd"
         formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
         
-        let todaySavedFestival = savedFestivals.first { festival in
+        let getActualDate = { (festival: SavedFestival) -> Date? in
             guard let festivalStartDate = formatter.date(from: festival.startDate),
                   let dayOffsetString = festival.selectedDay.components(separatedBy: CharacterSet.decimalDigits.inverted).first,
                   let dayOffset = Int(dayOffsetString) else {
-                return false
+                return nil
             }
-            guard let thisSavedDayDate = Calendar.current.date(byAdding: .day, value: dayOffset - 1, to: festivalStartDate) else {
-                return false
-            }
-            
-            let c1 = Calendar.current.dateComponents([.year, .month, .day], from: thisSavedDayDate)
-            let c2 = Calendar.current.dateComponents([.year, .month, .day], from: todayStart)
-            return c1.year == c2.year && c1.month == c2.month && c1.day == c2.day
+            return Calendar.current.date(byAdding: .day, value: dayOffset - 1, to: festivalStartDate)
         }
+        
+        let todaySavedFestival = savedFestivals.first { festival in
+            guard let savedDate = getActualDate(festival) else { return false }
+            return Calendar.current.isDate(savedDate, inSameDayAs: todayStart)
+        }
+        
         if let dDayFestival = todaySavedFestival {
             self.selectedFestival = dDayFestival
             self.currentState = .dDayFestival
             return
         }
-        let ongoingFestivalPeriods = savedFestivals.filter { festival in
-            guard let start = formatter.date(from: festival.startDate),
-                  let end = formatter.date(from: festival.endDate) else { return false }
-            let startDateOnly = Calendar.current.startOfDay(for: start)
-            let endDateOnly = Calendar.current.startOfDay(for: end)
-            return todayStart >= startDateOnly && todayStart <= endDateOnly
-        }
-        if let ongoingFestival = ongoingFestivalPeriods.first {
-            self.selectedFestival = ongoingFestival
-            self.currentState = .beforeFestival
-            return
-        }
-        let upcomingFestivals = savedFestivals.filter { festival in
-            guard let start = formatter.date(from: festival.startDate) else { return false }
-            return todayStart < Calendar.current.startOfDay(for: start)
-        }
-        if let nextFestival = upcomingFestivals.first {
+        
+        let upcomingSavedDays = savedFestivals.compactMap { festival -> (SavedFestival, Date)? in
+            guard let savedDate = getActualDate(festival) else { return nil }
+            if savedDate > todayStart {
+                return (festival, savedDate)
+            }
+            return nil
+        }.sorted { $0.1 < $1.1 }
+        
+        if let (nextFestival, _) = upcomingSavedDays.first {
             self.selectedFestival = nextFestival
             self.currentState = .beforeFestival
             return
         }
+
         if let lastFestival = savedFestivals.last {
             let dismissedName = UserDefaults.standard.string(forKey: dismissedAfterFestivalKey)
             if lastFestival.festivalName == dismissedName {
@@ -276,6 +284,7 @@ final class HomeViewController: UIViewController {
             self.currentState = .afterFestival
             return
         }
+        
         self.selectedFestival = nil
         self.currentState = .emptyFestival
     }

@@ -12,20 +12,13 @@ struct DummyFestivalData {
         Festival(
             imageName: "beautiful_mint_life",
             name: "2025 뷰티풀민트라이프",
-            // 페스티벌 전 - 13mini
-            startDate: "2025.06.13",
-            endDate: "2025.06.15",
-            // 페스티벌 중 - 15pro
-//            startDate: "2025.10.30",
-//            endDate: "2025.11.01",
-            // 페스티벌 후 - 15pro
-//            startDate: "2025.11.05",
-//            endDate: "2025.11.07",
+            startDate: "2025.11.09",
+            endDate: "2025.11.11",
             location: "올림픽공원",
             artistSchedule: [
                 "1일차": [
                     ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
-                        ArtistSchedule(name: "Hi-Fi Un!corn", image: "hifi", startTime: "13:40", endTime: "14:20"),
+                        ArtistSchedule(name: "Hi-Fi Un!corn", image: "hifi", startTime: "11:00", endTime: "13:30"),
                         ArtistSchedule(name: "유주", image: "yuzu", startTime: "14:50", endTime: "15:40"),
                         ArtistSchedule(name: "오월오일", image: "maymay", startTime: "16:10", endTime: "17:00"),
                         ArtistSchedule(name: "SAM KIM", image: "samkim", startTime: "17:30", endTime: "18:20"),
@@ -55,18 +48,9 @@ struct DummyFestivalData {
                 ]
             ],
             days: [
-                // 페스티벌 전 - 13mini
-                FestivalDay(dayOfWeek: "금", date: "2025.06.13"),
-                FestivalDay(dayOfWeek: "토", date: "2025.06.14"),
-                FestivalDay(dayOfWeek: "일", date: "2025.06.15")
-                // 페스티벌 중 - 15pro
-//                FestivalDay(dayOfWeek: "금", date: "2025.10.30"),
-//                FestivalDay(dayOfWeek: "토", date: "2025.11.01"),
-//                FestivalDay(dayOfWeek: "일", date: "2025.11.02")
-                // 페스티벌 후 - 16pro
-//                FestivalDay(dayOfWeek: "금", date: "2025.11.05"),
-//                FestivalDay(dayOfWeek: "토", date: "2025.11.06"),
-//                FestivalDay(dayOfWeek: "일", date: "2025.11.07")
+                FestivalDay(dayOfWeek: "금", date: "2025.11.09"),
+                FestivalDay(dayOfWeek: "토", date: "2025.11.10"),
+                FestivalDay(dayOfWeek: "일", date: "2025.11.11")
             ]
         ),
         
