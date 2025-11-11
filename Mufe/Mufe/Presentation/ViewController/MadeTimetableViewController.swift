@@ -435,24 +435,13 @@ class MadeTimetableViewController: UIViewController {
         }
         
         if let presentingVC = self.presentingViewController {
-            presentingVC.dismiss(animated: true) {
-                self.selectHomeTab()
-            }
+            presentingVC.dismiss(animated: true)
             return
         }
         
         if let nav = self.navigationController {
             nav.popToRootViewController(animated: true)
-            self.selectHomeTab()
             return
-        }
-        
-        selectHomeTab()
-    }
-    
-    private func selectHomeTab() {
-        if let tabBar = self.view.window?.rootViewController as? HomeTabBarController {
-            tabBar.selectedIndex = 0
         }
     }
     
