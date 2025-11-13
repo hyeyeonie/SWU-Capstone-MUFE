@@ -12,8 +12,8 @@ struct DummyFestivalData {
         Festival(
             imageName: "beautiful_mint_life",
             name: "2025 뷰티풀민트라이프",
-            startDate: "2025.11.09",
-            endDate: "2025.11.11",
+            startDate: "2025.11.15",
+            endDate: "2025.11.15",
             location: "올림픽공원",
             artistSchedule: [
                 "1일차": [
@@ -34,23 +34,23 @@ struct DummyFestivalData {
                         ArtistSchedule(name: "YB", image: "yb", startTime: "21:20", endTime: "22:20")
                     ])
                 ],
-                "2일차": [
-                    ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
-                        ArtistSchedule(name: "Dragon Pony", image: "dragonpony", startTime: "13:00", endTime: "13:40"),
-                        ArtistSchedule(name: "방예담", image: "yedam", startTime: "14:10", endTime: "15:00")
-                    ])
-                ],
-                "3일차": [
-                     ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
-                         ArtistSchedule(name: "데이먼스 이어", image: "damonsyear", startTime: "13:00", endTime: "13:40"),
-                         ArtistSchedule(name: "김필", image: "kimfeel", startTime: "14:10", endTime: "15:00")
-                     ])
-                ]
+//                "2일차": [
+//                    ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
+//                        ArtistSchedule(name: "Dragon Pony", image: "dragonpony", startTime: "13:00", endTime: "13:40"),
+//                        ArtistSchedule(name: "방예담", image: "yedam", startTime: "14:10", endTime: "15:00")
+//                    ])
+//                ],
+//                "3일차": [
+//                     ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
+//                         ArtistSchedule(name: "데이먼스 이어", image: "damonsyear", startTime: "13:00", endTime: "13:40"),
+//                         ArtistSchedule(name: "김필", image: "kimfeel", startTime: "14:10", endTime: "15:00")
+//                     ])
+//                ]
             ],
             days: [
-                FestivalDay(dayOfWeek: "금", date: "2025.11.09"),
-                FestivalDay(dayOfWeek: "토", date: "2025.11.10"),
-                FestivalDay(dayOfWeek: "일", date: "2025.11.11")
+                FestivalDay(dayOfWeek: "금", date: "2025.11.15"),
+//                FestivalDay(dayOfWeek: "토", date: "2025.11.10"),
+//                FestivalDay(dayOfWeek: "일", date: "2025.11.11")
             ]
         ),
         
