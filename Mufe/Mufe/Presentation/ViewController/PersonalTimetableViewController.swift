@@ -135,7 +135,8 @@ final class PersonalTimetableViewController: UIViewController {
     
     @objc private func didTapComplete() {
         guard let festival = self.selectedFestival,
-              let dateItem = self.selectedDateItem else {
+              let dateItem = self.selectedDateItem,
+              let nav = self.navigationController else {
             print("Error: 저장할 정보가 부족합니다.")
             return
         }
@@ -171,8 +172,11 @@ final class PersonalTimetableViewController: UIViewController {
         
         finalTimetableVC.isFromCellSelection = true
         finalTimetableVC.isFromHome = false
-
-        navigationController?.pushViewController(finalTimetableVC, animated: true)
+        
+        var viewControllers = nav.viewControllers
+        viewControllers.removeLast(2)
+        viewControllers.append(finalTimetableVC)
+        nav.setViewControllers(viewControllers, animated: true)
     }
     
     @objc private func didTapEdit() {

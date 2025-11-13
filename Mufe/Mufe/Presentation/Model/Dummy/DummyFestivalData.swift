@@ -9,17 +9,16 @@ import UIKit
 
 struct DummyFestivalData {
     static let festivals: [Festival] = [
-        // ✅ 1. (유지) 2025 뷰티풀민트라이프
         Festival(
             imageName: "beautiful_mint_life",
             name: "2025 뷰티풀민트라이프",
-            startDate: "2025.05.17",
-            endDate: "2025.05.19",
+            startDate: "2025.11.15",
+            endDate: "2025.11.15",
             location: "올림픽공원",
             artistSchedule: [
                 "1일차": [
                     ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
-                        ArtistSchedule(name: "Hi-Fi Un!corn", image: "hifi", startTime: "13:40", endTime: "14:20"),
+                        ArtistSchedule(name: "Hi-Fi Un!corn", image: "hifi", startTime: "11:00", endTime: "13:30"),
                         ArtistSchedule(name: "유주", image: "yuzu", startTime: "14:50", endTime: "15:40"),
                         ArtistSchedule(name: "오월오일", image: "maymay", startTime: "16:10", endTime: "17:00"),
                         ArtistSchedule(name: "SAM KIM", image: "samkim", startTime: "17:30", endTime: "18:20"),
@@ -35,27 +34,27 @@ struct DummyFestivalData {
                         ArtistSchedule(name: "YB", image: "yb", startTime: "21:20", endTime: "22:20")
                     ])
                 ],
-                "2일차": [
-                    ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
-                        ArtistSchedule(name: "Dragon Pony", image: "dragonpony", startTime: "13:00", endTime: "13:40"),
-                        ArtistSchedule(name: "방예담", image: "yedam", startTime: "14:10", endTime: "15:00")
-                    ])
-                ],
-                "3일차": [
-                     ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
-                         ArtistSchedule(name: "데이먼스 이어", image: "damonsyear", startTime: "13:00", endTime: "13:40"),
-                         ArtistSchedule(name: "김필", image: "kimfeel", startTime: "14:10", endTime: "15:00")
-                     ])
-                ]
+//                "2일차": [
+//                    ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
+//                        ArtistSchedule(name: "Dragon Pony", image: "dragonpony", startTime: "13:00", endTime: "13:40"),
+//                        ArtistSchedule(name: "방예담", image: "yedam", startTime: "14:10", endTime: "15:00")
+//                    ])
+//                ],
+//                "3일차": [
+//                     ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
+//                         ArtistSchedule(name: "데이먼스 이어", image: "damonsyear", startTime: "13:00", endTime: "13:40"),
+//                         ArtistSchedule(name: "김필", image: "kimfeel", startTime: "14:10", endTime: "15:00")
+//                     ])
+//                ]
             ],
             days: [
-                FestivalDay(dayOfWeek: "토", date: "2025.05.17"),
-                FestivalDay(dayOfWeek: "일", date: "2025.05.18"),
-                FestivalDay(dayOfWeek: "월", date: "2025.05.19")
+                FestivalDay(dayOfWeek: "금", date: "2025.11.15"),
+//                FestivalDay(dayOfWeek: "토", date: "2025.11.10"),
+//                FestivalDay(dayOfWeek: "일", date: "2025.11.11")
             ]
         ),
         
-        // ✅ 2. (신규) 그랜드 민트 페스티벌 2025 (10월 말)
+        // ✅ 2. (유지) 그랜드 민트 페스티벌 2025
         Festival(
             imageName: "gmf_2025",
             name: "Grand Mint Festival 2025",
@@ -99,7 +98,7 @@ struct DummyFestivalData {
             ]
         ),
         
-        // ✅ 3. (신규) 2025 부산 락 페스티벌 (11월 초)
+        // ✅ 3. (유지) 2025 부산 락 페스티벌
         Festival(
             imageName: "busan_rock_fes",
             name: "2025 부산 락 페스티벌",
@@ -138,7 +137,7 @@ struct DummyFestivalData {
             ]
         ),
         
-        // ✅ 4. (신규) RIDE THE BEAT 2025 (12월 중순)
+        // ✅ 4. (유지) RIDE THE BEAT 2025
         Festival(
             imageName: "ride_the_beat",
             name: "RIDE THE BEAT 2025",
@@ -173,7 +172,7 @@ struct DummyFestivalData {
             ]
         ),
 
-        // ✅ 5. (신규) COUNTDOWN FANTASY 2025-26 (연말)
+        // ✅ 5. (유지) COUNTDOWN FANTASY 2025-26
         Festival(
             imageName: "countdown_fantasy",
             name: "COUNTDOWN FANTASY 2025-26",
@@ -213,7 +212,7 @@ struct DummyFestivalData {
             ]
         ),
         
-        // ✅ 6. (신규) Have A Nice Day #10 (2026년 4월)
+        // ✅ 6. (유지) Have A Nice Day #10
         Festival(
             imageName: "have_a_nice_day",
             name: "Have A Nice Day #10",
@@ -244,7 +243,7 @@ struct DummyFestivalData {
             ]
         ),
 
-        // ✅ 7. (신규) HIPHOPPLAYA FESTIVAL 2026 (2026년 5월)
+        // ✅ 7. (유지) HIPHOPPLAYA FESTIVAL 2026
         Festival(
             imageName: "hipplaya_2026",
             name: "HIPHOPPLAYA FESTIVAL 2026",
@@ -252,7 +251,7 @@ struct DummyFestivalData {
             endDate: "2026.05.03",
             location: "난지한강공원",
             artistSchedule: [
-                "1일차": [
+                "1D": [
                     ArtistInfo(stage: "Main Stage", location: "난지", artists: [
                         ArtistSchedule(name: "ZICO", image: "zico", startTime: "21:00", endTime: "21:50"),
                         ArtistSchedule(name: "E SENS", image: "esens", startTime: "20:00", endTime: "20:40"),
@@ -260,7 +259,7 @@ struct DummyFestivalData {
                         ArtistSchedule(name: "pH-1", image: "ph1", startTime: "18:00", endTime: "18:40")
                     ])
                 ],
-                "2일차": [
+                "2D": [
                     ArtistInfo(stage: "Main Stage", location: "난지", artists: [
                         ArtistSchedule(name: "박재범", image: "jaypark", startTime: "21:00", endTime: "21:50"),
                         ArtistSchedule(name: "Crush", image: "crush", startTime: "20:00", endTime: "20:40"),
@@ -275,7 +274,7 @@ struct DummyFestivalData {
             ]
         ),
         
-        // ✅ 8. (신규) Seoul Jazz Festival 2026 (2026년 5월 말)
+        // ✅ 8. (유지) Seoul Jazz Festival 2026
         Festival(
             imageName: "seoul_jazz_fes",
             name: "Seoul Jazz Festival 2026",
@@ -312,7 +311,7 @@ struct DummyFestivalData {
             ]
         ),
 
-        // ✅ 9. (신규) World DJ Festival 2026 (2026년 6월)
+        // ✅ 9. (유지) World DJ Festival 2026
         Festival(
             imageName: "world_dj_fes",
             name: "World DJ Festival 2026",
@@ -343,7 +342,7 @@ struct DummyFestivalData {
             ]
         ),
         
-        // ✅ 10. (신규) WATERBOMB Seoul 2026 (2026년 7월)
+        // ✅ 10. (유지) WATERBOMB Seoul 2026
         Festival(
             imageName: "waterbomb_seoul",
             name: "WATERBOMB Seoul 2026",
@@ -391,7 +390,7 @@ struct DummyFestivalData {
             ]
         ),
         
-        // ✅ 11. (신규) 2026 인천 펜타포트 락 페스티벌 (2026년 8월)
+        // ✅ 11. (유지) 2026 인천 펜타포트 락 페스티벌
         Festival(
             imageName: "icn_pentaport",
             name: "2026 인천 펜타포트 락 페스티벌",

@@ -61,9 +61,9 @@ final class TimetableTabView: UIView {
         collectionView.delegate = self
     }
     
-    func configure(with festivalGroups: [String: [SavedFestival]]) {
+    func configure(with festivalGroups: [String: [SavedFestival]], orderedKeys: [String]) {
         self.festivalGroups = festivalGroups
-        self.festivalNames = festivalGroups.keys.sorted()
+        self.festivalNames = orderedKeys
         collectionView.reloadData()
     }
 }

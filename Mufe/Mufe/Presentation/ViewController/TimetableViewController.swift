@@ -160,22 +160,29 @@ final class TimetableViewController: UIViewController {
     
     private func updateViewState() {
         let groupedFestivals = Dictionary(grouping: savedFestivals) { $0.festivalName }
-
+        
+        let orderedFestivalNames = savedFestivals.reduce(into: [String]()) { (result, festival) in
+            if !result.contains(festival.festivalName) {
+                result.append(festival.festivalName)
+            }
+        }
+        
         if groupedFestivals.isEmpty {
             emptyView.isHidden = false
             timetableTabView.isHidden = true
         } else {
             emptyView.isHidden = true
             timetableTabView.isHidden = false
-            timetableTabView.configure(with: groupedFestivals)
+            timetableTabView.configure(with: groupedFestivals, orderedKeys: orderedFestivalNames)
         }
     }
     
     private func loadSavedData() {
         do {
-            let descriptor = FetchDescriptor<SavedFestival>()
+            let sortDescriptor = SortDescriptor(\SavedFestival.startDate, order: .forward)
+            let descriptor = FetchDescriptor<SavedFestival>(sortBy: [sortDescriptor])
             self.savedFestivals = try SwiftDataManager.shared.context.fetch(descriptor)
-
+            
             print("📚 \(savedFestivals.count)개의 저장된 페스티벌을 불러왔습니다.")
             updateViewState()
         } catch {
