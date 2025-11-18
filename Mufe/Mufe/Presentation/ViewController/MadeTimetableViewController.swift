@@ -208,6 +208,20 @@ class MadeTimetableViewController: UIViewController {
             return
         }
         
+        if let festivalToDelete = allSavedDays.first(where: { $0.festivalName == festivalName && $0.selectedDay == dayToDelete }) {
+            
+            NotificationManager.shared.cancelPerformanceReminders(for: festivalToDelete)
+            
+            let remainingDays = allSavedDays.filter { $0.festivalName == festivalName && $0.selectedDay != dayToDelete }
+            
+            if remainingDays.isEmpty {
+                NotificationManager.shared.cancelPostFestivalReminder(for: festivalToDelete)
+            }
+            
+        } else {
+            print("🚨 알림 취소 실패: 삭제할 SavedFestival 객체를 찾지 못했습니다.")
+        }
+        
         SwiftDataManager.shared.deleteSavedFestival(festivalName: festivalName, day: dayToDelete) { [weak self] success in
             DispatchQueue.main.async {
                 if success {
@@ -414,6 +428,13 @@ class MadeTimetableViewController: UIViewController {
         
         SwiftDataManager.shared.context.insert(newSavedFestival)
         print("💾 \(newSavedFestival.festivalName) 타임테이블 저장 완료! (AI 추천 없음)")
+        
+        for timetable in newSavedFestival.timetables {
+            NotificationManager.shared.schedulePerformanceReminder(timetable: timetable,
+                                                                   festival: newSavedFestival)
+        }
+        
+        NotificationManager.shared.schedulePostFestivalReminder(festival: newSavedFestival)
         
         return newSavedFestival
     }

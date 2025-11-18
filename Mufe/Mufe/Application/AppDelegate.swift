@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,6 +15,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        UNUserNotificationCenter.current().delegate = self
+        NotificationManager.shared.requestNotificationPermission()
         return true
     }
 
@@ -34,3 +37,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    // 앱이 켜져있을 때 알림 배너 띄우기 (기존 동일)
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound, .badge])
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        let identifier = response.notification.request.identifier
+        print("🔔 [알림 탭] ID: \(identifier)")
+        
+        // 메인 탭바 컨트롤러 찾기
+        guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate,
+              let window = sceneDelegate.window,
+              let tabBarController = window.rootViewController as? UITabBarController else {
+            completionHandler()
+            return
+        }
+        
+        // 알림 종류에 따라 탭 이동
+        if identifier.starts(with: "performance-") {
+            print("👉 홈 화면으로 이동합니다.")
+            tabBarController.selectedIndex = 0
+            
+        } else if identifier.starts(with: "post-festival-") {
+            print("👉 추억 남기기 화면으로 이동합니다.")
+            tabBarController.selectedIndex = 2
+        }
+        
+        completionHandler()
+    }
+}

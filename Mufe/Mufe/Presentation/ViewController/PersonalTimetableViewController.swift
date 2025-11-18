@@ -161,6 +161,13 @@ final class PersonalTimetableViewController: UIViewController {
 
         SwiftDataManager.shared.context.insert(newSavedFestival)
         print("💾 \(newSavedFestival.festivalName) 타임테이블 저장 완료!")
+        
+        for timetable in newSavedFestival.timetables {
+            NotificationManager.shared.schedulePerformanceReminder(timetable: timetable,
+                                                                   festival: newSavedFestival)
+        }
+        
+        NotificationManager.shared.schedulePostFestivalReminder(festival: newSavedFestival)
 
         let finalTimetableVC = MadeTimetableViewController()
         finalTimetableVC.festival = festival
