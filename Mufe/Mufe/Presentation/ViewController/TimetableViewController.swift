@@ -127,7 +127,6 @@ final class TimetableViewController: UIViewController {
             
             madeVC.festival = originalFestival
             madeVC.savedFestival = firstDayFestival
-            
             madeVC.allSavedDays = allSavedFestivals
             
             madeVC.selectedDateItem = DateItem(
@@ -135,6 +134,18 @@ final class TimetableViewController: UIViewController {
                 date: firstDayFestival.selectedDate,
                 isMade: true
             )
+            
+            madeVC.timetables = firstDayFestival.timetables.map { saved in
+                Timetable(
+                    artistName: saved.artistName,
+                    imageName: saved.artistImage,
+                    location: saved.location,
+                    startTime: saved.startTime,
+                    endTime: saved.endTime,
+                    runningTime: saved.runningTime,
+                    script: ""
+                )
+            }
             
             madeVC.isFromCellSelection = true
             madeVC.onAddNewTimetableTapped = { [weak self] in

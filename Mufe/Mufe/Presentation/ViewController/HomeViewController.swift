@@ -362,9 +362,23 @@ extension HomeViewController: DateSelectionDelegate {
         }
         
         madeVC.allSavedDays = allDaysForThisFestival
-        
         madeVC.selectedDateItem = dateItem
         madeVC.isFromCellSelection = true
+        
+        if let savedDay = allDaysForThisFestival.first(where: { $0.selectedDay == dateItem.day }) {
+            madeVC.timetables = savedDay.timetables.map { saved in
+                Timetable(
+                    artistName: saved.artistName,
+                    imageName: saved.artistImage,
+                    location: saved.location,
+                    startTime: saved.startTime,
+                    endTime: saved.endTime,
+                    runningTime: saved.runningTime,
+                    script: ""
+                )
+            }
+            madeVC.savedFestival = savedDay
+        }
         
         madeVC.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(madeVC, animated: true)

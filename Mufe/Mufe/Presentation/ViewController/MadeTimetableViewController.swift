@@ -57,11 +57,6 @@ class MadeTimetableViewController: UIViewController {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
     }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -183,8 +178,66 @@ class MadeTimetableViewController: UIViewController {
             self?.confirmAndDeleteCurrentTimetable()
         }
         
+        timetableView.onEditButtonTapped = { [weak self] in
+            self?.presentEditViewController()
+        }
+        
         emptyView.onRegisterButtonTapped = { [weak self] in
             self?.navigateToOnboarding()
+        }
+    }
+    
+    private func presentEditViewController() {
+        guard let fullSchedule = festival.artistSchedule[selectedDateItem.day] else { return }
+        let mySavedArtistNames = Set(self.timetables.map { $0.artistName })
+        let preparedSchedule = fullSchedule.map { stageInfo -> ArtistInfo in
+            var newStageInfo = stageInfo
+            
+            newStageInfo.artists = stageInfo.artists.map { artist in
+                var newArtist = artist
+                newArtist.isSelected = mySavedArtistNames.contains(artist.name)
+                return newArtist
+            }
+            
+            return newStageInfo
+        }
+
+        let editVC = EditTimetableViewController()
+        editVC.scheduleList = preparedSchedule
+        editVC.onCompletion = { [weak self] selectedNames in
+            guard let self = self else { return }
+            
+            self.selectedArtistNames = selectedNames
+            let newTimetables = self.createTimetablesFromSelectedArtists()
+            self.updateDatabaseWithNewSelection(newTimetables: newTimetables)
+        }
+        
+        self.navigationController?.pushViewController(editVC, animated: true)
+    }
+    
+    private func updateDatabaseWithNewSelection(newTimetables: [Timetable]) {
+        guard let festivalName = festival?.name,
+              let day = selectedDateItem?.day else { return }
+        
+        SwiftDataManager.shared.deleteSavedFestival(festivalName: festivalName, day: day) { [weak self] success in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                if success {
+                    self.allSavedDays.removeAll(where: { $0.festivalName == festivalName && $0.selectedDay == day })
+                    
+                    if let newSaved = self.saveTimetablesToDatabase(with: newTimetables) {
+                        self.allSavedDays.append(newSaved)
+                        self.savedFestival = newSaved
+                        self.timetables = newTimetables
+                        
+                        self.updateContentForSelectedDate()
+                        print("✅ 수정사항 저장 및 UI 업데이트 완료")
+                    }
+                } else {
+                    print("❌ 수정 전 기존 데이터 삭제 실패")
+                }
+            }
         }
     }
     
