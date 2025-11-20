@@ -44,7 +44,7 @@ struct FestivalDay {
 struct ArtistInfo {
     let stage: String
     let location: String
-    let artists: [ArtistSchedule]
+    var artists: [ArtistSchedule]
 }
 
 struct ArtistSchedule {
@@ -52,17 +52,20 @@ struct ArtistSchedule {
     let image: String
     let startTime: String
     let endTime: String
+    var isSelected: Bool
     
     init(
         name: String,
         image: String,
         startTime: String,
-        endTime: String
+        endTime: String,
+        isSelected: Bool = false
     ) {
         self.name = name
         self.image = image
         self.startTime = startTime
         self.endTime = endTime
+        self.isSelected = isSelected
     }
     
     var duration: Int {
