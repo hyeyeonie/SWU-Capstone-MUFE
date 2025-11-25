@@ -9,12 +9,14 @@ import UIKit
 
 import SnapKit
 import Then
+import Lottie
 
 final class LoadingView: UIView {
     
-    private let lodingImageView = UIImageView().then {
-        $0.image = UIImage(named: "loading")
+    private let animationView = LottieAnimationView(name: "loading").then {
+        $0.loopMode = .loop
         $0.contentMode = .scaleAspectFit
+        $0.play()
     }
     
     private let findingLabel = UILabel().then {
@@ -46,25 +48,24 @@ final class LoadingView: UIView {
     }
     
     private func setUI() {
-        addSubviews(lodingImageView, findingLabel, scriptLabel)
+        addSubviews(animationView, findingLabel, scriptLabel)
     }
     
     private func setLayout() {
-        lodingImageView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(344)
+        animationView.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(284)
             $0.centerX.equalToSuperview()
-            $0.height.equalTo(40)
-            $0.width.equalTo(120)
+            $0.size.equalTo(160)
         }
         
         findingLabel.snp.makeConstraints {
-            $0.top.equalTo(lodingImageView.snp.bottom).offset(24)
-            $0.centerX.equalTo(lodingImageView)
+            $0.top.equalTo(animationView.snp.bottom).offset(24)
+            $0.centerX.equalTo(animationView)
         }
         
         scriptLabel.snp.makeConstraints {
             $0.top.equalTo(findingLabel.snp.bottom).offset(4)
-            $0.centerX.equalTo(lodingImageView)
+            $0.centerX.equalTo(animationView)
         }
     }
 }
