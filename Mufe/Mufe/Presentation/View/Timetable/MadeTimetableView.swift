@@ -15,6 +15,7 @@ final class MadeTimetableView: UIView {
     // MARK: - Properties
     
     private var stageGroups: [ArtistInfo] = []
+    var onEditButtonTapped: (() -> Void)?
     var onDeleteButtonTapped: (() -> Void)?
     
     // MARK: - UI Components
@@ -90,9 +91,8 @@ final class MadeTimetableView: UIView {
     }
     
     private func createOptionsMenu() -> UIMenu {
-        let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { _ in
-            print("수정하기 탭")
-            // TODO: 수정 기능 콜백 추가
+        let editAction = UIAction(title: "수정하기", image: UIImage(systemName: "pencil")) { [weak self] _ in
+            self?.onEditButtonTapped?()
         }
         
         let deleteAction = UIAction(title: "삭제하기", image: UIImage(systemName: "trash"), attributes: .destructive) { [weak self] _ in

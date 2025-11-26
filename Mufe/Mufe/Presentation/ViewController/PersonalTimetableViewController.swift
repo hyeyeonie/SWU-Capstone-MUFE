@@ -25,9 +25,10 @@ final class PersonalTimetableViewController: UIViewController {
     private var collectionViewHeightConstraint: Constraint?
     
     private let recommendLabel = UILabel().then {
-        $0.text = "이 공연들은 어때요?"
+        $0.text = "취향에 꼭 맞는\n아티스트를 찾아왔어요!"
         $0.customFont(.f2xl_Bold)
         $0.textColor = .gray00
+        $0.numberOfLines = 2
     }
     
     private let runningTimeLabel = UILabel().then {
@@ -111,7 +112,7 @@ final class PersonalTimetableViewController: UIViewController {
         }
         
         collectionView.snp.makeConstraints {
-            $0.top.equalTo(mufeImageView.snp.bottom)
+            $0.top.equalTo(mufeImageView.snp.bottom).offset(28)
             $0.horizontalEdges.equalToSuperview().inset(16)
             $0.bottom.equalTo(buttonBackgroundView.snp.top)
         }
@@ -161,6 +162,13 @@ final class PersonalTimetableViewController: UIViewController {
 
         SwiftDataManager.shared.context.insert(newSavedFestival)
         print("💾 \(newSavedFestival.festivalName) 타임테이블 저장 완료!")
+        
+        for timetable in newSavedFestival.timetables {
+            NotificationManager.shared.schedulePerformanceReminder(timetable: timetable,
+                                                                   festival: newSavedFestival)
+        }
+        
+        NotificationManager.shared.schedulePostFestivalReminder(festival: newSavedFestival)
 
         let finalTimetableVC = MadeTimetableViewController()
         finalTimetableVC.festival = festival

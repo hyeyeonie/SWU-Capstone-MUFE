@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2407A9012ED61898003A8D38 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 2407A9002ED61898003A8D38 /* Lottie */; };
 		246950C12DE573410044A86B /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 246950C02DE573410044A86B /* SnapKit */; };
 		246950C42DE573650044A86B /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 246950C32DE573650044A86B /* Then */; };
 /* End PBXBuildFile section */
@@ -43,6 +44,7 @@
 			files = (
 				246950C12DE573410044A86B /* SnapKit in Frameworks */,
 				246950C42DE573650044A86B /* Then in Frameworks */,
+				2407A9012ED61898003A8D38 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +89,7 @@
 			packageProductDependencies = (
 				246950C02DE573410044A86B /* SnapKit */,
 				246950C32DE573650044A86B /* Then */,
+				2407A9002ED61898003A8D38 /* Lottie */,
 			);
 			productName = Mufe;
 			productReference = 247AC3262DD4817500A4B103 /* Mufe.app */;
@@ -119,6 +122,7 @@
 			packageReferences = (
 				246950BF2DE573410044A86B /* XCRemoteSwiftPackageReference "SnapKit" */,
 				246950C22DE573650044A86B /* XCRemoteSwiftPackageReference "Then" */,
+				2407A8FF2ED61898003A8D38 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 247AC3272DD4817500A4B103 /* Products */;
@@ -362,6 +366,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2407A8FF2ED61898003A8D38 /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-spm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.2;
+			};
+		};
 		246950BF2DE573410044A86B /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit";
@@ -381,6 +393,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2407A9002ED61898003A8D38 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2407A8FF2ED61898003A8D38 /* XCRemoteSwiftPackageReference "lottie-spm" */;
+			productName = Lottie;
+		};
 		246950C02DE573410044A86B /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 246950BF2DE573410044A86B /* XCRemoteSwiftPackageReference "SnapKit" */;
