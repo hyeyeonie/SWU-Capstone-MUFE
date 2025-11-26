@@ -28,6 +28,9 @@ class EditTimetableViewController: UIViewController {
         $0.delegate = self
         $0.allowsMultipleSelection = true
         
+        $0.showsVerticalScrollIndicator = false
+        $0.showsHorizontalScrollIndicator = false
+        
         $0.register(EditTimetableCell.self, forCellWithReuseIdentifier: EditTimetableCell.identifier)
         $0.register(StageHeaderView.self, forSupplementaryViewOfKind: "StageHeader", withReuseIdentifier: StageHeaderView.identifier)
         $0.register(TimeSidebarView.self, forSupplementaryViewOfKind: "TimeSidebar", withReuseIdentifier: TimeSidebarView.identifier)
