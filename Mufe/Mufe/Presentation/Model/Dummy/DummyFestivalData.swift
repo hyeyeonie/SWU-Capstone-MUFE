@@ -10,34 +10,11 @@ import UIKit
 struct DummyFestivalData {
     static let festivals: [Festival] = [
         
-        // ✅ 1. 알림 테스트용 페스티벌 (오늘: 11월 19일)
-        Festival(
-            imageName: "mufe_test_icon",
-            name: "🔥 MUFE 알림 테스트",
-            startDate: "2025.11.19",
-            endDate: "2025.11.19",
-            location: "오늘 (11/19)",
-            artistSchedule: [
-                "1일차": [
-                    ArtistInfo(stage: "TEST STAGE", location: "지금 테스트용", artists: [
-                        // ⭐️ 공연 시작 01:10 -> [00:40]에 30분 전 알림이 울립니다!
-                        ArtistSchedule(name: "🚨 30분 전 알림 테스트 🚨", image: "mufe", startTime: "01:20", endTime: "01:40"),
-                        ArtistSchedule(name: "다음 공연", image: "mufe", startTime: "02:00", endTime: "03:00")
-                    ])
-                ]
-            ],
-            days: [
-                FestivalDay(dayOfWeek: "수", date: "2025.11.19")
-            ]
-        ),
-        
-        // ... (나머지 페스티벌 데이터는 그대로 유지) ...
-        // ✅ 2. (수정) 뷰티풀 민트 라이프 (3일로 확장 및 날짜/요일 수정)
         Festival(
             imageName: "beautiful_mint_life",
             name: "2025 뷰티풀민트라이프",
             startDate: "2025.11.15",
-            endDate: "2025.11.17", // 3일로 수정
+            endDate: "2025.11.17",
             location: "올림픽공원",
             artistSchedule: [
                 "1일차": [ // 11.15 (토)
@@ -66,11 +43,11 @@ struct DummyFestivalData {
                     ])
                 ],
                 "3일차": [ // 11.17 (월)
-                     ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
-                         ArtistSchedule(name: "데이먼스 이어", image: "damonsyear", startTime: "13:00", endTime: "13:40"),
-                         ArtistSchedule(name: "김필", image: "kimfeel", startTime: "14:10", endTime: "15:00"),
-                         ArtistSchedule(name: "N.Flying", image: "nflying", startTime: "15:30", endTime: "16:20")
-                     ])
+                    ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
+                        ArtistSchedule(name: "데이먼스 이어", image: "damonsyear", startTime: "13:00", endTime: "13:40"),
+                        ArtistSchedule(name: "김필", image: "kimfeel", startTime: "14:10", endTime: "15:00"),
+                        ArtistSchedule(name: "N.Flying", image: "nflying", startTime: "15:30", endTime: "16:20")
+                    ])
                 ]
             ],
             days: [
@@ -80,11 +57,107 @@ struct DummyFestivalData {
             ]
         ),
         
-        // ✅ 3. (정렬 수정) 그랜드 민트 페스티벌 2025
+        // MARK: - ✅ 3. (시뮬레이션용) Grand Mint Festival 2025
+        
+        // 1️⃣ [활성화됨] 페스티벌 시작 전 (Before)
+        // - 시점: 미래 (2025년 12월로 설정)
         Festival(
             imageName: "gmf_2025",
             name: "Grand Mint Festival 2025",
-            startDate: "2025.10.25",
+            startDate: "2025.12.25",
+            endDate: "2025.12.26",
+            location: "올림픽공원",
+            artistSchedule: [
+                "1일차": [
+                    ArtistInfo(stage: "Mint Breeze Stage", location: "88잔디마당", artists: [
+                        ArtistSchedule(name: "유다빈밴드", image: "yudabinband", startTime: "12:00", endTime: "12:40"),
+                        ArtistSchedule(name: "페퍼톤스", image: "peppertones", startTime: "13:20", endTime: "14:10"),
+                        ArtistSchedule(name: "권진아", image: "kwonjinah", startTime: "14:40", endTime: "15:30"),
+                        ArtistSchedule(name: "소란", image: "soran", startTime: "16:00", endTime: "16:50"),
+                        ArtistSchedule(name: "적재", image: "jukjae", startTime: "17:20", endTime: "18:10"),
+                        ArtistSchedule(name: "N.Flying", image: "nflying", startTime: "18:40", endTime: "19:40"),
+                        ArtistSchedule(name: "이승환", image: "leeseunghwan", startTime: "20:10", endTime: "21:10")
+                    ]),
+                    ArtistInfo(stage: "Loving Forest Garden", location: "88호수 수변무대", artists: [
+                        ArtistSchedule(name: "신인류", image: "shinryu", startTime: "16:50", endTime: "17:30"),
+                        ArtistSchedule(name: "우용", image: "wooyong", startTime: "18:10", endTime: "18:50"),
+                        ArtistSchedule(name: "김뜻돌", image: "kimddodol", startTime: "19:30", endTime: "20:10")
+                    ])
+                ],
+                "2일차": [
+                    ArtistInfo(stage: "Mint Breeze Stage", location: "88잔디마당", artists: [
+                        ArtistSchedule(name: "글렌체크", image: "glencheck", startTime: "14:40", endTime: "15:30"),
+                        ArtistSchedule(name: "실리카겔", image: "silicagel", startTime: "16:00", endTime: "16:50"),
+                        ArtistSchedule(name: "Colde", image: "colde", startTime: "17:20", endTime: "18:10"),
+                        ArtistSchedule(name: "자우림", image: "jaurim", startTime: "18:40", endTime: "19:40"),
+                        ArtistSchedule(name: "LUCY", image: "lucy", startTime: "20:10", endTime: "21:10")
+                    ]),
+                    ArtistInfo(stage: "Loving Forest Garden", location: "88호수 수변무대", artists: [
+                        ArtistSchedule(name: "최유리", image: "choiyuri", startTime: "18:10", endTime: "18:50"),
+                        ArtistSchedule(name: "나상현씨밴드", image: "nasanghyuncband", startTime: "19:30", endTime: "20:10")
+                    ])
+                ]
+            ],
+            days: [
+                FestivalDay(dayOfWeek: "목", date: "2025.12.25"),
+                FestivalDay(dayOfWeek: "금", date: "2025.12.26")
+            ]
+        ),
+        
+        /*
+        // 2️⃣ [주석처리됨] 페스티벌 당일 (During)
+        // - 시점: 오늘 (테스트 하시는 날짜로 맞춰주세요, 예: 11월 27일)
+        Festival(
+            imageName: "gmf_2025",
+            name: "Grand Mint Festival 2025",
+            startDate: "2025.11.27", // 오늘 날짜
+            endDate: "2025.11.28",
+            location: "올림픽공원",
+            artistSchedule: [
+                "1일차": [
+                    ArtistInfo(stage: "Mint Breeze Stage", location: "88잔디마당", artists: [
+                        ArtistSchedule(name: "유다빈밴드", image: "yudabinband", startTime: "12:00", endTime: "12:40"),
+                        ArtistSchedule(name: "페퍼톤스", image: "peppertones", startTime: "13:20", endTime: "14:10"),
+                        ArtistSchedule(name: "권진아", image: "kwonjinah", startTime: "14:40", endTime: "15:30"),
+                        ArtistSchedule(name: "소란", image: "soran", startTime: "16:00", endTime: "16:50"),
+                        ArtistSchedule(name: "적재", image: "jukjae", startTime: "17:20", endTime: "18:10"),
+                        ArtistSchedule(name: "N.Flying", image: "nflying", startTime: "18:40", endTime: "19:40"),
+                        ArtistSchedule(name: "이승환", image: "leeseunghwan", startTime: "20:10", endTime: "21:10")
+                    ]),
+                    ArtistInfo(stage: "Loving Forest Garden", location: "88호수 수변무대", artists: [
+                        ArtistSchedule(name: "신인류", image: "shinryu", startTime: "16:50", endTime: "17:30"),
+                        ArtistSchedule(name: "우용", image: "wooyong", startTime: "18:10", endTime: "18:50"),
+                        ArtistSchedule(name: "김뜻돌", image: "kimddodol", startTime: "19:30", endTime: "20:10")
+                    ])
+                ],
+                "2일차": [
+                    ArtistInfo(stage: "Mint Breeze Stage", location: "88잔디마당", artists: [
+                        ArtistSchedule(name: "글렌체크", image: "glencheck", startTime: "14:40", endTime: "15:30"),
+                        ArtistSchedule(name: "실리카겔", image: "silicagel", startTime: "16:00", endTime: "16:50"),
+                        ArtistSchedule(name: "Colde", image: "colde", startTime: "17:20", endTime: "18:10"),
+                        ArtistSchedule(name: "자우림", image: "jaurim", startTime: "18:40", endTime: "19:40"),
+                        ArtistSchedule(name: "LUCY", image: "lucy", startTime: "20:10", endTime: "21:10")
+                    ]),
+                    ArtistInfo(stage: "Loving Forest Garden", location: "88호수 수변무대", artists: [
+                        ArtistSchedule(name: "최유리", image: "choiyuri", startTime: "18:10", endTime: "18:50"),
+                        ArtistSchedule(name: "나상현씨밴드", image: "nasanghyuncband", startTime: "19:30", endTime: "20:10")
+                    ])
+                ]
+            ],
+            days: [
+                FestivalDay(dayOfWeek: "목", date: "2025.11.27"), // 오늘
+                FestivalDay(dayOfWeek: "금", date: "2025.11.28")
+            ]
+        ),
+        */
+         
+        /*
+        // 3️⃣ [주석처리됨] 페스티벌 지난 후 (After)
+        // - 시점: 과거 (원래 데이터인 10월 25일)
+        Festival(
+            imageName: "gmf_2025",
+            name: "Grand Mint Festival 2025",
+            startDate: "2025.10.25", // 지난 날짜
             endDate: "2025.10.26",
             location: "올림픽공원",
             artistSchedule: [
@@ -123,6 +196,7 @@ struct DummyFestivalData {
                 FestivalDay(dayOfWeek: "일", date: "2025.10.26")
             ]
         ),
+        */
         
         // ✅ 4. (정렬 수정) 2025 부산 락 페스티벌
         Festival(
