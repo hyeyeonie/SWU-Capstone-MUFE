@@ -20,13 +20,13 @@ final class LoadingView: UIView {
     }
     
     private let findingLabel = UILabel().then {
-        $0.text = "공연을 찾는 중.."
+        $0.text = "열심히 공연을 찾는 중.."
         $0.customFont(.fxl_Bold)
         $0.textColor = .gray00
     }
     
     private let scriptLabel = UILabel().then {
-        $0.text = "당신의 취향에 꼭 맞는 무대를 찾고 있어요"
+        $0.text = "AI가 당신의 취향을 닮은 무대를 찾아드려요!"
         $0.customFont(.fmd_Medium)
         $0.textColor = .gray40
     }
@@ -64,7 +64,7 @@ final class LoadingView: UIView {
         }
         
         scriptLabel.snp.makeConstraints {
-            $0.top.equalTo(findingLabel.snp.bottom).offset(4)
+            $0.top.equalTo(findingLabel.snp.bottom).offset(15)
             $0.centerX.equalTo(animationView)
         }
     }
