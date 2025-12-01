@@ -23,7 +23,7 @@ final class TimetableCell: UICollectionViewCell {
     }
     
     private let locationIcon = UIImageView().then {
-        $0.image = UIImage(systemName: "mappin.and.ellipse")
+        $0.image = UIImage(resource: .location)
         $0.tintColor = .gray60
     }
     
@@ -33,7 +33,7 @@ final class TimetableCell: UICollectionViewCell {
     }
     
     private let timeIcon = UIImageView().then {
-        $0.image = UIImage(systemName: "clock.fill")
+        $0.image = UIImage(resource: .timeIcon)
         $0.tintColor = .gray60
     }
     
@@ -126,7 +126,7 @@ final class TimetableCell: UICollectionViewCell {
     func configure(with data: Timetable) {
         nameLabel.text = data.artistName
         locationLabel.text = data.location
-        timeLabel.text = "\(data.startTime) - \(data.endTime), \(data.runningTime)분"
+        timeLabel.text = "\(data.startTime) - \(data.endTime)   \(data.runningTime)분"
         genreLabel.text = data.script
         artistImageView.image = UIImage(named: data.imageName) ?? UIImage(resource: .artistDefault)
     }

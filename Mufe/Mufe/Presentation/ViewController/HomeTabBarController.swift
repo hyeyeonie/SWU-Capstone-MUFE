@@ -48,8 +48,8 @@ final class HomeTabBarController: UITabBarController {
         let timetableVC = TimetableViewController()
         let timetableTabItem = UITabBarItem(
             title: "시간표",
-            image: UIImage(resource: .unselectedTimetable).withRenderingMode(.alwaysTemplate),
-            selectedImage: UIImage(resource: .selectedTimetable).withRenderingMode(.alwaysTemplate)
+            image: UIImage(resource: .unselectedTimetable).withRenderingMode(.alwaysOriginal),
+            selectedImage: UIImage(resource: .selectedTimetable).withRenderingMode(.alwaysOriginal)
         )
         timetableVC.tabBarItem = timetableTabItem
         let timetableNav = UINavigationController(rootViewController: timetableVC)
