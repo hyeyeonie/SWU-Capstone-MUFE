@@ -20,7 +20,6 @@ final class EditTimetableView: UIView {
     private let dayLabel = UILabel().then {
         $0.customFont(.flg_SemiBold)
         $0.textColor = .gray00
-        $0.text = "6/13 (토)"
     }
     
     private(set) var completeButton = UIButton(type: .custom).then {
@@ -41,6 +40,10 @@ final class EditTimetableView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configure(dayString: String) {
+        dayLabel.text = dayString
     }
     
     private func setStyle() {

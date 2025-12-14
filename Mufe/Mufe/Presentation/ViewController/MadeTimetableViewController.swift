@@ -12,8 +12,6 @@ import Then
 
 class MadeTimetableViewController: UIViewController {
     
-    // MARK: - Properties
-    
     var festival: Festival!
     var selectedDateItem: DateItem!
     var timetables: [Timetable] = []
@@ -25,8 +23,6 @@ class MadeTimetableViewController: UIViewController {
     var isFromHome: Bool = false
     
     var onAddNewTimetableTapped: (() -> Void)?
-    
-    // MARK: - UI Components
     
     private let backButton = UIButton().then {
         $0.contentMode = .scaleAspectFit
@@ -50,8 +46,6 @@ class MadeTimetableViewController: UIViewController {
     private let timetableView = MadeTimetableView()
     private let emptyView = MadeTimetableEmptyView()
     private let loadingView = LoadingView()
-    
-    // MARK: - Life Cycle
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -186,33 +180,62 @@ class MadeTimetableViewController: UIViewController {
             self?.navigateToOnboarding()
         }
     }
-    
+
     private func presentEditViewController() {
-        guard let fullSchedule = festival.artistSchedule[selectedDateItem.day] else { return }
+        guard
+            let selectedDayItem = self.selectedDateItem,
+            let fullSchedule = festival.artistSchedule[selectedDayItem.day]
+        else { return }
+
         let mySavedArtistNames = Set(self.timetables.map { $0.artistName })
+
         let preparedSchedule = fullSchedule.map { stageInfo -> ArtistInfo in
             var newStageInfo = stageInfo
-            
             newStageInfo.artists = stageInfo.artists.map { artist in
                 var newArtist = artist
                 newArtist.isSelected = mySavedArtistNames.contains(artist.name)
                 return newArtist
             }
-            
             return newStageInfo
         }
 
-        let editVC = EditTimetableViewController()
+        var finalDayString = ""
+
+        if let dayIndex = festival.artistSchedule.keys
+            .sorted()
+            .firstIndex(of: selectedDayItem.day),
+           festival.days.indices.contains(dayIndex) {
+
+            let dayItem = festival.days[dayIndex]
+
+            let inputFormatter = DateFormatter()
+            inputFormatter.dateFormat = "yyyy.MM.dd"
+            inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+
+            if let date = inputFormatter.date(from: dayItem.date) {
+                let mdFormatter = DateFormatter()
+                mdFormatter.dateFormat = "M/d"
+                mdFormatter.locale = Locale(identifier: "en_US_POSIX")
+
+                let weekdayFormatter = DateFormatter()
+                weekdayFormatter.dateFormat = "EEEEE"
+                weekdayFormatter.locale = Locale(identifier: "ko_KR")
+
+                finalDayString = "\(mdFormatter.string(from: date)) (\(weekdayFormatter.string(from: date)))"
+            }
+        }
+
+        let editVC = EditTimetableViewController(dayString: finalDayString)
         editVC.scheduleList = preparedSchedule
+
         editVC.onCompletion = { [weak self] selectedNames in
             guard let self = self else { return }
-            
             self.selectedArtistNames = selectedNames
             let newTimetables = self.createTimetablesFromSelectedArtists()
             self.updateDatabaseWithNewSelection(newTimetables: newTimetables)
         }
-        
-        self.navigationController?.pushViewController(editVC, animated: true)
+
+        navigationController?.pushViewController(editVC, animated: true)
     }
     
     private func updateDatabaseWithNewSelection(newTimetables: [Timetable]) {
@@ -484,7 +507,7 @@ class MadeTimetableViewController: UIViewController {
         
         for timetable in newSavedFestival.timetables {
             NotificationManager.shared.schedulePerformanceReminder(timetable: timetable,
-                                                                   festival: newSavedFestival)
+                                                                 festival: newSavedFestival)
         }
         
         NotificationManager.shared.schedulePostFestivalReminder(festival: newSavedFestival)
@@ -499,8 +522,6 @@ class MadeTimetableViewController: UIViewController {
             modalView.removeFromSuperview()
         })
     }
-    
-    // MARK: - Action Handlers
     
     @objc private func didTapBackButton() {
         if isFromHome {
