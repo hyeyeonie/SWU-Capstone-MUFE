@@ -70,7 +70,7 @@ struct DummyFestivalData {
             artistSchedule: [
                 "1일차": [ // 06.13 (금)
                     ArtistInfo(stage: "STAGE 1", location: "88잔디마당", artists: [
-                        ArtistSchedule(name: "Hi-Fi Un!corn", image: "hifi", startTime: "11:00", endTime: "13:30"),
+                        ArtistSchedule(name: "Hi-Fi Un!corn", image: "hifi", startTime: "13:40", endTime: "14:20"),
                         ArtistSchedule(name: "유주", image: "yuzu", startTime: "14:50", endTime: "15:40"),
                         ArtistSchedule(name: "오월오일", image: "maymay", startTime: "16:10", endTime: "17:00"),
                         ArtistSchedule(name: "SAM KIM", image: "samkim", startTime: "17:30", endTime: "18:20"),
@@ -290,7 +290,7 @@ struct DummyFestivalData {
                         ArtistSchedule(name: "까치산", image: "kachisan", startTime: "21:50", endTime: "22:30"),
                         ArtistSchedule(name: "터치드", image: "touched", startTime: "23:00", endTime: "23:50"),
                         ArtistSchedule(name: "너드커넥션", image: "nerdnerd", startTime: "00:20", endTime: "01:10"),
-                        ArtistSchedule(name: "유다빈밴드", image: "ydbb", startTime: "01:40", endTime: "01:50")
+                        ArtistSchedule(name: "유다빈밴드", image: "ydbb", startTime: "01:40", endTime: "02:30")
                     ]),
                     
                     // MARK: - STATION STARDUST
