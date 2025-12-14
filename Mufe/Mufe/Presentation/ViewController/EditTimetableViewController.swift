@@ -12,13 +12,11 @@ import Then
 
 class EditTimetableViewController: UIViewController {
     
-    // MARK: - Properties
+    let dayString: String
     
     var scheduleList: [ArtistInfo] = []
     var onCompletion: (([String]) -> Void)?
 
-    // MARK: - UI Components
-    
     private let timeTableLayout = TimetableLayout()
     private let editTimetableView = EditTimetableView()
     
@@ -36,9 +34,16 @@ class EditTimetableViewController: UIViewController {
         $0.register(TimeSidebarView.self, forSupplementaryViewOfKind: "TimeSidebar", withReuseIdentifier: TimeSidebarView.identifier)
         $0.register(CornerHeaderView.self, forSupplementaryViewOfKind: "CornerHeader", withReuseIdentifier: CornerHeaderView.identifier)
     }
-
-    // MARK: - Life Cycle
     
+    init(dayString: String) {
+        self.dayString = dayString
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -47,6 +52,12 @@ class EditTimetableViewController: UIViewController {
         setLayout()
         setActions()
         setDelegate()
+        
+        editTimetableView.configure(dayString: self.dayString)
+        
+        let calculatedStartHour = findMinStartHour()
+        timeTableLayout.dynamicStartHour = calculatedStartHour
+        timeTableLayout.dynamicEndHour = findMaxEndHour(minStartHour: calculatedStartHour)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -58,13 +69,11 @@ class EditTimetableViewController: UIViewController {
             for (itemIndex, artist) in section.artists.enumerated() {
                 if artist.isSelected {
                     let indexPath = IndexPath(item: itemIndex, section: sectionIndex)
-                    collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+                    self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
                 }
             }
         }
     }
-    
-    // MARK: - UI Setup
     
     private func setStyle() {
         view.backgroundColor = .grayBg
@@ -95,7 +104,69 @@ class EditTimetableViewController: UIViewController {
         timeTableLayout.delegate = self
     }
     
-    // MARK: - Actions
+    private func findMinStartHour() -> Int {
+        var earliestStartTimeInMinutes = Int.max
+
+        for section in scheduleList {
+            for artist in section.artists {
+                let components = artist.startTime.split(separator: ":").compactMap { Int($0) }
+                guard components.count == 2 else { continue }
+                
+                var hour = components[0]
+                let minute = components[1]
+                
+                if hour >= 0 && hour <= 4 {
+                    hour += 24
+                }
+                
+                let totalMinutes = hour * 60 + minute
+                
+                if totalMinutes < earliestStartTimeInMinutes {
+                    earliestStartTimeInMinutes = totalMinutes
+                }
+            }
+        }
+        
+        if earliestStartTimeInMinutes == Int.max {
+            return 11
+        }
+
+        let paddedStartTimeInMinutes = max(0, earliestStartTimeInMinutes - 30)
+
+        let startHourForLayout = Int(floor(Double(paddedStartTimeInMinutes) / 60.0))
+        
+        return max(0, startHourForLayout)
+    }
+    
+    private func findMaxEndHour(minStartHour: Int) -> Int {
+        var latestEndTimeInMinutes = 0
+        
+        for section in scheduleList {
+            for artist in section.artists {
+                let components = artist.endTime.split(separator: ":").compactMap { Int($0) }
+                guard components.count == 2 else { continue }
+                
+                var hour = components[0]
+                let minute = components[1]
+                
+                if hour >= 0 && hour <= 4 {
+                    hour += 24
+                }
+                
+                let totalMinutes = hour * 60 + minute
+                
+                if totalMinutes > latestEndTimeInMinutes {
+                    latestEndTimeInMinutes = totalMinutes
+                }
+            }
+        }
+        
+        let paddedEndTimeInMinutes = latestEndTimeInMinutes + 30
+        
+        let endHourForLayout = Int(ceil(Double(paddedEndTimeInMinutes) / 60.0))
+        
+        return max(minStartHour + 1, endHourForLayout)
+    }
     
     @objc private func didTapComplete() {
         var selectedNames: [String] = []
@@ -118,8 +189,6 @@ class EditTimetableViewController: UIViewController {
     }
 }
 
-// MARK: - UICollectionView DataSource & Delegate
-
 extension EditTimetableViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -136,7 +205,6 @@ extension EditTimetableViewController: UICollectionViewDataSource, UICollectionV
         let artist = scheduleList[indexPath.section].artists[indexPath.item]
         cell.configure(with: artist)
         
-        // 재사용되는 셀의 선택 상태를 데이터모델과 동기화
         cell.isSelected = artist.isSelected
         
         return cell
@@ -145,7 +213,6 @@ extension EditTimetableViewController: UICollectionViewDataSource, UICollectionV
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         if kind == "StageHeader" {
-            // 상단 스테이지 이름 헤더
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: StageHeaderView.identifier, for: indexPath) as! StageHeaderView
             
             let info = scheduleList[indexPath.section]
@@ -154,23 +221,25 @@ extension EditTimetableViewController: UICollectionViewDataSource, UICollectionV
             return header
             
         } else if kind == "TimeSidebar" {
-            // 좌측 시간 표시 사이드바
             let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TimeSidebarView.identifier, for: indexPath) as! TimeSidebarView
             
-            let hour = 11 + indexPath.item
+            let startHour = timeTableLayout.dynamicStartHour
+            var hour = startHour + indexPath.item
+            
+            if hour >= 24 {
+                hour -= 24
+            }
+            
             view.configure(hour: hour)
             
             return view
             
         } else if kind == "CornerHeader" {
-            // 좌측 상단 빈 공간 (Sticky Header 겹침 방지용)
             return collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CornerHeaderView.identifier, for: indexPath)
         }
         
         return UICollectionReusableView()
     }
-    
-    // MARK: Selection Logic
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         scheduleList[indexPath.section].artists[indexPath.item].isSelected = true
@@ -182,8 +251,6 @@ extension EditTimetableViewController: UICollectionViewDataSource, UICollectionV
         print("Deselected: \(scheduleList[indexPath.section].artists[indexPath.item].name)")
     }
 }
-
-// MARK: - TimetableLayout Delegate
 
 extension EditTimetableViewController: TimetableLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, startTimeFor indexPath: IndexPath) -> String {

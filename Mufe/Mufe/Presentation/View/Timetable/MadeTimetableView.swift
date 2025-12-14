@@ -106,7 +106,11 @@ final class MadeTimetableView: UIView {
         self.stageGroups = stageGroups
 
         let totalCount = stageGroups.flatMap { $0.artists }.count
-        let totalMinutes = stageGroups.flatMap { $0.artists }.reduce(0) { $0 + $1.duration }
+        let totalMinutes = stageGroups.flatMap { $0.artists }.reduce(0) { total, artist in
+            let safeDuration = max(0, artist.duration)
+            return total + safeDuration
+        }
+        
         summaryLabel.text = "총 \(totalCount)개, \(totalMinutes)분"
 
         collectionView.reloadData()

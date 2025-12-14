@@ -69,12 +69,21 @@ struct ArtistSchedule {
     }
     
     var duration: Int {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        guard let start = formatter.date(from: startTime),
-              let end = formatter.date(from: endTime) else { return 0 }
-        return Int(end.timeIntervalSince(start) / 60)
-    }
+            let formatter = DateFormatter()
+            formatter.dateFormat = "HH:mm"
+            
+            guard let start = formatter.date(from: startTime),
+                  var end = formatter.date(from: endTime) else { return 0 }
+            if end.timeIntervalSince(start) < 0 {
+                guard let nextDayEnd = Calendar.current.date(byAdding: .day, value: 1, to: end) else {
+                    return 0
+                }
+                end = nextDayEnd
+            }
+            let timeIntervalInMinutes = Int(end.timeIntervalSince(start) / 60)
+            
+            return timeIntervalInMinutes
+        }
 }
 
 enum PerformanceStatus {

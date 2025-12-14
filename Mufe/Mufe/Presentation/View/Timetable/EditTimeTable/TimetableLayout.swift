@@ -17,17 +17,16 @@ final class TimetableLayout: UICollectionViewLayout {
     
     weak var delegate: TimetableLayoutDelegate?
     
-    // MARK: - Settings
     let stageHeaderHeight: CGFloat = 70
     let timeSidebarWidth: CGFloat = 70
     let columnWidth: CGFloat = 160
     let cellMargin: CGFloat = 16
-    let heightPerMinute: CGFloat = 2.6     // 10분 단위 간격이 26pt
+    let heightPerMinute: CGFloat = 2.6
     let cellTopOffset: CGFloat = 9
     let startTimeOffset: CGFloat = 10
     
-    let startHour = 11
-    let endHour = 22
+    var dynamicStartHour: Int = 11
+    var dynamicEndHour: Int = 29
     
     private var cache: [UICollectionViewLayoutAttributes] = []
     private var contentBounds: CGRect = .zero
@@ -41,14 +40,13 @@ final class TimetableLayout: UICollectionViewLayout {
         guard let collectionView = collectionView else { return }
         cache.removeAll()
         
-        let totalMinutes = (endHour - startHour) * 60
+        let totalMinutes = (dynamicEndHour - dynamicStartHour) * 60
         let contentHeight = CGFloat(totalMinutes) * heightPerMinute + stageHeaderHeight
         let numberOfStages = collectionView.numberOfSections
         let contentWidth = CGFloat(numberOfStages) * columnWidth + timeSidebarWidth
         
         contentBounds = CGRect(x: 0, y: 0, width: contentWidth, height: contentHeight)
         
-        // 아티스트 셀 배치
         for section in 0..<numberOfStages {
             let items = collectionView.numberOfItems(inSection: section)
             for item in 0..<items {
@@ -60,6 +58,7 @@ final class TimetableLayout: UICollectionViewLayout {
                 let startMin = convertToMinutes(time: startTime)
                 let endMin = convertToMinutes(time: endTime)
                 let duration = CGFloat(endMin - startMin)
+                
                 let xPos = timeSidebarWidth + (CGFloat(section) * columnWidth) + (cellMargin / 2)
                 let yPos = stageHeaderHeight + startTimeOffset + (CGFloat(startMin) * heightPerMinute) + cellTopOffset
                 let width = columnWidth - cellMargin
@@ -78,14 +77,12 @@ final class TimetableLayout: UICollectionViewLayout {
         guard let collectionView = collectionView else { return nil }
         let offset = collectionView.contentOffset
         
-        // 일반 셀
         for attributes in cache {
             if attributes.frame.intersects(rect) {
                 visibleLayoutAttributes.append(attributes)
             }
         }
         
-        // Stage Header (Sticky)
         let numberOfStages = collectionView.numberOfSections
         for section in 0..<numberOfStages {
             let indexPath = IndexPath(item: 0, section: section)
@@ -99,9 +96,8 @@ final class TimetableLayout: UICollectionViewLayout {
             visibleLayoutAttributes.append(attributes)
         }
         
-        // Time Sidebar (Sticky)
-        for hour in startHour..<endHour {
-            let index = hour - startHour
+        for hour in dynamicStartHour..<dynamicEndHour {
+            let index = hour - dynamicStartHour
             let indexPath = IndexPath(item: index, section: 0)
             let attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: "TimeSidebar", with: indexPath)
             
@@ -115,7 +111,6 @@ final class TimetableLayout: UICollectionViewLayout {
             visibleLayoutAttributes.append(attributes)
         }
         
-        // Corner Header (Sticky)
         let cornerAttr = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: "CornerHeader", with: IndexPath(item: 0, section: 0))
         cornerAttr.frame = CGRect(x: offset.x, y: max(0, offset.y), width: timeSidebarWidth, height: stageHeaderHeight)
         cornerAttr.zIndex = 100
@@ -131,6 +126,14 @@ final class TimetableLayout: UICollectionViewLayout {
     private func convertToMinutes(time: String) -> Int {
         let components = time.split(separator: ":").compactMap { Int($0) }
         guard components.count == 2 else { return 0 }
-        return (components[0] * 60 + components[1]) - (startHour * 60)
+        
+        var hour = components[0]
+        let minute = components[1]
+        
+        if hour >= 0 && hour <= 4 {
+            hour += 24
+        }
+        
+        return (hour * 60 + minute) - (dynamicStartHour * 60)
     }
 }
