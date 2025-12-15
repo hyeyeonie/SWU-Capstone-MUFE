@@ -252,8 +252,8 @@ struct DummyFestivalData {
         Festival(
             imageName: "countdown_fantasy",
             name: "COUNTDOWN FANTASY 2025-2026",
-            startDate: "2025.12.30",
-            endDate: "2025.12.31",
+            startDate: "2025.12.15",
+            endDate: "2025.12.16",
             location: "일산 KINTEX",
             artistSchedule: [
                 "1일차": [
@@ -307,8 +307,8 @@ struct DummyFestivalData {
                 ]
             ],
             days: [
-                FestivalDay(dayOfWeek: "화", date: "2025.12.30"),
-                FestivalDay(dayOfWeek: "수", date: "2025.12.31")
+                FestivalDay(dayOfWeek: "월", date: "2025.12.15"),
+                FestivalDay(dayOfWeek: "화", date: "2025.12.16")
             ]
         ),
         
