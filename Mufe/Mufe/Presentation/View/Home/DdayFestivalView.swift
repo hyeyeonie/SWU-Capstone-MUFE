@@ -71,7 +71,16 @@ final class DdayFestivalView: UIView {
     
     func updateFestivalTimes(_ times: [SavedTimetable]) {
         DispatchQueue.main.async {
-            self.timetables = times
+            let sortedTimes = times.sorted { (first, second) -> Bool in
+                func adjustedHour(_ timeString: String) -> Int {
+                    let hour = Int(timeString.prefix(2)) ?? 0
+                    return hour < 6 ? hour + 24 : hour
+                }
+                
+                return adjustedHour(first.startTime) < adjustedHour(second.startTime)
+            }
+            
+            self.timetables = sortedTimes
             self.festivalCollectionView.reloadData()
         }
     }
